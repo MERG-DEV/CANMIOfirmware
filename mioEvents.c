@@ -22,6 +22,8 @@
 void clearEvents(unsigned char i);
 
 extern void setOutput(unsigned char io, unsigned char state, unsigned char type);
+extern void inputScan(BOOL report);
+extern void sendProducedEvent(unsigned char action, BOOL on);
 
 /**
  * Reset events for the IO back to default. Called when the Type of the IO
@@ -95,8 +97,9 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         inputScan(TRUE);
         for (unsigned char io=0; io < NUM_IO; io++) {
             if (NV->io[io].type != TYPE_INPUT) {
-                // TODO send current status
-                
+                // send current status
+                BOOL state = ee_read(EE_OP_STATE+io);
+                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
             }
         }
     }

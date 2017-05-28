@@ -92,7 +92,7 @@ Config configs[NUM_IO] = {
 };
 
 // forward declarations
-BYTE inputScan(void);
+BYTE inputScan(BYTE report);
 void __init(void);
 BOOL checkCBUS( void);
 void ISRHigh(void);
@@ -185,7 +185,7 @@ int main(void) @0x800 {
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
         if (started) {
-            inputScan();    // Strobe keyboard for button presses
+            inputScan(FALSE);    // Strobe keyboard for button presses
             if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
                 startServos();  // call every 5ms
                 lastServoStartTime.Val = tickGet();
@@ -228,6 +228,7 @@ void initialise(void) {
     INTCON2bits.RBPU = 0;
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
+    initStatusLeds();
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
         configIO(io);
