@@ -229,6 +229,7 @@ void initialise(void) {
     INTCON2bits.RBPU = 0;
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
+    initStatusLeds();
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
         configIO(io);

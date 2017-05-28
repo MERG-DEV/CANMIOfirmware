@@ -14,7 +14,6 @@
 #include "config.h"
 #include "GenericTypeDefs.h"
 #include "TickTime.h"
-
 // Forward declarations
 void setDigitalOutput(unsigned char io, BOOL state);
 
@@ -112,6 +111,7 @@ void setDigitalOutput(unsigned char io, BOOL state) {
         state = state ? 0:1;
     }
     setOutputPin(io, state);
+    ee_write(EE_OP_STATE+io, state);
     sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
     // Was this a ON and we have a pulse duration defined?
     if (state && nodeVarTable.moduleNVs.io[io].nv_io.nv_output.output_pulse_duration) {
