@@ -92,7 +92,7 @@ Config configs[NUM_IO] = {
 };
 
 // forward declarations
-BYTE inputScan(void);
+void inputScan(BOOL report);
 void __init(void);
 BOOL checkCBUS( void);
 void ISRHigh(void);
@@ -170,6 +170,7 @@ void main(void) {
 #else
 int main(void) @0x800 {
 #endif
+    initStatusLeds();
     initialise();
     startTime.Val = tickGet();
  
@@ -185,7 +186,7 @@ int main(void) @0x800 {
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
         if (started) {
-            inputScan();    // Strobe keyboard for button presses
+            inputScan(FALSE);    // Strobe keyboard for button presses
             if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
                 startServos();  // call every 5ms
                 lastServoStartTime.Val = tickGet();

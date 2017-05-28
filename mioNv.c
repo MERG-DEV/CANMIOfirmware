@@ -12,7 +12,8 @@
 #include "xc.h"
 #include "mioNv.h"
 #include "mioEEPROM.h"
-#include "../../CBUSlib/events.h"
+#include "events.h"
+#include "romops.h"
 
 extern void setType(unsigned char i, unsigned char type);
 
@@ -90,31 +91,31 @@ void defaultNVs(unsigned char i, unsigned char type) {
     // add the module's default nv for this io
     switch(type) {
         case TYPE_INPUT:
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_ENABLE_OFF(i)), 0);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_INVERTED(i)), 0);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), 0);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), 0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_ENABLE_OFF(i)), (BYTE)0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_INVERTED(i)), (BYTE)0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)0);
             break;
         case TYPE_OUTPUT:
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), 0);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_OUTPUT_INVERTED(i)), 0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_OUTPUT_INVERTED(i)), (BYTE)0);
             break;
         case TYPE_SERVO:
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), 25);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), 200);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), 5);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), 5);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)25);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)200);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
             break;
         case TYPE_BOUNCE:
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_START_POS(i)), 0);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_END_POS(i)), 90);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), 1);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_START_POS(i)), (BYTE)0);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_END_POS(i)), (BYTE)90);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
             break;
         case TYPE_MULTI:
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), 3);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), 25);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), 110);
-            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), 200);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)25);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)110);
+            writeFlashImage((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)200);
             break;
     }
 }

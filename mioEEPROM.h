@@ -11,7 +11,7 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-#include "../../CBUSlib/EEPROM.h"
+#include "EEPROM.h"
     /*
      * Any additional EEPROM storage requirements above that required by the CBUS library
      * is defined here. I.e. module specific storage.

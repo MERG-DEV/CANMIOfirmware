@@ -22,6 +22,7 @@
 void clearEvents(unsigned char i);
 
 extern void setOutput(unsigned char io, unsigned char state, unsigned char type);
+extern void inputScan(BOOL report);
 
 /**
  * Reset events for the IO back to default. Called when the Type of the IO
