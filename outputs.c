@@ -14,6 +14,9 @@
 #include "config.h"
 #include "GenericTypeDefs.h"
 #include "TickTime.h"
+#include "romops.h"
+#include "mioEEPROM.h"
+
 // Forward declarations
 void setDigitalOutput(unsigned char io, BOOL state);
 
