@@ -42,7 +42,7 @@ extern "C" {
 #endif
 
 
-#include "../../CBUSlib/FLiM.h"
+#include "FliM.h"
 #include "module.h"
 
 

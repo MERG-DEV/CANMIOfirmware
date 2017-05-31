@@ -120,7 +120,7 @@ Config configs[NUM_IO] = {
 };
 
 // forward declarations
-BYTE inputScan(BYTE report);
+void inputScan(BOOL report);
 void __init(void);
 BOOL checkCBUS( void);
 void ISRHigh(void);
@@ -198,6 +198,7 @@ void main(void) {
 #else
 int main(void) @0x800 {
 #endif
+    initStatusLeds();
     initialise();
     startTime.Val = tickGet();
  

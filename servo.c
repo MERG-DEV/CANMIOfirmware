@@ -55,11 +55,11 @@
 #include <xc.h>
 #include "mioNv.h"
 #include "mioEvents.h"
-#include "../../CBUSlib/FLiM.h"
+#include "FliM.h"
 #include "config.h"
-#include "../../CBUSlib/GenericTypeDefs.h"
-#include "../../CBUSlib/TickTime.h"
-#include "../CBUSlib/romops.h"
+#include "GenericTypeDefs.h"
+#include "TickTime.h"
+#include "romops.h"
 #include "mioEEPROM.h"
 
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width

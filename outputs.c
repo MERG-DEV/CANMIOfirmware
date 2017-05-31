@@ -38,12 +38,13 @@
 
 #include "mioNv.h"
 #include "mioEvents.h"
-#include "../../CBUSlib/FLiM.h"
+#include "FliM.h"
 #include "config.h"
-#include "../../CBUSlib/GenericTypeDefs.h"
-#include "../../CBUSlib/TickTime.h"
+#include "GenericTypeDefs.h"
+#include "TickTime.h"
+#include "romops.h"
 #include "mioEEPROM.h"
-#include "../../CBUSlib/romops.h"
+
 // Forward declarations
 void setDigitalOutput(unsigned char io, BOOL state);
 
