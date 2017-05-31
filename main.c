@@ -58,6 +58,10 @@
 #include "../CBUSlib/can18.h"
 #include "../CBUSlib/cbus.h"
 
+
+void DATAEE_WriteByte(WORD bAdd, BYTE bData);
+BYTE DATAEE_ReadByte(WORD bAdd);
+
 extern BYTE BlinkLED();
 extern void startServos();
 extern void initServos();
@@ -99,6 +103,7 @@ void ISRHigh(void);
 void initialise(void);
 void configIO(unsigned char io);
 void factoryReset(void);
+void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
 void setOutput(unsigned char i, unsigned char state, unsigned char type);
 void sendProducedEvent(unsigned char action, BOOL on);
@@ -170,32 +175,35 @@ void main(void) {
 #else
 int main(void) @0x800 {
 #endif
+    initRomOps();
+    // The very first ee_write seems to not work so I put a dummy write here
+    ee_write((WORD)EE_DUMMY, 0xff);
     initStatusLeds();
-    initialise();
+    initialise(); 
     startTime.Val = tickGet();
- 
+
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
-        if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
-            started = TRUE;
-            if (NV->sendSodDelay > 0) {
-                sendProducedEvent(ACTION_SOD, TRUE);
-            }
-        }
-        checkCBUS();    // Consume any CBUS message - display it if not display message mode
+//        if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
+//            started = TRUE;
+//            if (NV->sendSodDelay > 0) {
+ //               sendProducedEvent(ACTION_SOD, TRUE);
+//            }
+//        }
+    //    checkCBUS();    // Consume any CBUS message and act upon it
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
-        if (started) {
-            inputScan(FALSE);    // Strobe keyboard for button presses
-            if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
-                startServos();  // call every 5ms
-                lastServoStartTime.Val = tickGet();
-            }
-            if (tickTimeSince(lastServoPollTime) > 20*ONE_MILI_SECOND) {
-                pollServos();
-                lastServoPollTime.Val = tickGet();
-            }
-        }
+//        if (started) {
+//            inputScan(FALSE);    // Strobe inputs for changes
+//            if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
+//                startServos();  // call every 5ms
+//                lastServoStartTime.Val = tickGet();
+//            }
+//            if (tickTimeSince(lastServoPollTime) > 20*ONE_MILI_SECOND) {
+//                pollServos();
+//                lastServoPollTime.Val = tickGet();
+//            }
+//        }
         // Check for any flashing status LEDs
         checkFlashing();
      } // main loop
@@ -207,23 +215,21 @@ int main(void) @0x800 {
  */
 void initialise(void) {
     // enable the 4x PLL
-    OSCTUNEbits.PLLEN = 1;
-    
+    OSCTUNEbits.PLLEN = 1; 
     // Digital I/O - disable analogue
     ANCON0 = 0;
     ANCON1 = 0;
     
     // check if EEPROM is valid
-    if (ee_read((WORD)EE_RESET) != 0xCA) {
+   if (ee_read((WORD)EE_RESET) != 0xCA) {
         // set EEPROM and Flash to default values
         factoryReset();
         // set the reset flag to indicate it has been initialised
         ee_write((WORD)EE_RESET, 0xCA);
     }
     canid = ee_read((WORD)EE_CAN_ID);
-    nn = ee_read((WORD)EE_NODE_ID);
-    
-    initTicker();
+    nn = ee_read_short((WORD)EE_NODE_ID);
+    initTicker(0);  // set low priority
     // set up io pins based upon type
     // Enable PORT B weak pullups
     INTCON2bits.RBPU = 0;
@@ -241,8 +247,7 @@ void initialise(void) {
     // Enable interrupt priority
     RCONbits.IPEN = 1;
     // enable interrupts, all init now done
-    ei();
- 
+    ei(); 
     setStatusLed(flimState == fsFLiM);
 }    
 
@@ -257,7 +262,8 @@ void factoryReset(void) {
     ee_write((WORD)EE_CAN_ID, DEFAULT_CANID);
     ee_write_short((WORD)EE_NODE_ID, DEFAULT_NN); 
     ee_write((WORD)EE_FLIM_MODE, fsSLiM);
-    
+  
+    factoryResetGlobalNv();
 
     // Event flash - just clear all events 
     doNnclr();
@@ -266,8 +272,7 @@ void factoryReset(void) {
     for (io=0; io<NUM_IO; io++) {
         //default type is INPUT
         setType(io, TYPE_INPUT);
-            
-    }
+    } 
     flushFlashImage();
 }
 
@@ -277,11 +282,12 @@ void factoryReset(void) {
  * @param type the new Type
  */
 void setType(unsigned char i, unsigned char type) {
-    writeFlashImage((BYTE*)(AT_NV+NV_IO_TYPE(i)), type);
+    WORD addr = AT_NV+NV_IO_TYPE(i);
+    writeFlashImage((BYTE*)addr, type);
     // set to default NVs
     defaultNVs(i, type);
     // set up the default events. 
-    // Actually found we don't need to do this - which is good because:
+    // Actually found we don't need to do defaultEvents - which is good because:
     // a) it is a pain to implement
     // b) it messes with the user's settings
 //    defaultEvents(i, type);

@@ -18,13 +18,13 @@
 extern void setType(unsigned char i, unsigned char type);
 
 const NodeVarTable nodeVarTable @AT_NV = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
-    0,  // sod delay
-    0,  // hb delay
-    0,  // cutoff
-    0,  // startup1
-    0,  // startup2
-    0,  // sequential
-    5,  // servo speed
+    0,  // sod delay    - delay in sending SOD or zero = no sod
+    0,  // hb delay     - heartbeat delay
+    1,  // cutoff       - cut servos off when reached destination
+    0,  // startup1     - move servos 1-8 on startup
+    0,  // startup2     - move servos 9-16 on startup
+    1,  // sequential   - activate outputs sequentially
+    5,  // servo speed  - default servo speed
     0,0,0,0,0,0,0,0,  // spare
     0,  // io[0].type
     0,0,0,0,0,  // io[0]
@@ -81,6 +81,15 @@ void actUponNVchange(unsigned char index, unsigned char value) {
         // TODO more settings to be done
         setType(IO_NV(index), value);
     }
+}
+
+/**
+ * Set NVs back to factory defaults.
+ */
+void factoryResetGlobalNv() {
+    writeFlashImage((BYTE*)(AT_NV + NV_SERVO_CUTOFF), (BYTE)1);
+    writeFlashImage((BYTE*)(AT_NV + NV_SERVO_SEQUENTIAL), (BYTE)1);
+    writeFlashImage((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);
 }
 
 /**

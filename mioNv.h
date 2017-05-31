@@ -39,7 +39,7 @@ extern "C" {
 #define NV_SPARE6                       13
 #define NV_SPARE7                       14
 #define NV_SPARE8                       15
-#define NV_IO_START                     16
+#define NV_IO_START                     32
 #define NVS_PER_IO                      6
     
 // NVs per IO
@@ -67,7 +67,7 @@ extern "C" {
 #define IO_NV(i)                        ((i-NV_IO_START)/NVS_PER_IO)
   
 // the types
-#define TYPE_INPUT                  0
+#define TYPE_INPUT                  0x88
 #define TYPE_OUTPUT                 1
 #define TYPE_SERVO                  2
 #define TYPE_BOUNCE                 3
@@ -117,7 +117,7 @@ typedef struct {
         WORD startup;                 // ??
         BYTE sequential;              // whether outputs change sequentially or all together
         BYTE servo_speed;               // default servo speed
-        BYTE spare[8];
+        BYTE spare[24];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 

@@ -16,11 +16,11 @@ extern "C" {
      * Any additional EEPROM storage requirements above that required by the CBUS library
      * is defined here. I.e. module specific storage.
      */
-
+#define EE_DUMMY         EE_TOP-6    // Dummy entry to do initial write to
     /**
      * Record the current output state for all the IO.
      */
-#define EE_OP_STATE         EE_TOP-6    // Space to store current state of up to 16 outputs
+#define EE_OP_STATE         EE_TOP-7    // Space to store current state of up to 16 outputs
     
 
 #ifdef	__cplusplus
