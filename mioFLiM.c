@@ -38,6 +38,8 @@
           IDE or text editor to the same settings.
 ******************************************************************************************************
 	
+	Original by Pete Bronlow
+	23/5/2017 Modified by Ian Hogg for CANMIO
 */
 #include <xc.h>
 #include "canmio.h"
