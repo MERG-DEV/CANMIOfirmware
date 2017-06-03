@@ -48,7 +48,7 @@
 extern "C" {
 #endif /* __cplusplus */
     
-#include "../CBUSlib/GenericTypeDefs.h"
+#include "GenericTypeDefs.h"
 #include "canmio.h"
     
 // Global NVs
@@ -165,6 +165,7 @@ typedef struct {
 #define NV_NUM  sizeof(ModuleNvDefs)     // Number of node variables
 #define AT_NV   0x7F80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
 
+extern void mioNvInit();
 extern unsigned int getNodeVar(unsigned int index);
 extern void setNodeVar(unsigned int index, unsigned int value);
 extern BOOL validateNV(BYTE nvIndex, BYTE oldValue, BYTE value);

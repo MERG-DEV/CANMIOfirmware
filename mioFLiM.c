@@ -45,7 +45,7 @@
 #include "canmio.h"
 #include "mioNv.h"
 #include "mioEvents.h"
-#include "../CBUSlib/devincs.h"
+#include "devincs.h"
 
 #ifndef __XC8__
 #pragma romdata PARAMETERS
@@ -111,6 +111,7 @@ extern BOOL	NV_changed;
 
 void mioFlimInit(void) {
     flimInit();
+    mioNvInit();
     
 }
 

@@ -53,7 +53,6 @@ void setOutputPin(unsigned char io, BOOL state);
 // Externs
 extern void sendProducedEvent(unsigned char io, BOOL state);
 extern Config configs[NUM_IO];
-extern __rom const ModuleNvDefs * NV;
 /**
  * Initialise the IO digital outputs.
  * Set up the pulse data structures.

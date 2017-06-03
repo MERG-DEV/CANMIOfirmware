@@ -33,13 +33,20 @@
  * Created on 03 June 2016, 08:12
  */
 #include "module.h"
+#ifdef NV_CACHE
 #include "mioNv.h"
-static ModuleNvDefs nvCache;
-ModuleNvDefs __ram * NVC = &nvCache;
+#include "romops.h"
+static ModuleNvDefs nvCache;        // RAM storage for NVs
 
-void loadCache() {
+extern const BYTE * NvBytePtr;
 
+ModuleNvDefs* loadNvCache() {
+    BYTE * np = (BYTE*)(&nvCache);
+    unsigned char i;
+    // do whole blocks
+    for (i=0; i<sizeof(ModuleNvDefs); i++) {
+        *(np+i) = readFlashBlock((WORD)(NvBytePtr+i));
+    }
+    return &nvCache;
 }
-void writeCache() {
-    
-}
+#endif

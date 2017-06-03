@@ -39,14 +39,13 @@
 #include <xc.h>
 
 #include "mioNv.h"
-#include "../CBUSlib/FliM.h"
+#include "FliM.h"
 #include "canmio.h"
 #include "config.h"
 #include "mioEvents.h"
-#include "../CBUSlib/cbus.h"
+#include "cbus.h"
 
 extern Config configs[NUM_IO];
-extern __rom const ModuleNvDefs * NV;
 /**
  * The current state of the inputs. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.

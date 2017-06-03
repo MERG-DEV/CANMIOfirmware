@@ -14,13 +14,8 @@ extern "C" {
 
 #include "module.h"
 #include "mioNv.h"
-    
-extern ModuleNvDefs * NVC;
 
-extern void loadCache();
-
-extern void writeCache();
-
+extern ModuleNvDefs * loadNvCache();
 
 #ifdef	__cplusplus
 }

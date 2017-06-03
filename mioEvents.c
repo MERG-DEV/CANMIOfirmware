@@ -48,6 +48,7 @@
 #include "mioEvents.h"
 #include "cbus.h"
 #include "actionQueue.h"
+#include "FliM.h"
 
 // forward declarations
 void clearEvents(unsigned char i);
@@ -59,7 +60,6 @@ extern void sendProducedEvent(unsigned char action, BOOL on);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
-extern __rom const ModuleNvDefs * NV;
 /**
  * Reset events for the IO back to default. Called when the Type of the IO
  * is changed.

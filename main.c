@@ -193,7 +193,6 @@ static BOOL        started = FALSE;
 static TickValue   lastServoPollTime;
 static TickValue   lastServoStartTime;
 static unsigned char io;
-extern __rom const ModuleNvDefs * NV;
 
 // MAIN APPLICATION
         
@@ -272,6 +271,7 @@ void initialise(void) {
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
     initStatusLeds();
+    mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
         configIO(io);
@@ -281,8 +281,7 @@ void initialise(void) {
     initServos();
 #endif
     initOutputs();
-    mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
-
+    
     // Enable interrupt priority
     RCONbits.IPEN = 1;
     // enable interrupts, all init now done
@@ -322,7 +321,7 @@ void factoryReset(void) {
  */
 void setType(unsigned char i, unsigned char type) {
     WORD addr = AT_NV+NV_IO_TYPE(i);
-    writeFlashImage((BYTE*)addr, type);
+    writeFlashByte((BYTE*)addr, type);
     // set to default NVs
     defaultNVs(i, type);
     // set up the default events. 

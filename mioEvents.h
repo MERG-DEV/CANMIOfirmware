@@ -47,7 +47,7 @@ extern "C" {
      */
  
 #include "canmio.h"
-#include "../CBUSlib/events.h"
+#include "events.h"
 
     // Global produced actions first
 
