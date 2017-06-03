@@ -11,10 +11,10 @@ ToDos:
  * DONE debounce inputs
  * DONE invert inputs
  * DONE invert outputs
- * digital output pulse output.c
+ * DONE digital output pulse output.c
  * bounce profiles  
  * DONE multi-position outputs
- * sequence servos servo.c
+ * DONE sequence servos servo.c
  * remember output state in EEPROM outputs.c & servo.c
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c

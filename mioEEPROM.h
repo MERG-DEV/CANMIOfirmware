@@ -49,6 +49,8 @@ extern "C" {
      * Record the current output state for all the IO.
      */
 #define EE_OP_STATE         EE_TOP-7    // Space to store current state of up to 16 outputs
+                                        // You'll probably want to do ee_read(EE_OP_STATE - io)
+                                        // Note the - and not + as the space goes down from EE_TOP
     
 
 #ifdef	__cplusplus

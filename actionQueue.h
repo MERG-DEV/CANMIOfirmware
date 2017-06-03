@@ -1,4 +1,3 @@
-
 /*
  Routines for CBUS FLiM operations - part of CBUS libraries for PIC 18F
   This work is licensed under the:
@@ -27,55 +26,16 @@
 	
 */ 
 /* 
- * File:   module.h
+ * File:   actionQueue.h
  * Author: Ian
  *
- * The CBUS library files include this module specific header. 
- * This is the means to isolate dependencies between the library and the module
- * specific code. All the dependencies of the library on the module specific code
- * should be defined in this file.
- * 
- * In particular EEPROM, NV and Event definitions should be here or included from here.
- *  
- * Created on 15 April 2017, 21:33
+ * Created on 1 June 2017, 13:14
+ *
  */
 
-#ifndef MODULE_H
-#define	MODULE_H
+#define ACTION_T	BYTE
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-    
-/*********************** MODULE OPTIONS **************************/
-// BOOTLOADER
-#define BOOTLOADER_PRESENT
-// We'll be using event hash tables for fast access - at the expense of some RAM
-#define HASH_TABLE
-// enable servos
-//#define SERVO
-// Don't enable MULTI for now
-//#define MULTI
-// Don't enable BOUNCE for now
-//#define BOUNCE
-/************************* END OF OPTIONS ************************/
-    
- /*
- * NVs
- */
-#include "mioNv.h"
-#include "mioEEPROM.h"
-    
-/*
- * EVENTS
- */
-#include "mioEvents.h"
-
-#include "canmio.h"
-
-#ifdef	__cplusplus
-}
-#endif
-
-#endif	/* MODULE_H */
-
+extern BOOL pushAction(ACTION_T a);
+extern ACTION_T getAction();
+extern void doneAction();
+extern ACTION_T pullAction();

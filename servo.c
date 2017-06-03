@@ -53,6 +53,8 @@
  * Created on 17 April 2017, 13:14
  */
 #include <xc.h>
+#include "module.h"
+#ifdef SERVO
 #include "mioNv.h"
 #include "mioEvents.h"
 #include "FliM.h"
@@ -61,6 +63,9 @@
 #include "TickTime.h"
 #include "romops.h"
 #include "mioEEPROM.h"
+#include "servo.h"
+
+extern __rom const ModuleNvDefs * NV;
 
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
@@ -76,19 +81,19 @@ extern Config configs[NUM_IO];
 extern void sendProducedEvent(unsigned char action, BOOL on);
 extern void setOutputPin(unsigned char io, BOOL state);
 
-
-enum ServoState {
-    OFF,            // not generating any pulses
-    STOPPED,        // pulse width fixed, reached desired destination
-    MOVING          // pulse width changing
-} servoState[NUM_IO];
+// Variables
+ServoState servoState[NUM_IO];
 unsigned char currentPos[NUM_IO];
 unsigned char targetPos[NUM_IO];
-unsigned char speed[NUM_IO];
+char speed[NUM_IO];
 unsigned char eventFlags[NUM_IO];
-#define EVENT_FLAG_ON       1
-#define EVENT_FLAG_OFF      2
-#define EVENT_FLAG_MID      4
+#define EVENT_FLAG_ON       0x01
+#define EVENT_FLAG_OFF      0x02
+#define EVENT_FLAG_MID      0x04
+#define EVENT_FLAG_POS1     0x08
+#define EVENT_FLAG_POS2     0x10
+#define EVENT_FLAG_POS3     0x20
+#define EVENT_FLAG_POS4     0x40
 TickValue  ticksWhenStopped[NUM_IO];
 
 static unsigned char block;
@@ -133,20 +138,25 @@ void initServos() {
  * @param io
  */
 void startServos() {
+    unsigned char type;
     // increment block before calling setup so that block is left as the current block whilst the
     // timers expire
     block++;
     if (block > 3) block = 0;
-    if (nodeVarTable.moduleNVs.io[block*4].type == TYPE_SERVO) {
+    type = NV->io[block*4].type;
+    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         if (servoState[block*4] != OFF) setupTimer1(block*4);
     }
-    if (nodeVarTable.moduleNVs.io[block*4+1].type == TYPE_SERVO) {
+    type = NV->io[block*4+1].type;
+    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         if (servoState[block*4+1] != OFF) setupTimer2(block*4+1);
     }
-    if (nodeVarTable.moduleNVs.io[block*4+2].type == TYPE_SERVO) {
+    type = NV->io[block*4+2].type;
+    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         if (servoState[block*4+2] != OFF) setupTimer3(block*4+2);
     }
-    if (nodeVarTable.moduleNVs.io[block*4+3].type == TYPE_SERVO) {
+    type = NV->io[block*4+3].type;
+    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         if (servoState[block*4+3] != OFF) setupTimer4(block*4+3);
     }
 }
@@ -225,67 +235,163 @@ inline void timer4DoneInterruptHandler() {
 
 /**
  * This handles the servo state machine and moves the servo towards the required
- * position and generates the Produced events. Called approx every 20ms i.e. 50 times a second.
- * Therefore to move a servo through 200 positions using a speed of 5 will take just under 1 second.
+ * position and generates the Produced events. Called approx every 100ms i.e. 10 times a second.
+ * Therefore to move a servo through 250 positions using a speed of 5 will take 5 seconds.
+ * Typical speeds might be:
+ * For a turnout: 25 = 1 second
+ * For a signal:  40 = 0.6 seconds
+ * For a level crossing gate: 5 = 5 seconds
  */
 void pollServos() {
+    unsigned char midway;
+    BOOL beforeMidway;
     for (unsigned char io; io<NUM_IO; io++) {
-        unsigned char midway = (nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_end_pos)/2 + 
-                    (nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_start_pos)/2;
-        if (nodeVarTable.moduleNVs.io[io].type == TYPE_SERVO) {
-            BOOL beforeMidway=FALSE;
-            switch (servoState[io]) {
-                case MOVING:
-                    if (targetPos[io] > currentPos[io]) {
-                        if (currentPos[io] < midway) {
-                            beforeMidway = TRUE;
+        switch (NV->io[io].type) {
+            case TYPE_SERVO:
+                midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                    (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
+                beforeMidway=FALSE;
+                switch (servoState[io]) {
+                    case MOVING:
+                        if (targetPos[io] > currentPos[io]) {
+                            if (currentPos[io] < midway) {
+                                beforeMidway = TRUE;
+                            }
+                            currentPos[io] += speed[io];
+                            if (currentPos[io] > targetPos[io]) {
+                                currentPos[io] = targetPos[io];
+                            }
+                            if ((eventFlags[io] & EVENT_FLAG_MID) && (currentPos[io] >= midway) && beforeMidway) {
+                                // passed through midway point
+                                // we send an ACON/ACOF depending upon direction servo was moving
+                                // This can then be used to drive frog switching relays
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), beforeMidway ?TRUE:FALSE);
+                            }
+                        } else if (targetPos[io] < currentPos[io]) {
+                            if (currentPos[io] > midway) {
+                                beforeMidway = TRUE;
+                            }
+                            currentPos[io] -= speed[io];
+                            if (currentPos[io] < targetPos[io]) {
+                                currentPos[io = targetPos[io]];
+                            }
+                            if ((eventFlags[io] & EVENT_FLAG_MID) && (currentPos[io] <= midway) && beforeMidway) {
+                                // passed through midway point
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+                            }
                         }
-                        currentPos[io] += speed[io];
-                        if (currentPos[io] > targetPos[io]) {
-                            currentPos[io] = targetPos[io];                       }
-                        if ((eventFlags[io] & EVENT_FLAG_MID) && (currentPos[io] >= midway) && beforeMidway) {
-                            // passed through midway point
-                            // we send an ACON/ACOF depending upon direction servo was moving
-                            // This can then be used to drive frog switching relays
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), beforeMidway ?TRUE:FALSE);
+                        if (targetPos[io] == currentPos[io]) {
+                            servoState[io] = STOPPED;
+                            ticksWhenStopped[io].Val = tickGet();
+                            // send ON event or OFF
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
                         }
-                    } else if (targetPos[io] < currentPos[io]) {
-                        if (currentPos[io] > midway) {
-                            beforeMidway = TRUE;
+                        break;
+                    case STOPPED:
+                        // if we have been stopped for more than 1 sec then change to OFF
+                        if (NV->io[io].flags & FLAG_CUTOFF) {
+                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
+                                servoState[io] = OFF;
+                            }
                         }
-                        currentPos[io] -= speed[io];
-                        if (currentPos[io] < targetPos[io]) {
-                            currentPos[io = targetPos[io]];
+                        break;
+                    case OFF:
+                        // output off
+                        // no need to do anything since if output is OFF we don't start the timer in startServos
+                        break;
+                }
+                break;
+            case TYPE_BOUNCE:
+                switch (servoState[io]) {
+                    case MOVING:
+                        // Implement the bounce algorithm here
+                        // TODO
+                        if (targetPos[io] > currentPos[io]) {
+                            currentPos[io] += speed[io];
+                            if (currentPos[io] > targetPos[io]) {
+                                currentPos[io] = targetPos[io];
+                            }
+                        } else if (targetPos[io] < currentPos[io]) {
+                            currentPos[io] -= speed[io];
+                            if (currentPos[io] < targetPos[io]) {
+                                currentPos[io = targetPos[io]];
+                            }
                         }
-                        if ((eventFlags[io] & EVENT_FLAG_MID) && (currentPos[io] <= midway) && beforeMidway) {
-                            // passed through midway point
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+                        if (targetPos[io] == currentPos[io]) {
+                            servoState[io] = STOPPED;
+                            ticksWhenStopped[io].Val = tickGet();
+                            // send ON event or OFF
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
                         }
-                    }
-                    if (targetPos[io] == currentPos[io]) {
-                        servoState[io] = STOPPED;
-                        ticksWhenStopped[io].Val = tickGet();
-                        // send ON event or OFF
-                        sendProducedEvent(ACTION_IO_PRODUCER_SERVO(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
-                    }
-                    break;
-                case STOPPED:
-                    // if we have been stopped for more than 1 sec then change to OFF
-                    if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
-                        servoState[io] = OFF;
-                    }
-                case OFF:
-                    // output off
-                    // no need to do anything since if output is OFF we don't start the timer in startServos
-                    break;
-            }
+                        break;
+                    case STOPPED:
+                        // if we have been stopped for more than 1 sec then change to OFF
+                        if (NV->io[io].flags & FLAG_CUTOFF) {
+                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
+                                servoState[io] = OFF;
+                            }
+                        }
+                        break;
+                    case OFF:
+                        // output off
+                        // no need to do anything since if output is OFF we don't start the timer in startServos
+                        break;
+                }
+                break;
+            case TYPE_MULTI:
+                switch (servoState[io]) {
+                    case MOVING:
+                        if (targetPos[io] > currentPos[io]) {
+                            currentPos[io] += speed[io];
+                            if (currentPos[io] > targetPos[io]) {
+                                currentPos[io] = targetPos[io];
+                            }
+                        } else if (targetPos[io] < currentPos[io]) {
+                            currentPos[io] -= speed[io];
+                            if (currentPos[io] < targetPos[io]) {
+                                currentPos[io = targetPos[io]];
+                            }
+                        }
+                        if (targetPos[io] == currentPos[io]) {
+                            servoState[io] = STOPPED;
+                            ticksWhenStopped[io].Val = tickGet();
+                            // MULTI only sends ON events. Work out which event
+                            if (eventFlags[io] & EVENT_FLAG_POS1) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), TRUE);
+                            }
+                            if (eventFlags[io] & EVENT_FLAG_POS2) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), TRUE);
+                            }
+                            if (eventFlags[io] & EVENT_FLAG_POS3) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), TRUE);
+                            }
+                            if (eventFlags[io] & EVENT_FLAG_POS4) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), TRUE);
+                            }
+                        }
+                        break;
+                    case STOPPED:
+                        // if we have been stopped for more than 1 sec then change to OFF
+                        if (NV->io[io].flags & FLAG_CUTOFF) {
+                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
+                                servoState[io] = OFF;
+                            }
+                        }
+                        break;
+                    case OFF:
+                        // output off
+                        // no need to do anything since if output is OFF we don't start the timer in startServos
+                        break;
+                }
+                break;
         }
     }
 }
 
 
 /**
- * Set a servo moving to the required state.
+ * Set a servo moving to the required state. 
+ * Called for SERVO and BOUNCE types.
  * Handles inverted outputs and generates Produced events.
  * 
  * @param io
@@ -294,29 +400,18 @@ void pollServos() {
 void setServoOutput(unsigned char io, unsigned char action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO OFF
-            targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_start_pos;
-            speed[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_es_speed;
+            targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
+            speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
             eventFlags[io] = EVENT_FLAG_OFF & EVENT_FLAG_MID;
             servoState[io] = MOVING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
-            targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_end_pos;
-            speed[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_servo.servo_se_speed;
+            targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
+            speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
             eventFlags[io] = EVENT_FLAG_ON & EVENT_FLAG_MID;
             servoState[io] = MOVING;
             break;
     }
-}
-
-/**
- * Set a servo output to the required state, producing a bounce at the OFF end.
- * Handles inverted outputs and generates Produced events.
- * 
- * @param io
- * @param action
- */
-void setBounceOutput(unsigned char io, unsigned char action) {
-    // TODO Bounce output type
 }
 
 /**
@@ -327,34 +422,34 @@ void setBounceOutput(unsigned char io, unsigned char action) {
 void setMultiOutput(unsigned char io, unsigned char action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO Position 1
-            targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_pos1;
-            speed[io] = nodeVarTable.moduleNVs.servo_speed;
-            eventFlags[io] = EVENT_FLAG_ON;
+            targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;
+            speed[io] = NV->servo_speed;
+            eventFlags[io] = EVENT_FLAG_POS1;
             servoState[io] = MOVING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO Position 2
-            targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_pos2;
-            speed[io] = nodeVarTable.moduleNVs.servo_speed;
-            eventFlags[io] = EVENT_FLAG_ON;
+            targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos2;
+            speed[io] = NV->servo_speed;
+            eventFlags[io] = EVENT_FLAG_POS2;
             servoState[io] = MOVING;
             break;
         case ACTION_IO_CONSUMER_3:  // SERVO Position 3
-            if (nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_num_pos >= 3) {
-                targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_pos3;
-                speed[io] = nodeVarTable.moduleNVs.servo_speed;
-                eventFlags[io] = EVENT_FLAG_ON;
+            if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 3) {
+                targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos3;
+                speed[io] = NV->servo_speed;
+                eventFlags[io] = EVENT_FLAG_POS3;
                 servoState[io] = MOVING;
             }
             break;
         case ACTION_IO_CONSUMER_4:  // SERVO Position 4
-            if (nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_num_pos >= 4) {
-                targetPos[io] = nodeVarTable.moduleNVs.io[io].nv_io.nv_multi.multi_pos4;
-                speed[io] = nodeVarTable.moduleNVs.servo_speed;
-                eventFlags[io] = EVENT_FLAG_ON;
+            if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 4) {
+                targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos4;
+                speed[io] = NV->servo_speed;
+                eventFlags[io] = EVENT_FLAG_POS4;
                 servoState[io] = MOVING;
             }
             break;
     }
 }
-
+#endif
 

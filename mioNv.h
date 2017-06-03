@@ -52,57 +52,71 @@ extern "C" {
 #include "canmio.h"
     
 // Global NVs
-#define NV_SOD_DELAY                    1
-#define NV_HB_DELAY                     2  
-#define NV_SERVO_CUTOFF                 3
-#define NV_SERVO_STARTUP_B1             4
-#define NV_SERVO_STARTUP_B2             5
-#define NV_SERVO_SEQUENTIAL             6
-#define NV_SERVO_SPEED                  7   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_SPARE1                       8
-#define NV_SPARE2                       9
-#define NV_SPARE3                       10
-#define NV_SPARE4                       11
-#define NV_SPARE5                       12
-#define NV_SPARE6                       13
-#define NV_SPARE7                       14
-#define NV_SPARE8                       15
-#define NV_IO_START                     32
-#define NVS_PER_IO                      6
+#define NV_SOD_DELAY                    0
+#define NV_HB_DELAY                     1  
+#define NV_SERVO_SPEED                  2   // Used for Multi and Bounce types where there isn't an NV to define speed.
+#define NV_SPARE1                       3
+#define NV_SPARE2                       4
+#define NV_SPARE3                       5
+#define NV_SPARE4                       6
+#define NV_SPARE5                       7
+#define NV_SPARE6                       8
+#define NV_SPARE7                       9
+#define NV_SPARE8                       10
+#define NV_SPARE9                       11
+#define NV_SPARE10                      12
+#define NV_SPARE11                      13
+#define NV_SPARE12                      14
+#define NV_SPARE13                      15
+#define NV_IO_START                     16
+#define NVS_PER_IO                      7
     
 // NVs per IO
-#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i))
-#define NV_IO_INPUT_ENABLE_OFF(i)       (NV_IO_START + NVS_PER_IO*(i) + 1)
-#define NV_IO_INPUT_INVERTED(i)         (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 4)
-#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + 1)
-#define NV_IO_OUTPUT_INVERTED(i)        (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + 1)
-#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)
-#define NV_IO_BOUNCE_START_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 1)
-#define NV_IO_BOUNCE_END_POS(i)         (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 1)
-#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + 4)
-#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + 5)
+#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i))		// TYPE and FLAGS always at the start
+#define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + 1)
+
+#define NV_IO_INPUT_ENABLE_OFF(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)	// Other NVs depend upon type
+#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// units of 5ms
+#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// units of 5ms
+
+#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 0.1 seconds
+
+#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + 2)
+#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 3)
+#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// position moved every 100ms
+#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 5)	// position moved every 100ms
+
+#define NV_IO_BOUNCE_START_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)
+#define NV_IO_BOUNCE_END_POS(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
+#define NV_IO_BOUNCE_SE_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 4)	// Starting speed in one direction
+#define NV_IO_BOUNCE_ES_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// Starting speed in other direction
+#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + 6)
+
+#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 2)
+#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + 3)
+#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + 4)
+#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + 5)
+#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + 6)
 
 #define IS_NV_TYPE(i)                   (((i-NV_IO_START) % NVS_PER_IO) == 0)
 #define IO_NV(i)                        ((i-NV_IO_START)/NVS_PER_IO)
   
 // the types
-#define TYPE_INPUT                  0x88
+#define TYPE_INPUT                  0
 #define TYPE_OUTPUT                 1
 #define TYPE_SERVO                  2
 #define TYPE_BOUNCE                 3
 #define TYPE_MULTI                  4
 
+// the flags
+#define	FLAG_SEQUENTIAL             1	// Whether this action is processed in sequence with other actions
+#define	FLAG_CUTOFF                 2	// Whether the servo cut off after 1 second once it has reached its target position
+#define	FLAG_STARTUP                4	// Whether this output be changed on module start to match values in EE_OP_STATE
+#define	FLAG_INVERTED               8	// Whether the sense of this input or output inverted
+
 typedef struct {
     unsigned char type;
+    unsigned char flags;
     union {
         struct {
             unsigned char input_enable_off;
@@ -123,6 +137,8 @@ typedef struct {
         struct {
             unsigned char bounce_start_pos;
             unsigned char bounce_end_pos;
+            unsigned char bounce_se_speed;
+            unsigned char bounce_es_speed;
             unsigned char bounce_profile;
         } nv_bounce;
         struct {
@@ -141,11 +157,8 @@ typedef struct {
 typedef struct {
         BYTE sendSodDelay;               // Time after start in 100mS (plus 2 seconds) to send an automatic SoD. Set to zero for no auto SoD
         BYTE hbDelay;                    // Interval in 100mS for automatic heartbeat. Set to zero for no heartbeat.
-        BYTE cutoff;                  // whether servos stop when they reach their destination
-        WORD startup;                 // ??
-        BYTE sequential;              // whether outputs change sequentially or all together
         BYTE servo_speed;               // default servo speed
-        BYTE spare[24];
+        BYTE spare[13];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 

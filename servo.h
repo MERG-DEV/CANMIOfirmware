@@ -1,3 +1,5 @@
+#ifndef  __SERVO_H__
+#define  __SERVO_H__
 
 /*
  Routines for CBUS FLiM operations - part of CBUS libraries for PIC 18F
@@ -27,55 +29,23 @@
 	
 */ 
 /* 
- * File:   module.h
+ * File:   servo.h
  * Author: Ian
- *
- * The CBUS library files include this module specific header. 
- * This is the means to isolate dependencies between the library and the module
- * specific code. All the dependencies of the library on the module specific code
- * should be defined in this file.
  * 
- * In particular EEPROM, NV and Event definitions should be here or included from here.
- *  
- * Created on 15 April 2017, 21:33
+ * Created on 1 June 2017, 13:14
  */
-
-#ifndef MODULE_H
-#define	MODULE_H
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-    
-/*********************** MODULE OPTIONS **************************/
-// BOOTLOADER
-#define BOOTLOADER_PRESENT
-// We'll be using event hash tables for fast access - at the expense of some RAM
-#define HASH_TABLE
-// enable servos
-//#define SERVO
-// Don't enable MULTI for now
-//#define MULTI
-// Don't enable BOUNCE for now
-//#define BOUNCE
-/************************* END OF OPTIONS ************************/
-    
- /*
- * NVs
- */
-#include "mioNv.h"
-#include "mioEEPROM.h"
-    
-/*
- * EVENTS
- */
-#include "mioEvents.h"
-
+#include <xc.h>
 #include "canmio.h"
 
-#ifdef	__cplusplus
-}
-#endif
+typedef enum {
+    OFF,            // not generating any pulses
+    STOPPED,        // pulse width fixed, reached desired destination
+    MOVING          // pulse width changing
+} ServoState;
 
-#endif	/* MODULE_H */
+extern ServoState servoState[NUM_IO];
+extern unsigned char currentPos[NUM_IO];
+unsigned char targetPos[NUM_IO];
+char speed[NUM_IO];
 
+#endif  //__SERVO_H__

@@ -76,15 +76,15 @@
 #include "canmio.h"
 #include "mioFLiM.h"
 #include "config.h"
-#include "../CBUSlib/StatusLeds.h"
+#include "StatusLeds.h"
 #include "inputs.h"
 #include "mioEEPROM.h"
-#include "../CBUSlib/events.h"
+#include "events.h"
 #include "mioNv.h"
-#include "../CBUSlib/FliM.h"
-#include "../CBUSlib/romops.h"
-#include "../CBUSlib/can18.h"
-#include "../CBUSlib/cbus.h"
+#include "FliM.h"
+#include "romops.h"
+#include "can18.h"
+#include "cbus.h"
 
 
 void DATAEE_WriteByte(WORD bAdd, BYTE bData);
@@ -94,6 +94,8 @@ extern BYTE BlinkLED();
 extern void startServos();
 extern void initServos();
 extern void pollServos();
+extern void initOutputs();
+extern void processOutputs();
 extern inline void timer1DoneInterruptHandler();
 extern inline void timer2DoneInterruptHandler();
 extern inline void timer3DoneInterruptHandler();
@@ -191,6 +193,7 @@ static BOOL        started = FALSE;
 static TickValue   lastServoPollTime;
 static TickValue   lastServoStartTime;
 static unsigned char io;
+extern __rom const ModuleNvDefs * NV;
 
 // MAIN APPLICATION
         
@@ -212,26 +215,31 @@ int main(void) @0x800 {
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
-//        if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
-//            started = TRUE;
-//            if (NV->sendSodDelay > 0) {
- //               sendProducedEvent(ACTION_SOD, TRUE);
-//            }
-//        }
-    //    checkCBUS();    // Consume any CBUS message and act upon it
+        if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
+            started = TRUE;
+            if (NV->sendSodDelay > 0) {
+                sendProducedEvent(ACTION_SOD, TRUE);
+            }
+        }
+        checkCBUS();    // Consume any CBUS message and act upon it
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
-//        if (started) {
-//            inputScan(FALSE);    // Strobe inputs for changes
-//            if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
-//                startServos();  // call every 5ms
-//                lastServoStartTime.Val = tickGet();
-//            }
-//            if (tickTimeSince(lastServoPollTime) > 20*ONE_MILI_SECOND) {
-//                pollServos();
-//                lastServoPollTime.Val = tickGet();
-//            }
-//        }
+        if (started) {
+            if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
+#ifdef SERVO
+                startServos();  // call every 5ms
+#endif
+                inputScan(FALSE);    // Strobe inputs for changes
+                lastServoStartTime.Val = tickGet();
+            }
+            if (tickTimeSince(lastServoPollTime) > 100*ONE_MILI_SECOND) {
+#ifdef SERVO
+                pollServos();
+#endif
+                processOutputs();
+                lastServoPollTime.Val = tickGet();
+            }
+        }
         // Check for any flashing status LEDs
         checkFlashing();
      } // main loop
@@ -269,7 +277,10 @@ void initialise(void) {
         configIO(io);
     }
     initInputScan();
+#ifdef SERVO
     initServos();
+#endif
+    initOutputs();
     mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
 
     // Enable interrupt priority
@@ -293,13 +304,13 @@ void factoryReset(void) {
   
     factoryResetGlobalNv();
 
-    // Event flash - just clear all events 
-    doNnclr();
     // perform other actions based upon type
     unsigned char i;
     for (io=0; io<NUM_IO; io++) {
         //default type is INPUT
         setType(io, TYPE_INPUT);
+        // Event flash - just clear all events 
+        defaultEvents(io, TYPE_INPUT);
     } 
     flushFlashImage();
 }
@@ -352,18 +363,13 @@ void configIO(unsigned char i) {
                 TRISA |= (1 << configs[i].no);  // input
             } else {
                 TRISA &= ~(1 << configs[i].no); // output
-                // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
-                setOutput(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
             }
-            
             break;
         case 'B':
             if (NV->io[i].type == TYPE_INPUT) {
                 TRISB |= (1 << configs[i].no);  // input
             } else {
                 TRISB &= ~(1 << configs[i].no); // output
-                // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
-                setOutput(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
             }
             break;
         case 'C':
@@ -371,10 +377,12 @@ void configIO(unsigned char i) {
                 TRISC |= (1 << configs[i].no);  // input
             } else {
                 TRISC &= ~(1 << configs[i].no); // output
-                // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
-                setOutput(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
             }
             break;          
+    }
+    // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
+    if (NV->io[i].flags & FLAG_STARTUP) {
+        setOutput(i, ee_read((WORD)EE_OP_STATE-i), NV->io[i].type);
     }
 }
 
@@ -414,6 +422,7 @@ void __init(void)
 
 void interrupt high_priority high_isr (void)
 {
+#ifdef SERVO
  /* service the servo pulse width timers */
     if (PIR1bits.TMR1IF) {
         timer1DoneInterruptHandler();
@@ -431,5 +440,6 @@ void interrupt high_priority high_isr (void)
         timer4DoneInterruptHandler();
         PIR4bits.TMR4IF = 0;
     }
+#endif
 }
 

@@ -45,9 +45,8 @@
 #include "mioEvents.h"
 #include "../CBUSlib/cbus.h"
 
-
-extern const NodeVarTable nodeVarTable;
 extern Config configs[NUM_IO];
+extern __rom const ModuleNvDefs * NV;
 /**
  * The current state of the inputs. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.
@@ -83,22 +82,22 @@ void initInputScan(void) {
  */
 void inputScan(BOOL report) {
     for (io=0; io< NUM_IO; io++) {
-        if (nodeVarTable.moduleNVs.io[io].type == TYPE_INPUT) {
+        if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);
             if (input != inputState[io]) {
                 BOOL change = report;
                 // check if we have reached the debounce count
-                if (inputState[io] && (delayCount[io] == nodeVarTable.moduleNVs.io[io].nv_io.nv_input.input_on_delay)) {
+                if (inputState[io] && (delayCount[io] == NV->io[io].nv_io.nv_input.input_on_delay)) {
                     change = TRUE;
                 }
-                if (!inputState[io] && (delayCount[io] == nodeVarTable.moduleNVs.io[io].nv_io.nv_input.input_off_delay)) {
+                if (!inputState[io] && (delayCount[io] == NV->io[io].nv_io.nv_input.input_off_delay)) {
                     change = TRUE;
                 }
                 if (change) {
                     delayCount[io] = 0;
                     inputState[io] = input;
                     // check if input is inverted
-                    if (nodeVarTable.moduleNVs.io[io].nv_io.nv_input.input_inverted) {
+                    if (NV->io[io].flags & FLAG_INVERTED) {
                         input = !input;
                     }
                     // send the changed Produced event
@@ -106,7 +105,7 @@ void inputScan(BOOL report) {
                         cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), TRUE);
                     } else {
                         // check if OFF events are enabled
-                        if (nodeVarTable.moduleNVs.io[io].nv_io.nv_input.input_enable_off) {
+                        if (NV->io[io].nv_io.nv_input.input_enable_off) {
                             cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), FALSE);
                         }
                     }
@@ -125,7 +124,7 @@ void inputScan(BOOL report) {
  * @return Non zero is the input is high or FALSE if the input is low
  */
 BOOL readInput(unsigned char io) {
-    if (nodeVarTable.moduleNVs.io[io].type == TYPE_INPUT) {
+    if (NV->io[io].type == TYPE_INPUT) {
             switch(configs[io].port) {
             case 'a':
                 return TRISA & (1<<configs[io].no);

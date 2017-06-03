@@ -121,8 +121,6 @@ extern void clearEvents(unsigned char i);
 #define EVperEVT                20          // Max number of EVs per event
 #define AT_EVENTS               0x6F90      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
 
-// We'll be using event hash tables for fast access - at the expense of some RAM
-#define HASH_TABLE
 // We'll also be using configurable produced events
 #define PRODUCED_EVENTS
 #define ConsumedActionType  BYTE;
