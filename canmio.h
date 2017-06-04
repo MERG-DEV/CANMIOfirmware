@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+#include "devincs.h" // include processor files - each processor file is guarded.  
 
 #ifdef __XC8__
 #define AT_NAME_ADDRESS @0x810

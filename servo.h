@@ -34,7 +34,7 @@
  * 
  * Created on 1 June 2017, 13:14
  */
-#include <xc.h>
+#include "devincs.h"
 #include "canmio.h"
 
 typedef enum {
@@ -45,7 +45,7 @@ typedef enum {
 
 extern ServoState servoState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
-unsigned char targetPos[NUM_IO];
-char speed[NUM_IO];
+extern unsigned char targetPos[NUM_IO];
+extern char speed[NUM_IO];
 
 #endif  //__SERVO_H__

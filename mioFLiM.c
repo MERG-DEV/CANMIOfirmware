@@ -41,15 +41,16 @@
 	Original by Pete Bronlow
 	23/5/2017 Modified by Ian Hogg for CANMIO
 */
-#include <xc.h>
+#include "devincs.h"
 #include "canmio.h"
 #include "mioNv.h"
 #include "mioEvents.h"
-#include "devincs.h"
 
 #ifndef __XC8__
 #pragma romdata PARAMETERS
 #endif
+
+extern void mioNvInit();
 
 #define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+NV_NUM+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
 
@@ -82,30 +83,30 @@ const rom char          module_type[] = MODULE_TYPE;
 
 // Node and event variables at a fixed place in ROM, starting on a segment boundary
 // so they can be written to as required 
-#ifdef __C18__
+#ifdef __18CXX
 #pragma romdata	flimdata	// Node and event variables
 #endif
           
 //const rom EventTableEntry  eventTable[EVT_NUM];
-#ifdef __C18__
+#ifdef __18CXX
 #pragma romdata
 #endif
 
 // Static RAM variables 
 
-#ifdef __C18__
+#ifdef __18CXX
 #pragma udata MAIN_VARS
-rom     ModuleNvDefs    *NV;          // Pointer to node variables structure
+//rom     ModuleNvDefs    *NV;          // Pointer to node variables structure. Now in appNv.c
 #endif
 
 extern BOOL	NV_changed;
 
 
-#ifdef __C18__
+#ifdef __18CXX
 #pragma udata 
 #endif
 
-#ifdef __C18__
+#ifdef __18CXX
 #pragma code APP
 #endif
 

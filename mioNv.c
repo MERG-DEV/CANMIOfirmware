@@ -37,7 +37,7 @@
  * Node variables contain global parameters that need to be persisted to Flash.
  */
 
-#include <xc.h>
+#include "devincs.h"
 #include "module.h"
 #include "mioNv.h"
 #include "mioEEPROM.h"
@@ -47,84 +47,96 @@
 #include "nvCache.h"
 
 extern void setType(unsigned char i, unsigned char type);
-
+#ifdef __XC8
 const ModuleNvDefs moduleNvDefs @AT_NV = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
-    0,  // sod delay    - delay in sending SOD or zero = no sod
-    0,  // hb delay     - heartbeat delay
-    5,  // servo speed  - default servo speed
-    {0,0,0,0,0,0,0,0,0,0,0,0,0},  // spare
-    {
-        {
-            0,  // io[0].type
-            0,  // io[0].flags
-            1,1,1  // io[0]
-        },{
-            0,  // io[1].type
-            0,  // io[1].flags
-            1,1,1  // io[1]
-        },{
-            0,  // io[2].type
-            0,  // io[2].flags
-            1,1,1  // io[2]
-        },{
-            0,  // io[3].type
-            0,  // io[3].flags
-            1,1,1  // io[3]
-        },{
-            0,  // io[4].type
-            0,  // io[4].flags
-            1,1,1  // io[4]
-        },{
-            0,  // io[5].type
-            0,  // io[5].flags
-            1,1,1  // io[5]
-        },{
-            0,  // io[6].type
-            0,  // io[6].flags
-            1,1,1  // io[6]
-        },{
-            0,  // io[7].type
-            0,  // io[7].flags
-            1,1,1  // io[7]
-        },{
-            0,  // io[8].type
-            0,  // io[8].flags
-            1,1,1  // io[8]
-        },{
-            0,  // io[9].type
-            0,  // io[9].flags
-            1,1,1  // io[9]
-        },{
-            0,  // io[10].type
-            0,  // io[10].flags
-            1,1,1  // io[10]
-        },{
-            0,  // io[11].type
-            0,  // io[11].flags
-            1,1,1  // io[11]
-        },{
-            0,  // io[12].type
-            0,  // io[12].flags
-            1,1,1  // io[12]
-        },{
-            0,  // io[13].type
-            0,  // io[13].flags
-            1,1,1  // io[13]
-        },{
-            0,  // io[14].type
-            0,  // io[14].flags
-            1,1,1  // io[14]
-        },{
-            0,  // io[15].type
-            0,  // io[15].flags
-            1,1,1  // io[15]
+#else
+#pragma romdata myNV=AT_NV
+    const rom NodeVarTable nodeVarTable = {
+        {    
+#endif
+            0,  // sod delay    - delay in sending SOD or zero = no sod
+            0,  // hb delay     - heartbeat delay
+            5,  // servo speed  - default servo speed
+            {0,0,0,0,0,0,0,0,0,0,0,0,0},  // spare
+            {
+                {
+                    0,  // io[0].type
+                    0,  // io[0].flags
+                    1,1,1  // io[0]
+                },{
+                    0,  // io[1].type
+                    0,  // io[1].flags
+                    1,1,1  // io[1]
+                },{
+                    0,  // io[2].type
+                    0,  // io[2].flags
+                    1,1,1  // io[2]
+                },{
+                    0,  // io[3].type
+                    0,  // io[3].flags
+                    1,1,1  // io[3]
+                },{
+                    0,  // io[4].type
+                0,  // io[4].flags
+                    1,1,1  // io[4]
+                },{
+                    0,  // io[5].type
+                    0,  // io[5].flags
+                    1,1,1  // io[5]
+                },{
+                    0,  // io[6].type
+                    0,  // io[6].flags
+                    1,1,1  // io[6]
+                },{
+                    0,  // io[7].type
+                    0,  // io[7].flags
+                    1,1,1  // io[7]
+                },{
+                    0,  // io[8].type
+                    0,  // io[8].flags
+                    1,1,1  // io[8]
+                },{
+                    0,  // io[9].type
+                    0,  // io[9].flags
+                    1,1,1  // io[9]
+                },{
+                    0,  // io[10].type
+                    0,  // io[10].flags
+                    1,1,1  // io[10]
+                },{
+                    0,  // io[11].type
+                    0,  // io[11].flags
+                    1,1,1  // io[11]
+                },{
+                    0,  // io[12].type
+                    0,  // io[12].flags
+                    1,1,1  // io[12]
+                },{
+                    0,  // io[13].type
+                    0,  // io[13].flags
+                    1,1,1  // io[13]
+                },{
+                    0,  // io[14].type
+                    0,  // io[14].flags
+                    1,1,1  // io[14]
+                },{
+                    0,  // io[15].type
+                    0,  // io[15].flags
+                    1,1,1  // io[15]
+                }
+            }
         }
-    }
-};
+    };
 /*
  Module specific NV routines
  */
+#ifdef __XC8
+const NodeVarTable nodeVarTable @AT_NV;
 ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
+#else
+rom ModuleNvDefs * NV = (ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
+#endif
+
 void mioNvInit() {
 #ifdef NV_CACHE
     NV = loadNvCache(); // replace pointer with the cache

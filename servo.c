@@ -52,7 +52,7 @@
  *
  * Created on 17 April 2017, 13:14
  */
-#include <xc.h>
+#include "devincs.h"
 #include "module.h"
 #ifdef SERVO
 #include "mioNv.h"
@@ -99,7 +99,8 @@ static unsigned char timer2Counter; // the High order byte to make T2 16bit
 static unsigned char timer4Counter; // the High order byte to make T4 16bit
 
 void initServos() {
-    for (unsigned char io=0; io<NUM_IO; io++) {
+    unsigned char io;
+    for (io=0; io<NUM_IO; io++) {
         servoState[io] = OFF;
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE-io);   // restore last known positions
         speed[io] = 0;
@@ -165,14 +166,19 @@ void startServos() {
  * @param io
  */
 void setupTimer1(unsigned char io) {
+#ifdef __XC8
     TMR1 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+#else
+    TMR1L = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+    TMR1H = 0xFF;
+#endif
     // turn on output
     setOutputPin(io, TRUE);
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
 void setupTimer2(unsigned char io) {
-    TMR2 = 0;                   // start counting at 0
     WORD ticks = POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io];
+    TMR2 = 0;                   // start counting at 0
     PR2 = ticks & 0xFF;       // set the duration
     timer2Counter = ticks >> 8;
     // turn on output
@@ -180,14 +186,19 @@ void setupTimer2(unsigned char io) {
     T2CONbits.TMR2ON =1;        // enable Timer2
 }
 void setupTimer3(unsigned char io) {
+#ifdef __XC8
     TMR3 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+#else
+    TMR3L = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+    TMR3H = 0xFF;
+#endif
     // turn on output
     setOutputPin(io, TRUE);
     T3CONbits.TMR3ON = 1;       // enable Timer3
 }
 void setupTimer4(unsigned char io) {
-    TMR4 = 0;                   // start counting at 0
     WORD ticks = POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io];
+    TMR4 = 0;                   // start counting at 0
     PR4 = ticks & 0xff;       // set the duration
     timer4Counter = ticks >> 8;
     // turn on output
@@ -200,11 +211,11 @@ void setupTimer4(unsigned char io) {
  * disable the timer and turn the output pin off. 
  * Don't recheck IO type here as it shouldn't be necessary and we want to be as quick as possible.
  */
-inline void timer1DoneInterruptHandler() {
+void timer1DoneInterruptHandler() {
     T1CONbits.TMR1ON = 0;       // disable Timer1
     setOutputPin(block*4, FALSE);    
 }
-inline void timer2DoneInterruptHandler() {
+void timer2DoneInterruptHandler() {
     // Is the 16bit counter now at 0?
     if (timer2Counter == 0) {
         // stop counting
@@ -215,11 +226,11 @@ inline void timer2DoneInterruptHandler() {
         timer2Counter--;
     }
 }
-inline void timer3DoneInterruptHandler() {
+void timer3DoneInterruptHandler() {
     T3CONbits.TMR3ON = 0;       // disable Timer3t
     setOutputPin(block*4+2, FALSE);    
 }
-inline void timer4DoneInterruptHandler() {
+void timer4DoneInterruptHandler() {
     // Is the 16bit counter now at 0?
     if (timer4Counter == 0) {
         // stop counting
@@ -243,7 +254,8 @@ inline void timer4DoneInterruptHandler() {
 void pollServos() {
     unsigned char midway;
     BOOL beforeMidway;
-    for (unsigned char io; io<NUM_IO; io++) {
+    unsigned char io;
+    for (io; io<NUM_IO; io++) {
         switch (NV->io[io].type) {
             case TYPE_SERVO:
                 midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 

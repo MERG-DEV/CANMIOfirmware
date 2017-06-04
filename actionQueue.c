@@ -45,16 +45,16 @@
 ACTION_T pullAction();
 
 #define BUFFER_SIZE 	32		// The size needs to be big enough to store all the pending actions 
-					// for CANMIO 16 should be enough but need +1 to separate the ends
-					// of the cyclic buffer so need to move the next power of two since
-					// cyclic wrapping is done with a bitmask.
+                                // for CANMIO 16 should be enough but need +1 to separate the ends
+                                // of the cyclic buffer so need to move the next power of two since
+                                // cyclic wrapping is done with a bitmask.
 #define POINTER_MASK 	(BUFFER_SIZE-1)
 
 
-ACTION_T buffer[BUFFER_SIZE];
+ACTION_T buffer[BUFFER_SIZE];   // the actual cyclic buffer space
 
-BYTE readIdx;			// index of the next to read
-BYTE writeIdx;			// index of the next to write
+BYTE readIdx;                   // index of the next to read
+BYTE writeIdx;                  // index of the next to write
 ACTION_T currentAction;
 
 /**
@@ -75,11 +75,13 @@ BOOL pushAction(ACTION_T a) {
 	// do we already have an instruction for the IO ?
 	BYTE io = CONSUMER_IO(a);
 	// check it this IO was already in the buffer
-	for (BYTE i=readIdx; i != writeIdx; i=(i+1)&POINTER_MASK) {
+    BYTE i;
+	for (i=readIdx; i != writeIdx; i=(i+1)&POINTER_MASK) {
 		BYTE thisIo = CONSUMER_IO(buffer[i]);
 		if (thisIo == io) {
 			// delete this entry
-			for (BYTE j=i; j != writeIdx; j=(j+1)&POINTER_MASK) {
+            BYTE j;
+			for (j=i; j != writeIdx; j=(j+1)&POINTER_MASK) {
 				buffer[j] = buffer[(j+1)&POINTER_MASK];
 			}
 			if (writeIdx == 0) {
@@ -121,8 +123,11 @@ void doneAction() {
  * @return the next action
  */
 ACTION_T pullAction() {
-	if (writeIdx == readIdx) return NO_ACTION;	// buffer empty
-	ACTION_T ret = buffer[readIdx++];
+    ACTION_T ret;
+	if (writeIdx == readIdx) {
+        return NO_ACTION;	// buffer empty
+    }
+	ret = buffer[readIdx++];
 	readIdx &= POINTER_MASK;
 	return ret;
 }

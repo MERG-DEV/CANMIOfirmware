@@ -59,7 +59,8 @@ extern Config configs[NUM_IO];
  */
 void initOutputs() {
     // probably initialised to 0 by the compiler but make sure here
-    for (unsigned char io=0; io<NUM_IO; io++) {
+    unsigned char io;
+    for (io=0; io<NUM_IO; io++) {
        pulseDelays[io] = 0;
     }
 }
@@ -86,7 +87,8 @@ void setDigitalOutput(unsigned char io, BOOL state) {
 
 void processOutputs() {
     unsigned char state;
-    for (unsigned char io=0; io<NUM_IO; io++) {
+    unsigned char io;
+    for (io=0; io<NUM_IO; io++) {
         if (pulseDelays[io] == 1) {
             // time to go off
             state = ee_read(EE_OP_STATE-io);

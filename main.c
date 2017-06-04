@@ -69,9 +69,8 @@
  *	The Main CANMIO program supporting configurable I/O.
  */
 
-#include <xc.h>
+#include "devincs.h"
 #include <stddef.h>
-#include <pic18f25k80.h>
 #include "module.h"
 #include "canmio.h"
 #include "mioFLiM.h"
@@ -91,15 +90,23 @@ void DATAEE_WriteByte(WORD bAdd, BYTE bData);
 BYTE DATAEE_ReadByte(WORD bAdd);
 
 extern BYTE BlinkLED();
+extern void initOutputs();
+extern void processOutputs();
+
+#ifdef SERVO
 extern void startServos();
 extern void initServos();
 extern void pollServos();
-extern void initOutputs();
-extern void processOutputs();
-extern inline void timer1DoneInterruptHandler();
-extern inline void timer2DoneInterruptHandler();
-extern inline void timer3DoneInterruptHandler();
-extern inline void timer4DoneInterruptHandler();
+extern void timer1DoneInterruptHandler();
+extern void timer2DoneInterruptHandler();
+extern void timer3DoneInterruptHandler();
+extern void timer4DoneInterruptHandler();
+#endif
+
+#ifdef __18CXX
+void ISRLow(void);
+void ISRHigh(void);
+#endif
 
 unsigned char canid = 0;        // initialised from ee
 unsigned int nn = DEFAULT_NN;   // initialised from ee
@@ -139,7 +146,7 @@ void setOutput(unsigned char i, unsigned char state, unsigned char type);
 void sendProducedEvent(unsigned char action, BOOL on);
 
 
-#ifdef __C18__
+#ifdef __18CXX
 void high_irq_errata_fix(void);
 
 /*
@@ -148,11 +155,11 @@ void high_irq_errata_fix(void);
 
 // High priority interrupt vector
 
-//#ifdef BOOTLOADER_PRESENT
+#ifdef BOOTLOADER_PRESENT
     #pragma code high_vector=0x808
-//#else
-//    #pragma code high_vector=0x08
-//#endif
+#else
+    #pragma code high_vector=0x08
+#endif
 
 
 //void interrupt_at_high_vector(void)
@@ -176,15 +183,15 @@ void high_irq_errata_fix(void) {
 
 // low priority interrupt vector
 
-//#ifdef BOOTLOADER_PRESENT
+#ifdef BOOTLOADER_PRESENT
     #pragma code low_vector=0x818
-//#else
-//    #pragma code low_vector=0x18
-//#endif
+#else
+    #pragma code low_vector=0x18
+#endif
 
 void LOW_INT_VECT(void)
 {
-//    _asm GOTO ISRLow _endasm
+    _asm GOTO ISRLow _endasm
 }
 #endif
 
@@ -200,7 +207,7 @@ static unsigned char io;
  * It is all run from here.
  * Initialise everything and then loop receiving and processing CAN messages.
  */
-#ifdef __C18__
+#ifdef __18CXX
 void main(void) {
 #else
 int main(void) @0x800 {
@@ -295,6 +302,7 @@ void initialise(void) {
  * Initialise EEPROM and Flash.
  */
 void factoryReset(void) {
+    unsigned char io;
     // set EEPROM to default values
     ee_write((WORD)EE_BOOT_FLAG, 0);
     ee_write((WORD)EE_CAN_ID, DEFAULT_CANID);
@@ -304,7 +312,6 @@ void factoryReset(void) {
     factoryResetGlobalNv();
 
     // perform other actions based upon type
-    unsigned char i;
     for (io=0; io<NUM_IO; io++) {
         //default type is INPUT
         setType(io, TYPE_INPUT);
@@ -393,7 +400,7 @@ void sendProducedEvent(unsigned char action, BOOL on) {
     }
 }
 
-#ifdef __C18__
+#ifdef __18CXX
 // C intialisation - declare a copy here so the library version is not used as it may link down in bootloader area
 
 void __init(void)
@@ -402,25 +409,32 @@ void __init(void)
 
 // Interrupt service routines
 #if defined(__18CXX)
-    #pragma interruptlow ISRHigh
-    void ISRHigh(void)
+    #pragma interruptlow ISRLow
+    void ISRLow(void) {
 #elif defined(__dsPIC30F__) || defined(__dsPIC33F__) || defined(__PIC24F__) || defined(__PIC24FK__) || defined(__PIC24H__)
     void _ISRFAST __attribute__((interrupt, auto_psv)) _INT1Interrupt(void)
 #elif defined(__PIC32MX__)
     void __ISR(_EXTERNAL_1_VECTOR, ipl4) _INT1Interrupt(void)
 #else
-    void _ISRFAST _INT1Interrupt(void) {
-#endif
-#else 
     void interrupt low_priority low_isr(void) {
 #endif
     tickISR();
     canInterruptHandler();
 }
 
+// Interrupt service routines
 
-void interrupt high_priority high_isr (void)
-{
+#if defined(__18CXX)
+    #pragma interruptlow ISRHigh
+    void ISRHigh(void) {
+#elif defined(__dsPIC30F__) || defined(__dsPIC33F__) || defined(__PIC24F__) || defined(__PIC24FK__) || defined(__PIC24H__)
+    void _ISRFAST __attribute__((interrupt, auto_psv)) _INT1Interrupt(void)
+#elif defined(__PIC32MX__)
+    void __ISR(_EXTERNAL_1_VECTOR, ipl4) _INT1Interrupt(void)
+#else 
+    void interrupt high_priority high_isr (void) {
+#endif
+
 #ifdef SERVO
  /* service the servo pulse width timers */
     if (PIR1bits.TMR1IF) {

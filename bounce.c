@@ -52,7 +52,7 @@
  *
  * Created on 1 June 2017, 13:14
  */
-#include <xc.h>
+#include "devincs.h"
 #include "module.h"
 #ifdef BOUNCE
 #include "GenericTypeDefs.h"
@@ -64,8 +64,8 @@ extern unsigned char targetPos[NUM_IO];
 extern char speed[NUM_IO];
 
 typedef enum {
-    FIRST_PULL,
-    BOUNCE
+    STATE_FIRST_PULL,
+    STATE_BOUNCE
 } BounceState;
 BounceState bounceState[NUM_IO];
 
@@ -89,7 +89,7 @@ BounceState bounceState[NUM_IO];
 #define PULL_SPEED 12
 
 void initBounce(unsigned char io) {
-    bounceState[io] = FIRST_PULL;
+    bounceState[io] = STATE_FIRST_PULL;
 }
 
 /**
@@ -131,14 +131,14 @@ BOOL bounceDown(unsigned char io) {
 
 BOOL bounceUp(unsigned char io) {
     switch(bounceState[io]) {
-    case FIRST_PULL:
+    case STATE_FIRST_PULL:
         // first just move to the targetPos[io]
         currentPos[io] -= speed[io];
         if (currentPos[io]>=targetPos[io]-BOUNDS) {
-            bounceState[io] = BOUNCE;
+            bounceState[io] = STATE_BOUNCE;
         }
         break;
-    case BOUNCE:
+    case STATE_BOUNCE:
         if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
             // acceleration due to pull using G but really this is wrong maybe a function of PULL_SPEED would be better
             speed[io] -= G;

@@ -49,22 +49,22 @@ extern "C" {
     
 /*********************** MODULE OPTIONS **************************/
 // BOOTLOADER
-#define BOOTLOADER_PRESENT
+//#define BOOTLOADER_PRESENT
 
     // We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
 
     // enable servos
-//#define SERVO
+#define SERVO
 
     // Don't enable MULTI for now
-//#define MULTI
+#define MULTI
 
     // Don't enable BOUNCE for now
-//#define BOUNCE
+#define BOUNCE
 
     // Whether NVs are cached in RAM
-#define NV_CACHE
+//#define NV_CACHE
 /************************* END OF OPTIONS ************************/
     
  /*

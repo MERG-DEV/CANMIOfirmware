@@ -36,8 +36,7 @@
  * Created on 17 April 2017, 13:14
  */
 
-#include <xc.h>
-
+#include "devincs.h"
 #include "mioNv.h"
 #include "FliM.h"
 #include "canmio.h"

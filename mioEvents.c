@@ -127,11 +127,13 @@ void clearEvents(unsigned char i) {
  * @param msg the full CBUS message so that OPC  and DATA can be retrieved.
  */
 void processEvent(BYTE tableIndex, BYTE * msg) {
+    unsigned char e;
     // SOD is only applicable to EV#2
     if (getEv(tableIndex, 1) == ACTION_SOD) {
+        unsigned char io;
         // Do the SOD
         inputScan(TRUE);
-        for (unsigned char io=0; io < NUM_IO; io++) {
+        for (io=0; io < NUM_IO; io++) {
             if (NV->io[io].type != TYPE_INPUT) {
                 // send current status
                 BOOL state = ee_read(EE_OP_STATE-io);
@@ -143,7 +145,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     // check the OPC if this is an ON or OFF event
     if ((msg[d0])&EVENT_ON_MASK) {
 	// ON events work up through the EVs
-        for (unsigned char e=1; e<EVperEVT ;e++) { 
+        for (e=1; e<EVperEVT ;e++) { 
             int action = getEv(tableIndex, e);
             if (action >= 0) {
                 if (action < NUM_PRODUCER_ACTIONS) {
@@ -154,7 +156,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         }
     } else {
 	// OFF events work down through the EVs
-        for (unsigned char e=EVperEVT-1; e>=1 ;e--) { 
+        for (e=EVperEVT-1; e>=1 ;e--) { 
             int action = getEv(tableIndex, e);
             if (action >= 0) {
                 if (action < NUM_PRODUCER_ACTIONS) {
@@ -182,13 +184,15 @@ void doAction(unsigned char io, unsigned char action) {
  * actions have finished and the next needs to be started.
  */
 void processActions() {
+    unsigned char io;
+    unsigned char type;
     unsigned char action = getAction();
 
     if (action == NO_ACTION) return;
     
-    unsigned char io = CONSUMER_IO(action);
+    io = CONSUMER_IO(action);
     action = CONSUMER_ACTION(action);
-    unsigned char type = NV->io[io].type;
+    type = NV->io[io].type;
     // check if action needs to be started
     if (needsStarting(io, action, type)) {
         setOutput(io, action, type);
