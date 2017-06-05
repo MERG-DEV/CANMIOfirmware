@@ -32,6 +32,8 @@
  * Created on 1 June 2017, 13:14
  *
  */
+#ifndef __ACTIONQUEUE_H_
+#define __ACTIONQUEUE_H_
 
 #define ACTION_T	BYTE
 
@@ -39,3 +41,4 @@ extern BOOL pushAction(ACTION_T a);
 extern ACTION_T getAction();
 extern void doneAction();
 extern ACTION_T pullAction();
+#endif
