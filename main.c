@@ -218,6 +218,7 @@ int main(void) @0x800 {
     initStatusLeds();
     initialise(); 
     startTime.Val = tickGet();
+startFLiMFlash(TRUE);
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
