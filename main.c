@@ -88,9 +88,6 @@
 #define EEPROM_VERSION  0x01
 #define FLASH_VERSION   0x01
 
-void DATAEE_WriteByte(WORD bAdd, BYTE bData);
-BYTE DATAEE_ReadByte(WORD bAdd);
-
 extern BYTE BlinkLED();
 extern void initOutputs();
 extern void processOutputs();
@@ -146,7 +143,8 @@ void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
 void setOutput(unsigned char i, unsigned char state, unsigned char type);
 void sendProducedEvent(unsigned char action, BOOL on);
-
+void factoryResetEE();
+void factoryResetFlash();
 
 #ifdef __18CXX
 void high_irq_errata_fix(void);
@@ -279,7 +277,7 @@ void initialise(void) {
         // set  Flash to default values
         factoryResetFlash();
         // set the version number to indicate it has been initialised
-        writeFlashByte(&(NV->nv_version), FLASH_VERSION);
+        writeFlashByte((BYTE *)&(NV->nv_version), FLASH_VERSION);
     }
     canid = ee_read((WORD)EE_CAN_ID);
     nn = ee_read_short((WORD)EE_NODE_ID);
