@@ -54,121 +54,106 @@ const ModuleNvDefs moduleNvDefs @AT_NV = {    //  Allow 128 bytes for NVs. Decla
     const rom NodeVarTable nodeVarTable = {
         {    
 #endif
+            0,  // NV data version 
             0,  // sod delay    - delay in sending SOD or zero = no sod
             0,  // hb delay     - heartbeat delay
             5,  // servo speed  - default servo speed
-            {0,0,0,0,0,0,0,0,0,0,0,0,0},  // spare
+            {0,0,0,0,0,0,0,0,0,0,0,0},  // spare
             {
                 { // io[0]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[1]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[2]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[3]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[4]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[5]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[6]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[7]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[8]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[9]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[10]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[11]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[12]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[13]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[14]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 },{ // io[15]
                     0,  // io[0].type
                     0,  // io[0].flags
-                    0,  // enable off
-                    0,  // inverted
+                    1,  // enable off
                     1,  // on_delay
                     1   // off_delay
                 }

@@ -52,22 +52,22 @@ extern "C" {
 #include "canmio.h"
     
 // Global NVs
-#define NV_SOD_DELAY                    0
-#define NV_HB_DELAY                     1  
-#define NV_SERVO_SPEED                  2   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_SPARE1                       3
-#define NV_SPARE2                       4
-#define NV_SPARE3                       5
-#define NV_SPARE4                       6
-#define NV_SPARE5                       7
-#define NV_SPARE6                       8
-#define NV_SPARE7                       9
-#define NV_SPARE8                       10
-#define NV_SPARE9                       11
-#define NV_SPARE10                      12
-#define NV_SPARE11                      13
-#define NV_SPARE12                      14
-#define NV_SPARE13                      15
+#define NV_VERSION                      0
+#define NV_SOD_DELAY                    1
+#define NV_HB_DELAY                     2  
+#define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
+#define NV_SPARE1                       4
+#define NV_SPARE2                       5
+#define NV_SPARE3                       6
+#define NV_SPARE4                       7
+#define NV_SPARE5                       8
+#define NV_SPARE6                       9
+#define NV_SPARE7                       10
+#define NV_SPARE8                       11
+#define NV_SPARE9                       12
+#define NV_SPARE10                      13
+#define NV_SPARE11                      14
+#define NV_SPARE12                      15
 #define NV_IO_START                     16
 #define NVS_PER_IO                      7
     
@@ -155,10 +155,11 @@ typedef struct {
  * This structure is required by FLiM.h
  */
 typedef struct {
+        BYTE nv_version;                // version of NV structure
         BYTE sendSodDelay;               // Time after start in 100mS (plus 2 seconds) to send an automatic SoD. Set to zero for no auto SoD
         BYTE hbDelay;                    // Interval in 100mS for automatic heartbeat. Set to zero for no heartbeat.
         BYTE servo_speed;               // default servo speed
-        BYTE spare[13];
+        BYTE spare[12];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 

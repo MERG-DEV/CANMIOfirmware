@@ -85,6 +85,8 @@
 #include "can18.h"
 #include "cbus.h"
 
+#define EEPROM_VERSION  0x01
+#define FLASH_VERSION   0x01
 
 void DATAEE_WriteByte(WORD bAdd, BYTE bData);
 BYTE DATAEE_ReadByte(WORD bAdd);
@@ -264,11 +266,20 @@ void initialise(void) {
     ANCON1 = 0;
     
     // check if EEPROM is valid
-   if (ee_read((WORD)EE_RESET) != 0xCA) {
-        // set EEPROM and Flash to default values
-        factoryReset();
+   if (ee_read((WORD)EE_RESET) != EEPROM_VERSION) {
+        // may need to upgrade of data in the future
+        // set EEPROM to default values
+        factoryResetEE();
         // set the reset flag to indicate it has been initialised
-        ee_write((WORD)EE_RESET, 0xCA);
+        ee_write((WORD)EE_RESET, EEPROM_VERSION);
+    }
+    // check if FLASH is valid
+   if (NV->nv_version != FLASH_VERSION) {
+        // may need to upgrade of data in the future
+        // set  Flash to default values
+        factoryResetFlash();
+        // set the version number to indicate it has been initialised
+        writeFlashByte(&(NV->nv_version), FLASH_VERSION);
     }
     canid = ee_read((WORD)EE_CAN_ID);
     nn = ee_read_short((WORD)EE_NODE_ID);
@@ -295,7 +306,17 @@ void initialise(void) {
     // enable interrupts, all init now done
     ei(); 
     setStatusLed(flimState == fsFLiM);
-}    
+}
+
+/**
+ * set EEPROM to default values
+ */
+void factoryResetEE() {
+    ee_write((WORD)EE_BOOT_FLAG, 0);
+    ee_write((WORD)EE_CAN_ID, DEFAULT_CANID);
+    ee_write_short((WORD)EE_NODE_ID, DEFAULT_NN); 
+    ee_write((WORD)EE_FLIM_MODE, fsSLiM);
+}
 
 /**
  * Set up the EEPROM and Flash.
@@ -303,13 +324,12 @@ void initialise(void) {
  * Initialise EEPROM and Flash.
  */
 void factoryReset(void) {
+    factoryResetEE();
+    factoryResetFlash();
+}
+
+void factoryResetFlash() {
     unsigned char io;
-    // set EEPROM to default values
-    ee_write((WORD)EE_BOOT_FLAG, 0);
-    ee_write((WORD)EE_CAN_ID, DEFAULT_CANID);
-    ee_write_short((WORD)EE_NODE_ID, DEFAULT_NN); 
-    ee_write((WORD)EE_FLIM_MODE, fsSLiM);
-  
     factoryResetGlobalNv();
 
     // perform other actions based upon type
