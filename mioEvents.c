@@ -66,7 +66,7 @@ extern BOOL completed(unsigned char io, unsigned char action, unsigned char type
  * @param io the IO number
  */
 void defaultEvents(unsigned char io, unsigned char type) {
-    WORD nn = ee_read((WORD)EE_NODE_ID);
+    WORD nn = ee_read_short((WORD)EE_NODE_ID);
     WORD en;
     clearEvents(io);
     // add the module's default events for this io
@@ -77,14 +77,14 @@ void defaultEvents(unsigned char io, unsigned char type) {
         case TYPE_BOUNCE:
             /*
              * We actually add both a Produced and a Consumed event here even though only
-             * one of these is applicable so that the type can be changed and the appropiate
+             * one of these is applicable so that the type can be changed and the appropriate
              * default will still be present.
              */
             en=io+1;
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            doEvlrn(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            doEvlrn(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT(io));
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT(io));
             break;
         case TYPE_MULTI:
             // no defaults for multi

@@ -85,9 +85,6 @@
 #include "can18.h"
 #include "cbus.h"
 
-#define EEPROM_VERSION  0x01
-#define FLASH_VERSION   0x01
-
 extern BYTE BlinkLED();
 extern void initOutputs();
 extern void processOutputs();
@@ -274,7 +271,7 @@ void initialise(void) {
     // check if FLASH is valid
    if (NV->nv_version != FLASH_VERSION) {
         // may need to upgrade of data in the future
-        // set  Flash to default values
+        // set Flash to default values
         factoryResetFlash();
         // set the version number to indicate it has been initialised
         writeFlashByte((BYTE *)&(NV->nv_version), FLASH_VERSION);
@@ -299,9 +296,16 @@ void initialise(void) {
 #endif
     initOutputs();
     
+    /*
+     * Now configure the interrupts.
+     * Interrupt priority is enabled with the High priority interrupt used for
+     * the servo timers and Low priority interrupt used for CAN and tick timer.
+     */
+    
     // Enable interrupt priority
     RCONbits.IPEN = 1;
     // enable interrupts, all init now done
+    IPR5bits.TXB0IP = 0;    // CAN TX buffer low priority
     ei(); 
     setStatusLed(flimState == fsFLiM);
 }
@@ -329,7 +333,7 @@ void factoryReset(void) {
 void factoryResetFlash() {
     unsigned char io;
     factoryResetGlobalNv();
-
+    clearAllEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
         //default type is INPUT

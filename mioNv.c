@@ -48,10 +48,10 @@
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
-const ModuleNvDefs moduleNvDefs @AT_NV = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
+const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
 #else
 #pragma romdata myNV=AT_NV
-    const rom NodeVarTable nodeVarTable = {
+    const rom NodeVarTable nodeVarTable; /* = {
         {    
 #endif
             0,  // NV data version 
@@ -159,7 +159,7 @@ const ModuleNvDefs moduleNvDefs @AT_NV = {    //  Allow 128 bytes for NVs. Decla
                 }
             }
         }
-    };
+    }; */
 /*
  Module specific NV routines
  */
@@ -199,6 +199,7 @@ void actUponNVchange(unsigned char index, unsigned char value) {
  * Set NVs back to factory defaults.
  */
 void factoryResetGlobalNv() {
+    writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);

@@ -39,6 +39,10 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+    
+    
+#define EEPROM_VERSION  0x01
+
 #include "EEPROM.h"
     /*
      * Any additional EEPROM storage requirements above that required by the CBUS library

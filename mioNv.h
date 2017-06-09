@@ -50,6 +50,8 @@ extern "C" {
     
 #include "GenericTypeDefs.h"
 #include "canmio.h"
+
+#define FLASH_VERSION   0x01
     
 // Global NVs
 #define NV_VERSION                      0
