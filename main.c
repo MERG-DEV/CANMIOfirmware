@@ -104,9 +104,8 @@ void ISRLow(void);
 void ISRHigh(void);
 #endif
 
-unsigned char canid = 0;        // initialised from ee
-unsigned int nn = DEFAULT_NN;   // initialised from ee
-//int mode;                       // initialised from ee
+// Default type is INPUT
+#define TYPE_DEFAULT    TYPE_INPUT
 
 // PIN configs
 Config configs[NUM_IO] = {
@@ -215,7 +214,6 @@ int main(void) @0x800 {
     initStatusLeds();
     initialise(); 
     startTime.Val = tickGet();
-startFLiMFlash(TRUE);
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
@@ -276,8 +274,6 @@ void initialise(void) {
         // set the version number to indicate it has been initialised
         writeFlashByte((BYTE *)&(NV->nv_version), FLASH_VERSION);
     }
-    canid = ee_read((WORD)EE_CAN_ID);
-    nn = ee_read_short((WORD)EE_NODE_ID);
     initTicker(0);  // set low priority
     // set up io pins based upon type
     // Enable PORT B weak pullups
@@ -305,7 +301,6 @@ void initialise(void) {
     // Enable interrupt priority
     RCONbits.IPEN = 1;
     // enable interrupts, all init now done
-    IPR5bits.TXB0IP = 0;    // CAN TX buffer low priority
     ei(); 
     setStatusLed(flimState == fsFLiM);
 }
@@ -336,10 +331,9 @@ void factoryResetFlash() {
     clearAllEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
-        //default type is INPUT
-        setType(io, TYPE_INPUT);
+        setType(io, TYPE_DEFAULT);
         // Event flash - just clear all events 
-        defaultEvents(io, TYPE_INPUT);
+        defaultEvents(io, TYPE_DEFAULT);
     } 
     flushFlashImage();
 }

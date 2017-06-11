@@ -66,7 +66,10 @@ extern "C" {
     // Whether NVs are cached in RAM
 //#define NV_CACHE
 /************************* END OF OPTIONS ************************/
-    
+
+    // Whether the module uses high or low priority for CAN interrupts
+    // set to 0 for LP. Set to 0xFF for HP
+#define CAN_INTERRUPT_PRIORITY 0    // all low priority
  /*
  * NVs
  */
