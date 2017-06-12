@@ -262,6 +262,14 @@ void pollServos() {
                     (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
                 beforeMidway=FALSE;
                 switch (servoState[io]) {
+                    case STARTING:
+                        if (eventFlags[io]&EVENT_FLAG_ON) { //ON means move from Start
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), FALSE);
+                        } else {
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), FALSE);
+                        }
+                        servoState[io] = MOVING;
+                        // fall through
                     case MOVING:
                         if (targetPos[io] > currentPos[io]) {
                             if (currentPos[io] < midway) {
@@ -294,7 +302,11 @@ void pollServos() {
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
                             // send ON event or OFF
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
+                            if (eventFlags[io]&EVENT_FLAG_ON) { //ON means move to End
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+                            } else {
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+                            }
                         }
                         break;
                     case STOPPED:
@@ -331,7 +343,7 @@ void pollServos() {
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
                             // send ON event or OFF
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
                         }
                         break;
                     case STOPPED:
@@ -413,13 +425,13 @@ void setServoOutput(unsigned char io, unsigned char action) {
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
             speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
             eventFlags[io] = EVENT_FLAG_OFF & EVENT_FLAG_MID;
-            servoState[io] = MOVING;
+            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
             speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
             eventFlags[io] = EVENT_FLAG_ON & EVENT_FLAG_MID;
-            servoState[io] = MOVING;
+            servoState[io] = STARTING;
             break;
     }
 }

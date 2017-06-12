@@ -40,7 +40,8 @@
 typedef enum {
     OFF,            // not generating any pulses
     STOPPED,        // pulse width fixed, reached desired destination
-    MOVING          // pulse width changing
+    MOVING,         // pulse width changing
+    STARTING
 } ServoState;
 
 extern ServoState servoState[NUM_IO];

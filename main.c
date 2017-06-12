@@ -209,9 +209,11 @@ void main(void) {
 int main(void) @0x800 {
 #endif
     initRomOps();
+    // Both LEDs on to start with
+    initStatusLeds();
     // The very first ee_write seems to not work so I put a dummy write here
     ee_write((WORD)EE_DUMMY, 0xff);
-    initStatusLeds();
+
     initialise(); 
     startTime.Val = tickGet();
 
@@ -238,6 +240,7 @@ int main(void) @0x800 {
 #ifdef SERVO
                 pollServos();
 #endif
+                processActions();
                 processOutputs();
                 lastServoPollTime.Val = tickGet();
             }
@@ -302,7 +305,6 @@ void initialise(void) {
     RCONbits.IPEN = 1;
     // enable interrupts, all init now done
     ei(); 
-    setStatusLed(flimState == fsFLiM);
 }
 
 /**
