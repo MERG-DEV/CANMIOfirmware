@@ -67,24 +67,29 @@ extern BOOL completed(unsigned char io, unsigned char action, unsigned char type
  */
 void defaultEvents(unsigned char io, unsigned char type) {
     WORD nn = ee_read_short((WORD)EE_NODE_ID);
-    WORD en;
+    WORD en = io+1;
     clearEvents(io);
     // add the module's default events for this io
     switch(type) {
-        case TYPE_INPUT:
         case TYPE_OUTPUT:
-        case TYPE_SERVO:
         case TYPE_BOUNCE:
             /*
-             * We actually add both a Produced and a Consumed event here even though only
-             * one of these is applicable so that the type can be changed and the appropriate
-             * default will still be present.
+             * We both a Produced and a Consumed event here.
              */
-            en=io+1;
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            // fall through
+        case TYPE_INPUT:
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT(io));
+            break;
+        case TYPE_SERVO:
+            // Produce ACON/ASON and ACOF/ASOF events with en as port number
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io));
+            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io));
+            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io));
+            // Consume ACON/ASON and ACOF/ASOF events with en as port number
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO(io));
             break;
         case TYPE_MULTI:
             // no defaults for multi
