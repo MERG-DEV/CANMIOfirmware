@@ -68,6 +68,10 @@
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
 
+#define MAX_SERVO_LOOP          120      // Max number of loops 
+#define MAX_BOUNCE_LOOP          50      // Max number of loops 
+#define MAX_MULTI_LOOP          100      // Max number of loops 
+
 // forward definitions
 void setupTimer1(unsigned char io);
 void setupTimer2(unsigned char io);
@@ -85,6 +89,8 @@ unsigned char currentPos[NUM_IO];
 unsigned char targetPos[NUM_IO];
 char speed[NUM_IO];
 unsigned char eventFlags[NUM_IO];
+unsigned char loopCount[NUM_IO];
+
 #define EVENT_FLAG_ON       0x01
 #define EVENT_FLAG_OFF      0x02
 #define EVENT_FLAG_MID      0x04
@@ -269,8 +275,15 @@ void pollServos() {
                             sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), FALSE);
                         }
                         servoState[io] = MOVING;
+                        loopCount[io] = 0;
                         // fall through
                     case MOVING:
+                        loopCount[io]++;
+                        if (loopCount[io] > MAX_SERVO_LOOP) {
+                            servoState[io] = STOPPED;
+                            ticksWhenStopped[io].Val = tickGet();
+                            break;
+                        }
                         if (targetPos[io] > currentPos[io]) {
                             if (currentPos[io] < midway) {
                                 beforeMidway = TRUE;
@@ -325,25 +338,30 @@ void pollServos() {
                 break;
             case TYPE_BOUNCE:
                 switch (servoState[io]) {
+                    case STARTING:
+                        servoState[io] = MOVING;
+                        loopCount[io] = 0;
+                        // fall through
                     case MOVING:
-                        // Implement the bounce algorithm here
-                        // TODO
-                        if (targetPos[io] > currentPos[io]) {
-                            currentPos[io] += speed[io];
-                            if (currentPos[io] > targetPos[io]) {
-                                currentPos[io] = targetPos[io];
-                            }
-                        } else if (targetPos[io] < currentPos[io]) {
-                            currentPos[io] -= speed[io];
-                            if (currentPos[io] < targetPos[io]) {
-                                currentPos[io = targetPos[io]];
-                            }
-                        }
-                        if (targetPos[io] == currentPos[io]) {
+                        loopCount[io]++;
+                        if (loopCount[io] > MAX_BOUNCE_LOOP) {
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
-                            // send ON event or OFF
-                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
+                            break;
+                        }
+                        // Implement the bounce algorithm here
+                        if (eventFlags[io]&EVENT_FLAG_ON) {
+                            if (bounceUp(io)) {
+                                servoState[io] = STOPPED;
+                                ticksWhenStopped[io].Val = tickGet();
+                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
+                            }
+                        } else {
+                            if (bounceDown(io)) {
+                                servoState[io] = STOPPED;
+                                ticksWhenStopped[io].Val = tickGet();
+                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), (eventFlags[io]&EVENT_FLAG_ON) ? TRUE : FALSE);
+                            }
                         }
                         break;
                     case STOPPED:
@@ -362,7 +380,17 @@ void pollServos() {
                 break;
             case TYPE_MULTI:
                 switch (servoState[io]) {
+                    case STARTING:
+                        servoState[io] = MOVING;
+                        loopCount[io] = 0;
+                        // fall through
                     case MOVING:
+                        loopCount[io]++;
+                        if (loopCount[io] > MAX_MULTI_LOOP) {
+                            servoState[io] = STOPPED;
+                            ticksWhenStopped[io].Val = tickGet();
+                            break;
+                        }
                         if (targetPos[io] > currentPos[io]) {
                             currentPos[io] += speed[io];
                             if (currentPos[io] > targetPos[io]) {

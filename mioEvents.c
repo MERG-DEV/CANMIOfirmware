@@ -60,6 +60,9 @@ extern void sendProducedEvent(unsigned char action, BOOL on);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
+extern BYTE inputState[NUM_IO];
+extern unsigned char currentPos[NUM_IO];
+
 /**
  * Reset events for the IO back to default. Called when the Type of the IO
  * is changed.
@@ -133,19 +136,7 @@ void clearEvents(unsigned char i) {
  */
 void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
-    // SOD is only applicable to EV#2
-    if (getEv(tableIndex, 1) == ACTION_SOD) {
-        unsigned char io;
-        // Do the SOD
-        inputScan(TRUE);
-        for (io=0; io < NUM_IO; io++) {
-            if (NV->io[io].type != TYPE_INPUT) {
-                // send current status
-                BOOL state = ee_read(EE_OP_STATE-io);
-                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
-            }
-        }
-    }
+
     // EV#0 is for produced event so start at 1
     // check the OPC if this is an ON or OFF event
     if ((msg[d0])&EVENT_ON_MASK) {
@@ -174,13 +165,59 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
 }
 
 void doAction(unsigned char io, unsigned char action) {
-    // check the flags to see if this is sequential
-    if (NV->io[io].flags & FLAG_SEQUENTIAL) {
-        // add to the action queue
-        pushAction(action);
+    unsigned char midway;
+    BOOL state;
+    
+    if (action < ACTION_PRODUCER_BASE) {
+        // this is a global action - not one based on an IO
+        switch (action) {
+            case ACTION_CONSUMED_SOD:
+                // Do the SOD
+                // Agreed with Pete that SOD is only applicable to EV#2 but I actually allow it at any EV#
+                inputScan(TRUE);
+                for (io=0; io < NUM_IO; io++) {
+                    switch(NV->io[io].type) {
+                        case TYPE_INPUT:
+                            sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io]);
+                            break;
+                        case TYPE_OUTPUT:
+                            state = ee_read(EE_OP_STATE-io);
+                            sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
+                            break;
+                        case TYPE_SERVO:
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
+                            // send the last mid
+                            midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                                    (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway);
+                            break;
+                        case TYPE_BOUNCE:
+                            state = ee_read(EE_OP_STATE-io);
+                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state);
+                            break;
+                        case TYPE_MULTI:
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
+                            if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
+                            }
+                            break;
+                    }
+                }
+                break;
+        }
     } else {
-        // do it now
-        setOutput(io, CONSUMER_ACTION(action), NV->io[io].type);
+        // this is an IO based action 
+        // check the flags to see if this is sequential
+        if (NV->io[io].flags & FLAG_SEQUENTIAL) {
+            // add to the action queue
+            pushAction(action);
+        } else {
+            // do it now
+            setOutput(io, CONSUMER_ACTION(action), NV->io[io].type);
+        }
     }
 }
 

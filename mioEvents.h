@@ -49,18 +49,20 @@ extern "C" {
 #include "canmio.h"
 #include "events.h"
 
-    // Global produced actions first
 
-#define ACTION_SOD                          1
+    // Global consumed actions first
+#define ACTION_CONSUMED_SOD                 1
+    // Global produced actions next
+#define ACTION_PRODUCED_SOD                 4
     // produced actions per io
-#define ACTION_PRODUCER_BASE                2
+#define ACTION_PRODUCER_BASE                8
 #define ACTION_IO_PRODUCER_1                0
 #define ACTION_IO_PRODUCER_2                1
 #define ACTION_IO_PRODUCER_3                2
 #define ACTION_IO_PRODUCER_4                3
 #define PRODUCER_ACTIONS_PER_IO             4
 #define NUM_PRODUCER_ACTIONS                (ACTION_PRODUCER_BASE + NUM_IO*PRODUCER_ACTIONS_PER_IO)
-    
+    // Now Consumed actions
 #define ACTION_CONSUMER_BASE                (ACTION_PRODUCER_BASE + NUM_PRODUCER_ACTIONS)
 #define ACTION_IO_CONSUMER_1                0
 #define ACTION_IO_CONSUMER_2                1

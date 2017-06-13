@@ -59,6 +59,8 @@ extern void setBounceOutput(unsigned char io, unsigned char state);
 extern void setMultiOutput(unsigned char io, unsigned char state);
 extern void setOuputPin(unsigned char io, BOOL state);
 
+extern unsigned char pulseDelays[NUM_IO];
+
 
 /**
  * Set an output to the requested state.
@@ -77,6 +79,7 @@ void setOutput(unsigned char io, unsigned char action, unsigned char type) {
             return;
 #ifdef BOUNCE
         case TYPE_BOUNCE:
+               // fall through
 #endif
 #ifdef SERVO
         case TYPE_SERVO:
@@ -102,6 +105,9 @@ BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type) {
             return FALSE;
         case TYPE_OUTPUT:
             // TODO needs fixing as if doing a pulse we don't need a restart
+            if (action == ACTION_IO_CONSUMER_OUTPUT(io)) {
+                
+            }
             return TRUE;
 #ifdef SERVO
         case TYPE_SERVO:
@@ -127,9 +133,8 @@ BOOL completed(unsigned char io, unsigned char action, unsigned char type) {
             // this should never happen
             return TRUE;
         case TYPE_OUTPUT:
-            // when asked on the MERG forum nobody was bothered whether sequential actions 
-            // wait for a pulse to complete. Therefore to make it easy we don't wait.
-            return TRUE;
+            // wait for a pulse to complete. 
+            return pulseDelays[io] == 0;
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE

@@ -43,7 +43,6 @@
  */
 /** TODOs
  * Bootloader and handling of OPC_BOOT
- * digital output pulse output.c
  * bounce profiles  
  * sequence servos servo.c
  * remember output state in EEPROM outputs.c & servo.c
@@ -63,14 +62,9 @@
  * Implement ASRQ
  * Consider the implementation of Flashing output
  * Consider option to set outputs on or off on powerup in addition to restore previous state
- * change implementation of sequential actions
  * NV change callback for type change
  * Consider a delay action for sequences
- * Change doAction to properly check for global actions
- * Move SOD processing to doAction from processEvent
- * Fix the SOD processing to include mid events
- * add needsStarting and completed for OUTPUT types
- * add a max loop count for bounce calculations
+ * add needsStarting and completed for OUTPUT types so can be processed sequentially
  * 
  * DONES:
  * DONE  change the START_SOD_EVENT for a learned action/event
@@ -85,6 +79,10 @@
  * DONE  Pulse outputs
  * DONE  Bounce algorithm for servos
  * DONE  Store output state in EEPROM + restore on powerup
+ * DONE  add a max loop count for bounce calculations
+ * DONE  Change doAction to properly check for global actions
+ * DONE  Move SOD processing to doAction from processEvent
+ * DONE  Fix the SOD processing to include mid events
  */
 
 /**
@@ -244,7 +242,7 @@ int main(void) @0x800 {
         if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
             started = TRUE;
             if (NV->sendSodDelay > 0) {
-                sendProducedEvent(ACTION_SOD, TRUE);
+                sendProducedEvent(ACTION_PRODUCED_SOD, TRUE);
             }
         }
         checkCBUS();    // Consume any CBUS message and act upon it
