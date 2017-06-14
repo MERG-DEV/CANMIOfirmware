@@ -214,7 +214,6 @@ void defaultNVs(unsigned char i, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ENABLE_OFF(i)), (BYTE)1);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)1);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)1);
             break;

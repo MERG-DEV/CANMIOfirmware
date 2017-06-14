@@ -77,9 +77,9 @@ extern "C" {
 #define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i))		// TYPE and FLAGS always at the start
 #define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + 1)
 
-#define NV_IO_INPUT_ENABLE_OFF(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)	// Other NVs depend upon type
-#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// units of 5ms
-#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// units of 5ms
+// Other NVs depend upon type
+#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 5ms
+#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 3)	// units of 5ms
 
 #define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 0.1 seconds
 
@@ -111,24 +111,22 @@ extern "C" {
 #define TYPE_MULTI                  4
 
 // the flags
-#define	FLAG_SEQUENTIAL             1	// Whether this action is processed in sequence with other actions
-#define	FLAG_CUTOFF                 2	// Whether the servo cut off after 1 second once it has reached its target position
-#define	FLAG_STARTUP                4	// Whether this output be changed on module start to match values in EE_OP_STATE
-#define	FLAG_INVERTED               8	// Whether the sense of this input or output inverted
+#define	FLAG_SEQUENTIAL             0x01	// Whether this action is processed in sequence with other actions
+#define	FLAG_CUTOFF                 0x02	// Whether the servo cut off after 1 second once it has reached its target position
+#define	FLAG_STARTUP                0x04	// Whether this output be changed on module start to match values in EE_OP_STATE
+#define	FLAG_INVERTED               0x08	// Whether the sense of this input or output inverted
+#define FLAG_DISABLE_OFF            0x10    // Whether off events are generated
 
 typedef struct {
     unsigned char type;
     unsigned char flags;
     union {
         struct {
-            unsigned char input_enable_off;
-            unsigned char input_inverted;
             unsigned char input_on_delay;
             unsigned char input_off_delay;
         } nv_input;
         struct {
             unsigned char output_pulse_duration;
-            unsigned char outout_inverted;
         } nv_output;
         struct {
             unsigned char servo_start_pos;

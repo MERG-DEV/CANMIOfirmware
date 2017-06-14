@@ -107,7 +107,7 @@ void inputScan(BOOL report) {
                             cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, TRUE);
                         } else {
                             // check if OFF events are enabled
-                            if (NV->io[io].nv_io.nv_input.input_enable_off) {
+                            if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
                                 cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, FALSE);
                             }
                         }
