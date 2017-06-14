@@ -36,6 +36,7 @@
  * Created on 17 April 2017, 13:14
  */
 
+#include <stddef.h>
 #include "devincs.h"
 #include "mioNv.h"
 #include "FliM.h"
@@ -79,6 +80,7 @@ void initInputScan(void) {
  *   
  */
 void inputScan(BOOL report) {
+    const Event * ev;
     for (io=0; io< NUM_IO; io++) {
         if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);
@@ -99,12 +101,15 @@ void inputScan(BOOL report) {
                         input = !input;
                     }
                     // send the changed Produced event
-                    if (input) {
-                        cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), TRUE);
-                    } else {
-                        // check if OFF events are enabled
-                        if (NV->io[io].nv_io.nv_input.input_enable_off) {
-                            cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                    ev = getProducedEvent(ACTION_IO_PRODUCER_INPUT(io));
+                    if (ev != NULL) {
+                        if (input) {
+                            cbusSendEvent( 0, ev->NN, ev->EN, TRUE);
+                        } else {
+                            // check if OFF events are enabled
+                            if (NV->io[io].nv_io.nv_input.input_enable_off) {
+                                cbusSendEvent( 0, ev->NN, ev->EN, FALSE);
+                            }
                         }
                     }
                 }
