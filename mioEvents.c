@@ -77,14 +77,14 @@ void defaultEvents(unsigned char io, unsigned char type) {
         case TYPE_OUTPUT:
         case TYPE_BOUNCE:
             /*
-             * We both a Produced and a Consumed event here.
+             * We create both a Produced and a Consumed event here.
              */
-            // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
-            // fall through
-        case TYPE_INPUT:
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT(io));
+            // fall through
+        case TYPE_INPUT:
+            // Produce ACON/ASON and ACOF/ASOF events with en as port number
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number

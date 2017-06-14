@@ -80,7 +80,7 @@ void initInputScan(void) {
  *   
  */
 void inputScan(BOOL report) {
-    const Event * ev;
+    volatile rom near Event * ev;
     for (io=0; io< NUM_IO; io++) {
         if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);
@@ -104,11 +104,11 @@ void inputScan(BOOL report) {
                     ev = getProducedEvent(ACTION_IO_PRODUCER_INPUT(io));
                     if (ev != NULL) {
                         if (input) {
-                            cbusSendEvent( 0, ev->NN, ev->EN, TRUE);
+                            cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, TRUE);
                         } else {
                             // check if OFF events are enabled
                             if (NV->io[io].nv_io.nv_input.input_enable_off) {
-                                cbusSendEvent( 0, ev->NN, ev->EN, FALSE);
+                                cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, FALSE);
                             }
                         }
                     }
