@@ -124,12 +124,12 @@ void inputScan(BOOL report) {
 BOOL readInput(unsigned char io) {
     if (NV->io[io].type == TYPE_INPUT) {
             switch(configs[io].port) {
-            case 'a':
-                return TRISA & (1<<configs[io].no);
-            case 'b':
-                return TRISB & (1<<configs[io].no);
-            case 'c':
-                return TRISA & (1<<configs[io].no);
+            case 'A':
+                return PORTA & (1<<configs[io].no);
+            case 'B':
+                return PORTB & (1<<configs[io].no);
+            case 'C':
+                return PORTC & (1<<configs[io].no);
             }
         }
     return FALSE;
