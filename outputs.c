@@ -105,9 +105,9 @@ BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type) {
             return FALSE;
         case TYPE_OUTPUT:
             // TODO needs fixing as if doing a pulse we don't need a restart
-            if (action == ACTION_IO_CONSUMER_OUTPUT(io)) {
+//            if (action == ACTION_IO_CONSUMER_OUTPUT(io)) {
                 
-            }
+//            }
             return TRUE;
 #ifdef SERVO
         case TYPE_SERVO:

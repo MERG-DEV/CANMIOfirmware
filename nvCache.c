@@ -36,7 +36,7 @@
 #ifdef NV_CACHE
 #include "mioNv.h"
 #include "romops.h"
-static ModuleNvDefs nvCache;        // RAM storage for NVs
+static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
 
 extern const BYTE * NvBytePtr;
 

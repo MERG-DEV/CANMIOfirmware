@@ -51,7 +51,7 @@ extern void setType(unsigned char i, unsigned char type);
 const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
 #else
 #pragma romdata myNV=AT_NV
-    const rom NodeVarTable nodeVarTable; /* = {
+    rom NodeVarTable nodeVarTable; /* = {
         {    
 #endif
             0,  // NV data version 
@@ -167,7 +167,11 @@ const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. D
 const NodeVarTable nodeVarTable @AT_NV;
 ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
 #else
-rom ModuleNvDefs * NV = (ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
+#ifdef NV_CACHE
+ModuleNvDefs * NV = &(nodeVarTable.moduleNVs);
+#else
+volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
+#endif
 #endif
 
 void mioNvInit() {
@@ -214,8 +218,8 @@ void defaultNVs(unsigned char i, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)1);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)1);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)4);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)4);
             break;
         case TYPE_OUTPUT:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);

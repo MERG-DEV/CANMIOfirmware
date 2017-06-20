@@ -80,19 +80,19 @@ void defaultEvents(unsigned char io, unsigned char type) {
              * We create both a Produced and a Consumed event here.
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT(io));
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io));
             // fall through
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io));
             addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io));
-            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io));
+            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io));
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO(io));
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io));
             break;
         case TYPE_MULTI:
             // no defaults for multi
@@ -127,51 +127,96 @@ void clearEvents(unsigned char i) {
 }
 
 /**
- * Process the consumed events. Perform whatever action is requested and based 
- * upon the Type of IO.
- * Current this sets the output immediately but it will need to be queued so
- * the changes are done sequentially.
+ * Process the consumed events. Extract the actions from the EVs. 
+ * The actions are pushed onto the actionQueue for subsequent processing in
+ * sequence.
+ * 
  * @param tableIndex the required action to be performed.
  * @param msg the full CBUS message so that OPC  and DATA can be retrieved.
  */
 void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
+    unsigned char io;
+    unsigned char ca;
+    unsigned char action;
 
     // EV#0 is for produced event so start at 1
     // check the OPC if this is an ON or OFF event
     if ((msg[d0])&EVENT_ON_MASK) {
 	// ON events work up through the EVs
         for (e=1; e<EVperEVT ;e++) { 
-            int action = getEv(tableIndex, e);
-            if (action >= 0) {
-                if (action < NUM_PRODUCER_ACTIONS) {
-                    unsigned char io = CONSUMER_IO(action);
-                    doAction(io, action);
+            action = getEv(tableIndex, e);
+            // check this is a consumed action
+            if ((action > 0) && (action <= NUM_CONSUMER_ACTIONS)) {
+                // check global consumed actions
+                if (action < ACTION_CONSUMER_IO_BASE) {
+                    pushAction(action);
+                } else {
+                    io = CONSUMER_IO(action);
+                    ca = CONSUMER_ACTION(action);
+                    switch (NV->io[io].type) {
+                        case TYPE_OUTPUT:
+                        case TYPE_SERVO:
+                        case TYPE_BOUNCE:
+                            if (ca == ACTION_IO_CONSUMER_1) {
+                                // action 1 (EV) must be converted to 2(ON)
+                                action++;
+                            }
+                            pushAction(action);
+                            break;
+                        case TYPE_MULTI:
+                            pushAction(action);
+                            break;
+                        default:
+                            // shouldn't happen - just ignore
+                            break;
+                    }
                 }
             }
         }
     } else {
 	// OFF events work down through the EVs
         for (e=EVperEVT-1; e>=1 ;e--) { 
-            int action = getEv(tableIndex, e);
-            if (action >= 0) {
-                if (action < NUM_PRODUCER_ACTIONS) {
-                    unsigned char io = CONSUMER_IO(action);
-                    doAction(io, action);
+            action = getEv(tableIndex, e);
+            if ((action > 0) && (action <= NUM_CONSUMER_ACTIONS)) {
+                // check global consumed actions
+                if (action < ACTION_CONSUMER_IO_BASE) {
+                    pushAction(action);
+                } else {
+                    io = CONSUMER_IO(action);
+                    ca = CONSUMER_ACTION(action);
+                    switch (NV->io[io].type) {
+                        case TYPE_OUTPUT:
+                        case TYPE_SERVO:
+                        case TYPE_BOUNCE:
+                            if (ca == ACTION_IO_CONSUMER_1) {
+                                // action 1 (EV) must be converted to 3(OFF)
+                                action += 2;
+                            }
+                            pushAction(action);
+                            break;
+                        case TYPE_MULTI:
+                            pushAction(action);
+                            break;
+                        default:
+                            // shouldn't happen - just ignore
+                            break;
+                    }
                 }
             }
         }
     }
 }
 
+/*
 void doAction(unsigned char io, unsigned char action) {
     unsigned char midway;
     BOOL state;
     
-    if (action < ACTION_PRODUCER_BASE) {
+    if (action < ACTION_CONSUMER_IO_BASE) {
         // this is a global action - not one based on an IO
         switch (action) {
-            case ACTION_CONSUMED_SOD:
+            case ACTION_CONSUMER_SOD:
                 // Do the SOD
                 // Agreed with Pete that SOD is only applicable to EV#2 but I actually allow it at any EV#
                 inputScan(TRUE);
@@ -212,14 +257,14 @@ void doAction(unsigned char io, unsigned char action) {
         // this is an IO based action 
         // check the flags to see if this is sequential
         if (NV->io[io].flags & FLAG_SEQUENTIAL) {
-            // add to the action queue
+            // add to the action queue 
             pushAction(action);
         } else {
             // do it now
             setOutput(io, CONSUMER_ACTION(action), NV->io[io].type);
-        }
+        } 
     }
-}
+}*/
 
 /**
  * This needs to be called on a regular basis to see if any
@@ -229,18 +274,72 @@ void processActions() {
     unsigned char io;
     unsigned char type;
     unsigned char action = getAction();
-
-    if (action == NO_ACTION) return;
+    unsigned char sequential;
     
-    io = CONSUMER_IO(action);
-    action = CONSUMER_ACTION(action);
-    type = NV->io[io].type;
-    // check if action needs to be started
-    if (needsStarting(io, action, type)) {
-        setOutput(io, action, type);
+    if (action == NO_ACTION) return;
+    // Check for SOD
+    if (action == ACTION_CONSUMER_SOD) {
+        // Do the SOD
+
+        return;
     }
-    // check if this actions has been completed
-    if (completed(io, action, type)) {
-        doneAction();
+    if ((action >= ACTION_CONSUMER_IO_BASE) && (action < NUM_CONSUMER_ACTIONS)) {
+        // process IO based consumed actions
+        io = CONSUMER_IO(action);
+        action = CONSUMER_ACTION(action);
+        type = NV->io[io].type;
+        sequential = NV->io[io].flags & FLAG_SEQUENTIAL;
+        // TODO handle sequential - will need to know which direction to look
+        // check if action needs to be started
+        if (needsStarting(io, action, type)) {
+            setOutput(io, action, type);
+        }
+        // check if this actions has been completed
+        if (completed(io, action, type)) {
+            doneAction();
+        }
+    }
+}
+
+/**
+ * Do the consumed SOD action. This sends events to indicate current state of the system.
+ */
+void doSOD() {
+    unsigned char midway;
+    BOOL state;
+    unsigned char io;
+    
+    // Agreed with Pete that SOD is only applicable to EV#2 but I actually allow it at any EV#
+    inputScan(TRUE);    // ensure we have current input status
+    for (io=0; io < NUM_IO; io++) {
+        switch(NV->io[io].type) {
+            case TYPE_INPUT:
+                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io]);
+                break;
+            case TYPE_OUTPUT:
+                state = ee_read(EE_OP_STATE-io);
+                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
+                break;
+            case TYPE_SERVO:
+                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
+                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
+                // send the last mid
+                midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
+                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway);
+                break;
+            case TYPE_BOUNCE:
+                state = ee_read(EE_OP_STATE-io);
+                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state);
+                break;
+            case TYPE_MULTI:
+                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
+                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
+                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
+                if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
+                    sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
+                }
+                break;
+        }
     }
 }

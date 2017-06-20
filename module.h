@@ -64,7 +64,7 @@ extern "C" {
 #define BOUNCE
 
     // Whether NVs are cached in RAM
-//#define NV_CACHE
+#define NV_CACHE
 /************************* END OF OPTIONS ************************/
 
     // Whether the module uses high or low priority for CAN interrupts

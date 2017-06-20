@@ -242,7 +242,7 @@ int main(void) @0x800 {
         if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
             started = TRUE;
             if (NV->sendSodDelay > 0) {
-                sendProducedEvent(ACTION_PRODUCED_SOD, TRUE);
+                sendProducedEvent(ACTION_PRODUCER_SOD, TRUE);
             }
         }
         checkCBUS();    // Consume any CBUS message and act upon it
@@ -365,16 +365,18 @@ void factoryResetFlash() {
  * @param i the IO
  * @param type the new Type
  */
-void setType(unsigned char i, unsigned char type) {
-    WORD addr = AT_NV+NV_IO_TYPE(i);
+void setType(unsigned char io, unsigned char type) {
+    WORD addr;
+    configIO(io);
+    addr = AT_NV+NV_IO_TYPE(io);
     writeFlashByte((BYTE*)addr, type);
     // set to default NVs
-    defaultNVs(i, type);
+    defaultNVs(io, type);
     // set up the default events. 
     // Actually found we don't need to do defaultEvents - which is good because:
     // a) it is a pain to implement
     // b) it messes with the user's settings
-//    defaultEvents(i, type);
+    defaultEvents(io, type);
 }
 
 /**
