@@ -40,16 +40,35 @@
 extern "C" {
 #endif
     /*
-     * This is where all the module specific events are defined.
+     * This is where all the module specific actions are defined.
      * The following definitions are required by the FLiM code:
      * NUM_PRODUCER_ACTIONS, NUM_CONSUMER_ACTIONS, HASH_LENGTH, EVT_NUM, 
-     * EVperEVT, NUM_CONSUMED_EVENTS, AT_ACTION2EVENT, AT_EVENT2ACTION    
+     * EVperEVT, NUM_CONSUMED_EVENTS
+     * 
+     * For MIO an action is a BYTE (unsigned char). The upperupper bit is used
+     * to indicate a sequential action. It would be nice to define:
+     * 
+     * typedef union {
+     *      unsigned char action_byte;
+     *      struct {
+     *          unsigned char action :7;
+     *          unsigned char sequential :1;
+     *      }
+     * } ACtION_T;
+     * but C spec doesn't define what size this would be. Therefore I just use
+     * BYTE (unsigned char).
+     * 
+     * The actions are defined below - but remember consumed actions may also have MSB
+     * set indicating sequential.
      */
  
 #include "canmio.h"
 #include "events.h"
 
 /* CONSUMED actions */
+#define ACTION_SIMULTANEOUS                 0x80    // default is SEQUENTIAL
+#define ACTION_MASK                         0x7F
+    
     // Global consumed actions first
 #define ACTION_CONSUMER_SOD                 1
         // Now Consumed actions per io

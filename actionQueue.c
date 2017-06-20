@@ -132,3 +132,14 @@ ACTION_T pullAction() {
 	return ret;
 }
 
+/**
+ * Peek an item in the queue. Does not remove the item from the queue.
+ * @param index the item index within the queue
+ * @return the Action or NO_ACTION 
+ */
+ACTION_T peekAction(unsigned char index) {
+    if (currentAction == NO_ACTION) return NO_ACTION;
+    if (index == 0) return currentAction;
+    return buffer[readIdx + index -1];
+}
+

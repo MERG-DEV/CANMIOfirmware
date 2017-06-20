@@ -111,11 +111,10 @@ extern "C" {
 #define TYPE_MULTI                  4
 
 // the flags
-#define	FLAG_SEQUENTIAL             0x01	// Whether this action is processed in sequence with other actions
+#define	FLAG_INVERTED               0x01	// Whether the sense of this input or output inverted
 #define	FLAG_CUTOFF                 0x02	// Whether the servo cut off after 1 second once it has reached its target position
 #define	FLAG_STARTUP                0x04	// Whether this output be changed on module start to match values in EE_OP_STATE
-#define	FLAG_INVERTED               0x08	// Whether the sense of this input or output inverted
-#define FLAG_DISABLE_OFF            0x10    // Whether off events are generated
+#define FLAG_DISABLE_OFF            0x08    // Whether off events are generated
 
 typedef struct {
     unsigned char type;

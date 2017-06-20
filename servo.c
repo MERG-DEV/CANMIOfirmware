@@ -64,6 +64,7 @@
 #include "romops.h"
 #include "mioEEPROM.h"
 #include "servo.h"
+#include "actionQueue.h"
 
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
@@ -447,7 +448,7 @@ void pollServos() {
  * @param io
  * @param action
  */
-void setServoOutput(unsigned char io, unsigned char action) {
+void setServoOutput(unsigned char io, ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO OFF
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
@@ -469,7 +470,7 @@ void setServoOutput(unsigned char io, unsigned char action) {
  * @param io
  * @param action
  */
-void setMultiOutput(unsigned char io, unsigned char action) {
+void setMultiOutput(unsigned char io, ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO Position 1
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;

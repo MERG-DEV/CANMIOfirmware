@@ -226,14 +226,14 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
             break;
         case TYPE_SERVO:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)200);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
             break;
         case TYPE_BOUNCE:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_START_POS(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_END_POS(i)), (BYTE)90);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_SE_SPEED(i)), (BYTE)5);
@@ -241,7 +241,7 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
             break;
         case TYPE_MULTI:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)110);

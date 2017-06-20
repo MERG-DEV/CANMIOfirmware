@@ -52,6 +52,7 @@
 
 // forward declarations
 void clearEvents(unsigned char i);
+void doSOD();
 
 extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
@@ -131,6 +132,17 @@ void clearEvents(unsigned char i) {
  * The actions are pushed onto the actionQueue for subsequent processing in
  * sequence.
  * 
+ * If an event is defined to have actions A1, A2, A3, A4 and A2 has the SIMULANEOUS 
+ * flag set then the sequence will be executed for ON event: A1, A2&A3, A4 and
+ * we therefore put:
+ *  A1 (sequential), A2 (simultaneous), A3 (sequential, A4 (sequential) 
+ * into the action queue.
+ * 
+ * For an OFF event we want the sequence: A4, A3&A2, A1 and therefore we put:
+ *  A4 (sequential), A3 (simultaneous), A2 (sequential), A1 (sequential)
+ * into the action queue. Therefore when doing an OFF Event we need to fiddle
+ * with the SIMULTANEOUS bit.
+ * 
  * @param tableIndex the required action to be performed.
  * @param msg the full CBUS message so that OPC  and DATA can be retrieved.
  */
@@ -138,22 +150,22 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
     unsigned char io;
     unsigned char ca;
-    unsigned char action;
+    ACTION_T action;
 
     // EV#0 is for produced event so start at 1
     // check the OPC if this is an ON or OFF event
     if ((msg[d0])&EVENT_ON_MASK) {
 	// ON events work up through the EVs
         for (e=1; e<EVperEVT ;e++) { 
-            action = getEv(tableIndex, e);
+            action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             // check this is a consumed action
-            if ((action > 0) && (action <= NUM_CONSUMER_ACTIONS)) {
+            if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
                 // check global consumed actions
-                if (action < ACTION_CONSUMER_IO_BASE) {
+                if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
                     pushAction(action);
                 } else {
-                    io = CONSUMER_IO(action);
-                    ca = CONSUMER_ACTION(action);
+                    io = CONSUMER_IO(action&ACTION_MASK);
+                    ca = CONSUMER_ACTION(action&ACTION_MASK);
                     switch (NV->io[io].type) {
                         case TYPE_OUTPUT:
                         case TYPE_SERVO:
@@ -177,11 +189,21 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     } else {
 	// OFF events work down through the EVs
         for (e=EVperEVT-1; e>=1 ;e--) { 
-            action = getEv(tableIndex, e);
-            if ((action > 0) && (action <= NUM_CONSUMER_ACTIONS)) {
+            ACTION_T nextAction;
+            unsigned char nextSimultaneous;
+            action = getEv(tableIndex, e);  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
+            // get the Simultaneous flag from the next action
+            if (e > 1) {
+                nextAction = getEv(tableIndex, e-1);
+                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+            } else {
+                nextSimultaneous = ACTION_SIMULTANEOUS;
+            }
+            action &= ACTION_MASK;
+            if (action <= NUM_CONSUMER_ACTIONS) {
                 // check global consumed actions
                 if (action < ACTION_CONSUMER_IO_BASE) {
-                    pushAction(action);
+                    pushAction(action|nextSimultaneous);
                 } else {
                     io = CONSUMER_IO(action);
                     ca = CONSUMER_ACTION(action);
@@ -193,10 +215,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                 // action 1 (EV) must be converted to 3(OFF)
                                 action += 2;
                             }
-                            pushAction(action);
+                            pushAction(action|nextSimultaneous);
                             break;
                         case TYPE_MULTI:
-                            pushAction(action);
+                            pushAction(action|nextSimultaneous);
                             break;
                         default:
                             // shouldn't happen - just ignore
@@ -273,28 +295,51 @@ void doAction(unsigned char io, unsigned char action) {
 void processActions() {
     unsigned char io;
     unsigned char type;
-    unsigned char action = getAction();
-    unsigned char sequential;
+    ACTION_T action = getAction();
+    unsigned char simultaneous;
+    unsigned char peekItem;
     
     if (action == NO_ACTION) return;
     // Check for SOD
     if (action == ACTION_CONSUMER_SOD) {
         // Do the SOD
-
+        doSOD();
         return;
     }
     if ((action >= ACTION_CONSUMER_IO_BASE) && (action < NUM_CONSUMER_ACTIONS)) {
         // process IO based consumed actions
+        simultaneous = action & ACTION_SIMULTANEOUS;
+        action &= ACTION_MASK;
         io = CONSUMER_IO(action);
         action = CONSUMER_ACTION(action);
         type = NV->io[io].type;
-        sequential = NV->io[io].flags & FLAG_SEQUENTIAL;
-        // TODO handle sequential - will need to know which direction to look
+
+        // TODO handle simultaneous - will need to know which direction to look
         // check if action needs to be started
         if (needsStarting(io, action, type)) {
             setOutput(io, action, type);
         }
-        // check if this actions has been completed
+        peekItem = 1;
+        while (simultaneous) {
+            ACTION_T nextAction;
+            unsigned char nextIo;
+            unsigned char nextType;
+            
+            nextAction = peekAction(peekItem);
+            simultaneous = nextAction & ACTION_SIMULTANEOUS;
+            nextAction &= ACTION_MASK;
+            nextIo = CONSUMER_IO(nextAction);
+            if (nextIo == io) {
+                // we shouldn't have 2 actions on the same IO at the same time
+                break;
+            }
+            nextAction = CONSUMER_ACTION(nextAction);
+            nextType = NV->io[nextIo].type;
+            if (needsStarting(nextIo, nextAction, nextType)) {
+                setOutput(nextIo, nextAction, nextType);
+            }
+        }
+        // check if this current action has been completed
         if (completed(io, action, type)) {
             doneAction();
         }
