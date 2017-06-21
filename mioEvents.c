@@ -318,25 +318,26 @@ void processActions() {
         // check if action needs to be started
         if (needsStarting(io, action, type)) {
             setOutput(io, action, type);
-        }
-        peekItem = 1;
-        while (simultaneous) {
-            ACTION_T nextAction;
-            unsigned char nextIo;
-            unsigned char nextType;
+            // now check to see if any others need starting  
+            peekItem = 1;
+            while (simultaneous) {
+                ACTION_T nextAction;
+                unsigned char nextIo;
+                unsigned char nextType;
             
-            nextAction = peekAction(peekItem);
-            simultaneous = nextAction & ACTION_SIMULTANEOUS;
-            nextAction &= ACTION_MASK;
-            nextIo = CONSUMER_IO(nextAction);
-            if (nextIo == io) {
-                // we shouldn't have 2 actions on the same IO at the same time
-                break;
-            }
-            nextAction = CONSUMER_ACTION(nextAction);
-            nextType = NV->io[nextIo].type;
-            if (needsStarting(nextIo, nextAction, nextType)) {
-                setOutput(nextIo, nextAction, nextType);
+                nextAction = peekAction(peekItem);
+                simultaneous = nextAction & ACTION_SIMULTANEOUS;
+                nextAction &= ACTION_MASK;
+                nextIo = CONSUMER_IO(nextAction);
+                if (nextIo == io) {
+                    // we shouldn't have 2 actions on the same IO at the same time
+                    break;
+                }
+                nextAction = CONSUMER_ACTION(nextAction);
+                nextType = NV->io[nextIo].type;
+                if (needsStarting(nextIo, nextAction, nextType)) {
+                    setOutput(nextIo, nextAction, nextType);
+                }
             }
         }
         // check if this current action has been completed
