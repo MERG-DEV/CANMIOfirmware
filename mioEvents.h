@@ -91,7 +91,7 @@ extern "C" {
 #define ACTION_IO_PRODUCER_3                2
 #define ACTION_IO_PRODUCER_4                3
 #define PRODUCER_ACTIONS_PER_IO             4
-#define NUM_PRODUCER_ACTIONS                (ACTION_PRODUCER_BASE - NUM_CONSUMER_ACTIONS+ NUM_IO*PRODUCER_ACTIONS_PER_IO)
+#define NUM_PRODUCER_ACTIONS                (4 + NUM_IO*PRODUCER_ACTIONS_PER_IO)
     
 
 #define NUM_ACTIONS                         (NUM_CONSUMER_ACTIONS + NUM_PRODUCER_ACTIONS)
@@ -159,6 +159,7 @@ extern void clearEvents(unsigned char i);
 #define ConsumedActionType  BYTE;
 
 extern void processEvent(BYTE eventIndex, BYTE* message);
+extern void processActions();
 
 #ifdef	__cplusplus
 }

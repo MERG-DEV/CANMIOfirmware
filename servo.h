@@ -49,4 +49,12 @@ extern unsigned char currentPos[NUM_IO];
 extern unsigned char targetPos[NUM_IO];
 extern char speed[NUM_IO];
 
+extern void startServos();
+extern void initServos();
+extern void pollServos();
+extern void timer1DoneInterruptHandler();
+extern void timer2DoneInterruptHandler();
+extern void timer3DoneInterruptHandler();
+extern void timer4DoneInterruptHandler();
+
 #endif  //__SERVO_H__

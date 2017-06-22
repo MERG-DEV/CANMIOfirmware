@@ -105,18 +105,13 @@
 #include "can18.h"
 #include "cbus.h"
 
+
 extern BYTE BlinkLED();
 extern void initOutputs();
 extern void processOutputs();
 
 #ifdef SERVO
-extern void startServos();
-extern void initServos();
-extern void pollServos();
-extern void timer1DoneInterruptHandler();
-extern void timer2DoneInterruptHandler();
-extern void timer3DoneInterruptHandler();
-extern void timer4DoneInterruptHandler();
+#include "servo.h"
 #endif
 
 #ifdef __18CXX
