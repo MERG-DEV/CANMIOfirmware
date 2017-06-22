@@ -101,18 +101,6 @@ void defaultEvents(unsigned char io, unsigned char type) {
     }
 }
 
-
-/**
- * Reset all events back to their default based upon their current Type setting.
- */
-void defaultAllEvents(void) {
-    // add the module's default events
-    unsigned char i;
-    for (i=0; i<NUM_IO; i++) {
-        defaultEvents(i, NV->io[i].type);
-    }
-}
-
 /**
  * Clear the events for the IO. Called prior to setting the default events.
  * @param i the IO number

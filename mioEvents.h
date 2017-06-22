@@ -142,7 +142,6 @@ extern "C" {
 
 
 extern void defaultEvents(unsigned char i, unsigned char type);
-extern void defaultAllEvents(void);
 extern void clearEvents(unsigned char i);
 
 // These are chosen so we don't use too much memory 32*20 = 640 bytes.

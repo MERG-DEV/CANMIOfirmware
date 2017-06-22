@@ -354,8 +354,6 @@ void factoryResetFlash() {
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
         setType(io, TYPE_DEFAULT);
-        // Event flash - just clear all events 
-        defaultEvents(io, TYPE_DEFAULT);
     } 
     flushFlashImage();
 }
@@ -373,9 +371,6 @@ void setType(unsigned char io, unsigned char type) {
     // set to default NVs
     defaultNVs(io, type);
     // set up the default events. 
-    // Actually found we don't need to do defaultEvents - which is good because:
-    // a) it is a pain to implement
-    // b) it messes with the user's settings
     defaultEvents(io, type);
 }
 
