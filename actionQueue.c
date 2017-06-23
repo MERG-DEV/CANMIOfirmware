@@ -42,7 +42,7 @@
 #include "actionQueue.h"
 
 // Forward declarations
-ACTION_T pullAction();
+ACTION_T pullAction(void);
 
 #define BUFFER_SIZE 	32		// The size needs to be big enough to store all the pending actions 
                                 // for CANMIO 16 should be enough but need +1 to separate the ends
@@ -103,7 +103,7 @@ BOOL pushAction(ACTION_T a) {
  *
  * @return the action
  */
-ACTION_T getAction() {
+ACTION_T getAction(void) {
 	if (currentAction == NO_ACTION) {
 		currentAction = pullAction();
 	}
@@ -113,7 +113,7 @@ ACTION_T getAction() {
 /**
  * Mark as having completed the current action.
  */
-void doneAction() {
+void doneAction(void) {
 	currentAction = NO_ACTION;
 }
 
@@ -122,7 +122,7 @@ void doneAction() {
  *
  * @return the next action
  */
-ACTION_T pullAction() {
+ACTION_T pullAction(void) {
     ACTION_T ret;
 	if (writeIdx == readIdx) {
         return NO_ACTION;	// buffer empty

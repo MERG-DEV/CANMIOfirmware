@@ -104,11 +104,13 @@
 #include "romops.h"
 #include "can18.h"
 #include "cbus.h"
+#ifdef SERVO
+#include "servo.h"
+#endif
 
 
-extern BYTE BlinkLED();
-extern void initOutputs();
-extern void processOutputs();
+extern void initOutputs(void);
+extern void processOutputs(void);
 
 #ifdef SERVO
 #include "servo.h"
@@ -154,8 +156,8 @@ void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
 void setOutput(unsigned char i, unsigned char state, unsigned char type);
 void sendProducedEvent(unsigned char action, BOOL on);
-void factoryResetEE();
-void factoryResetFlash();
+void factoryResetEE(void);
+void factoryResetFlash(void);
 
 #ifdef __18CXX
 void high_irq_errata_fix(void);
@@ -325,7 +327,7 @@ void initialise(void) {
 /**
  * set EEPROM to default values
  */
-void factoryResetEE() {
+void factoryResetEE(void) {
     ee_write((WORD)EE_BOOT_FLAG, 0);
     ee_write((WORD)EE_CAN_ID, DEFAULT_CANID);
     ee_write_short((WORD)EE_NODE_ID, DEFAULT_NN); 
@@ -342,7 +344,7 @@ void factoryReset(void) {
     factoryResetFlash();
 }
 
-void factoryResetFlash() {
+void factoryResetFlash(void) {
     unsigned char io;
     factoryResetGlobalNv();
     clearAllEvents();
@@ -375,7 +377,7 @@ void setType(unsigned char io, unsigned char type) {
  * @return true if a message has been received.
  */
 BOOL checkCBUS( void ) {
-    char    msg[20];
+    BYTE    msg[20];
 
     if (cbusMsgReceived( 0, (BYTE *)msg )) {
         LED2G = BlinkLED( 1 );           // Blink LED on whilst processing messages - to give indication how busy module is
@@ -425,7 +427,12 @@ void configIO(unsigned char i) {
 
 
 void sendProducedEvent(unsigned char action, BOOL on) {
-    const Event * ev = getProducedEvent(action);
+#ifdef __18CXX
+    rom near Event * ev;
+#else
+    const Event * ev;
+#endif
+    ev = getProducedEvent(action);
     if (ev != NULL) {
         cbusSendEvent( 0, ev->NN, ev->EN, on );
     }

@@ -40,7 +40,7 @@ static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
 
 extern const BYTE * NvBytePtr;
 
-ModuleNvDefs* loadNvCache() {
+ModuleNvDefs* loadNvCache(void) {
     BYTE * np = (BYTE*)(&nvCache);
     unsigned char i;
     // do whole blocks

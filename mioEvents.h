@@ -159,7 +159,7 @@ extern void clearEvents(unsigned char i);
 #define ConsumedActionType  BYTE;
 
 extern void processEvent(BYTE eventIndex, BYTE* message);
-extern void processActions();
+extern void processActions(void);
 
 #ifdef	__cplusplus
 }

@@ -44,7 +44,9 @@
 #include "events.h"
 #include "romops.h"
 #include "FliM.h"
+#ifdef NV_CACHE
 #include "nvCache.h"
+#endif
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
@@ -168,7 +170,7 @@ const NodeVarTable nodeVarTable @AT_NV;
 ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
 #else
 #ifdef NV_CACHE
-ModuleNvDefs * NV = &(nodeVarTable.moduleNVs);
+ModuleNvDefs * NV; // = &(nodeVarTable.moduleNVs);
 #else
 volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
 #endif

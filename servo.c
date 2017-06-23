@@ -106,7 +106,7 @@ static unsigned char block;
 static unsigned char timer2Counter; // the High order byte to make T2 16bit
 static unsigned char timer4Counter; // the High order byte to make T4 16bit
 
-void initServos() {
+void initServos(void) {
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
         servoState[io] = OFF;
@@ -144,7 +144,7 @@ void initServos() {
  * Checks that the servo isn't OFF
  * @param io
  */
-void startServos() {
+void startServos(void) {
     unsigned char type;
     // increment block before calling setup so that block is left as the current block whilst the
     // timers expire
@@ -219,11 +219,11 @@ void setupTimer4(unsigned char io) {
  * disable the timer and turn the output pin off. 
  * Don't recheck IO type here as it shouldn't be necessary and we want to be as quick as possible.
  */
-void timer1DoneInterruptHandler() {
+void timer1DoneInterruptHandler(void) {
     T1CONbits.TMR1ON = 0;       // disable Timer1
     setOutputPin(block*4, FALSE);    
 }
-void timer2DoneInterruptHandler() {
+void timer2DoneInterruptHandler(void) {
     // Is the 16bit counter now at 0?
     if (timer2Counter == 0) {
         // stop counting
@@ -234,11 +234,11 @@ void timer2DoneInterruptHandler() {
         timer2Counter--;
     }
 }
-void timer3DoneInterruptHandler() {
+void timer3DoneInterruptHandler(void) {
     T3CONbits.TMR3ON = 0;       // disable Timer3t
     setOutputPin(block*4+2, FALSE);    
 }
-void timer4DoneInterruptHandler() {
+void timer4DoneInterruptHandler(void) {
     // Is the 16bit counter now at 0?
     if (timer4Counter == 0) {
         // stop counting
@@ -259,7 +259,7 @@ void timer4DoneInterruptHandler() {
  * For a signal:  40 = 0.6 seconds
  * For a level crossing gate: 5 = 5 seconds
  */
-void pollServos() {
+void pollServos(void) {
     unsigned char midway;
     BOOL beforeMidway;
     unsigned char io;

@@ -52,7 +52,7 @@
 
 // forward declarations
 void clearEvents(unsigned char i);
-void doSOD();
+void doSOD(void);
 
 extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
@@ -280,7 +280,7 @@ void doAction(unsigned char io, unsigned char action) {
  * This needs to be called on a regular basis to see if any
  * actions have finished and the next needs to be started.
  */
-void processActions() {
+void processActions(void) {
     unsigned char io;
     unsigned char type;
     ACTION_T action = getAction();
@@ -338,7 +338,7 @@ void processActions() {
 /**
  * Do the consumed SOD action. This sends events to indicate current state of the system.
  */
-void doSOD() {
+void doSOD(void) {
     unsigned char midway;
     BOOL state;
     unsigned char io;

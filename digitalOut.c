@@ -57,7 +57,7 @@ extern Config configs[NUM_IO];
  * Initialise the IO digital outputs.
  * Set up the pulse data structures.
  */
-void initOutputs() {
+void initOutputs(void) {
     // probably initialised to 0 by the compiler but make sure here
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {

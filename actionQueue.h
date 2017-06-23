@@ -38,8 +38,8 @@
 #define ACTION_T	BYTE
 
 extern BOOL pushAction(ACTION_T a);
-extern ACTION_T getAction();
-extern void doneAction();
-extern ACTION_T pullAction();
+extern ACTION_T getAction(void);
+extern void doneAction(void);
+extern ACTION_T pullAction(void);
 extern ACTION_T peekAction(unsigned char index);
 #endif
