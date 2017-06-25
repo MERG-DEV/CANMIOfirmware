@@ -427,14 +427,8 @@ void configIO(unsigned char i) {
 
 
 void sendProducedEvent(unsigned char action, BOOL on) {
-#ifdef __18CXX
-    rom near Event * ev;
-#else
-    const Event * ev;
-#endif
-    ev = getProducedEvent(action);
-    if (ev != NULL) {
-        cbusSendEvent( 0, ev->NN, ev->EN, on );
+    if (getProducedEvent(action)) {
+        cbusSendEvent( 0, producedEvent.NN, producedEvent.EN, on );
     }
 }
 

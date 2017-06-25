@@ -58,6 +58,8 @@ static BYTE delayCount[NUM_IO];
 
 // forward declarations
 BOOL readInput(unsigned char io);
+// externs
+extern void sendProducedEvent(unsigned char action, BOOL on);
 
 static unsigned char io;
 
@@ -101,19 +103,17 @@ void inputScan(BOOL report) {
                         input = !input;
                     }
                     // send the changed Produced event
-                    ev = getProducedEvent(ACTION_IO_PRODUCER_INPUT(io));
-                    if (ev != NULL) {
-                        if (input) {
-                            cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, TRUE);
-                        } else {
-                            // check if OFF events are enabled
-                            if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
-                                cbusSendEvent( (unsigned char)0, ev->NN, ev->EN, FALSE);
-                            }
+                    if (input) {
+                        sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE);
+                    } else {
+                        // check if OFF events are enabled
+                        if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), FALSE);
                         }
                     }
+                } else {
+                    delayCount[io]++;
                 }
-                delayCount[io]++;
             } else {
                 delayCount[io] = 0;
             }
