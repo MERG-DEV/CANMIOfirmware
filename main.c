@@ -380,7 +380,7 @@ BOOL checkCBUS( void ) {
     BYTE    msg[20];
 
     if (cbusMsgReceived( 0, (BYTE *)msg )) {
-        LED2G = BlinkLED( 1 );           // Blink LED on whilst processing messages - to give indication how busy module is
+//        LED2G = BlinkLED( 1 );           // Blink LED on whilst processing messages - to give indication how busy module is
         parseCBUSMsg(msg);               // Process the incoming message
         return TRUE;
     }

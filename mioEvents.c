@@ -48,7 +48,7 @@
 #include "mioEvents.h"
 #include "cbus.h"
 #include "actionQueue.h"
-#include "FliM.h"
+#include "FliM.h" 
 
 // forward declarations
 void clearEvents(unsigned char i);
@@ -140,36 +140,39 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char ca;
     ACTION_T action;
 
+    BYTE opc=msg[d0];
     // EV#0 is for produced event so start at 1
     // check the OPC if this is an ON or OFF event
-    if ((msg[d0])&EVENT_ON_MASK) {
+    if (opc&EVENT_ON_MASK) {
 	// ON events work up through the EVs
         for (e=1; e<EVperEVT ;e++) { 
             action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
-            // check this is a consumed action
-            if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
-                // check global consumed actions
-                if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
-                    pushAction(action);
-                } else {
-                    io = CONSUMER_IO(action&ACTION_MASK);
-                    ca = CONSUMER_ACTION(action&ACTION_MASK);
-                    switch (NV->io[io].type) {
-                        case TYPE_OUTPUT:
-                        case TYPE_SERVO:
-                        case TYPE_BOUNCE:
-                            if (ca == ACTION_IO_CONSUMER_1) {
-                                // action 1 (EV) must be converted to 2(ON)
-                                action++;
-                            }
-                            pushAction(action);
-                            break;
-                        case TYPE_MULTI:
-                            pushAction(action);
-                            break;
-                        default:
-                            // shouldn't happen - just ignore
-                            break;
+            if (action != NO_ACTION) {
+                // check this is a consumed action
+                if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
+                    // check global consumed actions
+                    if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
+                        pushAction(action);
+                    } else {
+                        io = CONSUMER_IO(action&ACTION_MASK);
+                        ca = CONSUMER_ACTION(action&ACTION_MASK);
+                        switch (NV->io[io].type) {
+                            case TYPE_OUTPUT:
+                            case TYPE_SERVO:
+                            case TYPE_BOUNCE:
+                                if (ca == ACTION_IO_CONSUMER_1) {
+                                    // action 1 (EV) must be converted to 2(ON)
+                                    action++;
+                                }
+                                pushAction(action);
+                                break;
+                            case TYPE_MULTI:
+                                pushAction(action);
+                                break;
+                            default:
+                                // shouldn't happen - just ignore
+                                break;
+                        }
                     }
                 }
             }
@@ -180,37 +183,39 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             ACTION_T nextAction;
             unsigned char nextSimultaneous;
             action = getEv(tableIndex, e);  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
-            // get the Simultaneous flag from the next action
-            if (e > 1) {
-                nextAction = getEv(tableIndex, e-1);
-                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
-            } else {
-                nextSimultaneous = ACTION_SIMULTANEOUS;
-            }
-            action &= ACTION_MASK;
-            if (action <= NUM_CONSUMER_ACTIONS) {
-                // check global consumed actions
-                if (action < ACTION_CONSUMER_IO_BASE) {
-                    pushAction(action|nextSimultaneous);
+            if (action != NO_ACTION) {
+                // get the Simultaneous flag from the next action
+                if (e > 1) {
+                    nextAction = getEv(tableIndex, e-1);
+                    nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
                 } else {
-                    io = CONSUMER_IO(action);
-                    ca = CONSUMER_ACTION(action);
-                    switch (NV->io[io].type) {
-                        case TYPE_OUTPUT:
-                        case TYPE_SERVO:
-                        case TYPE_BOUNCE:
-                            if (ca == ACTION_IO_CONSUMER_1) {
-                                // action 1 (EV) must be converted to 3(OFF)
-                                action += 2;
-                            }
-                            pushAction(action|nextSimultaneous);
-                            break;
-                        case TYPE_MULTI:
-                            pushAction(action|nextSimultaneous);
-                            break;
-                        default:
-                            // shouldn't happen - just ignore
-                            break;
+                    nextSimultaneous = ACTION_SIMULTANEOUS;
+                }
+                action &= ACTION_MASK;
+                if (action <= NUM_CONSUMER_ACTIONS) {
+                    // check global consumed actions
+                    if (action < ACTION_CONSUMER_IO_BASE) {
+                        pushAction(action|nextSimultaneous);
+                    } else {
+                        io = CONSUMER_IO(action);
+                        ca = CONSUMER_ACTION(action);
+                        switch (NV->io[io].type) {
+                            case TYPE_OUTPUT:
+                            case TYPE_SERVO:
+                            case TYPE_BOUNCE:
+                                if (ca == ACTION_IO_CONSUMER_1) {
+                                    // action 1 (EV) must be converted to 3(OFF)
+                                    action += 2;
+                                }
+                                pushAction(action|nextSimultaneous);
+                                break;
+                            case TYPE_MULTI:
+                                pushAction(action|nextSimultaneous);
+                                break;
+                            default:
+                                // shouldn't happen - just ignore
+                                break;
+                        }
                     }
                 }
             }
