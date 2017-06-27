@@ -37,6 +37,7 @@
 
 #define ACTION_T	BYTE
 
+extern void actionQueueInit(void);
 extern BOOL pushAction(ACTION_T a);
 extern ACTION_T getAction(void);
 extern void doneAction(void);

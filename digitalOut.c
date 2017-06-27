@@ -73,8 +73,9 @@ void initOutputs(void) {
  * @param action
  */
 void setDigitalOutput(unsigned char io, BOOL state) {
+    state = (state == 1);
     if (NV->io[io].flags & FLAG_INVERTED) {
-        state = state ? 0:1;
+        state = state?0:1;
     }
     setOutputPin(io, state);
     ee_write(EE_OP_STATE-io, state);

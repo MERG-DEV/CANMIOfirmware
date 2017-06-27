@@ -141,10 +141,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     ACTION_T action;
 
     BYTE opc=msg[d0];
-    // EV#0 is for produced event so start at 1
     // check the OPC if this is an ON or OFF event
-    if (opc&EVENT_ON_MASK) {
-	// ON events work up through the EVs
+    if ( ! (opc&EVENT_ON_MASK)) {
+        // ON events work up through the EVs
+        // EV#0 is for produced event so start at 1
         for (e=1; e<EVperEVT ;e++) { 
             action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             if (action != NO_ACTION) {
@@ -179,18 +179,19 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         }
     } else {
 	// OFF events work down through the EVs
+        ACTION_T nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
-            ACTION_T nextAction;
             unsigned char nextSimultaneous;
-            action = getEv(tableIndex, e);  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
+            action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
+            
+            // get the Simultaneous flag from the next action
+            if (e > 1) {
+                nextAction = getEv(tableIndex, e-1);
+                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+            } else {
+                nextSimultaneous = ACTION_SIMULTANEOUS;
+            }
             if (action != NO_ACTION) {
-                // get the Simultaneous flag from the next action
-                if (e > 1) {
-                    nextAction = getEv(tableIndex, e-1);
-                    nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
-                } else {
-                    nextSimultaneous = ACTION_SIMULTANEOUS;
-                }
                 action &= ACTION_MASK;
                 if (action <= NUM_CONSUMER_ACTIONS) {
                     // check global consumed actions
@@ -299,10 +300,11 @@ void processActions(void) {
         doSOD();
         return;
     }
+    simultaneous = action & ACTION_SIMULTANEOUS;
+    action &= ACTION_MASK;
     if ((action >= ACTION_CONSUMER_IO_BASE) && (action < NUM_CONSUMER_ACTIONS)) {
         // process IO based consumed actions
-        simultaneous = action & ACTION_SIMULTANEOUS;
-        action &= ACTION_MASK;
+        
         io = CONSUMER_IO(action);
         action = CONSUMER_ACTION(action);
         type = NV->io[io].type;

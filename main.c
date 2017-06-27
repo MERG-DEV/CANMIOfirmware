@@ -104,6 +104,7 @@
 #include "romops.h"
 #include "can18.h"
 #include "cbus.h"
+#include "actionQueue.h"
 #ifdef SERVO
 #include "servo.h"
 #endif
@@ -301,6 +302,7 @@ void initialise(void) {
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
     initStatusLeds();
+    actionQueueInit();
     mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
@@ -362,9 +364,11 @@ void factoryResetFlash(void) {
  */
 void setType(unsigned char io, unsigned char type) {
     WORD addr;
-    configIO(io);
     addr = AT_NV+NV_IO_TYPE(io);
     writeFlashByte((BYTE*)addr, type);
+    loadNvCache();
+
+    configIO(io);
     // set to default NVs
     defaultNVs(io, type);
     // set up the default events. 

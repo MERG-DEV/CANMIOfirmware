@@ -60,7 +60,7 @@ ACTION_T currentAction;
 /**
  * Initialise the action queue.
  */
-void actionQueueInit() {
+void actionQueueInit(void) {
 	readIdx = 0;
 	writeIdx = 0;
 	currentAction = NO_ACTION;
