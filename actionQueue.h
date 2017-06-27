@@ -35,12 +35,13 @@
 #ifndef __ACTIONQUEUE_H_
 #define __ACTIONQUEUE_H_
 
-#define ACTION_T	BYTE
+#define CONSUMER_ACTION_T	BYTE
+#define PRODUCER_ACTION_T	BYTE
 
 extern void actionQueueInit(void);
-extern BOOL pushAction(ACTION_T a);
-extern ACTION_T getAction(void);
+extern BOOL pushAction(CONSUMER_ACTION_T a);
+extern CONSUMER_ACTION_T getAction(void);
 extern void doneAction(void);
-extern ACTION_T pullAction(void);
-extern ACTION_T peekAction(unsigned char index);
+extern CONSUMER_ACTION_T pullAction(void);
+extern CONSUMER_ACTION_T peekAction(unsigned char index);
 #endif

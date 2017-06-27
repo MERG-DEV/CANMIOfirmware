@@ -113,8 +113,8 @@
 extern void initOutputs(void);
 extern void processOutputs(void);
 
-#ifdef SERVO
-#include "servo.h"
+#ifdef NV_CACHE
+#include "nvCache.h"
 #endif
 
 #ifdef __18CXX
@@ -366,8 +366,9 @@ void setType(unsigned char io, unsigned char type) {
     WORD addr;
     addr = AT_NV+NV_IO_TYPE(io);
     writeFlashByte((BYTE*)addr, type);
+#ifdef NV_CACHE
     loadNvCache();
-
+#endif
     configIO(io);
     // set to default NVs
     defaultNVs(io, type);
@@ -430,8 +431,8 @@ void configIO(unsigned char i) {
 }
 
 
-void sendProducedEvent(unsigned char action, BOOL on) {
-    if (getProducedEvent(action)) {
+void sendProducedEvent(PRODUCER_ACTION_T paction, BOOL on) {
+    if (getProducedEvent(paction)) {
         cbusSendEvent( 0, producedEvent.NN, producedEvent.EN, on );
     }
 }

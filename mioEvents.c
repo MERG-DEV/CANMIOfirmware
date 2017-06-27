@@ -138,7 +138,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
     unsigned char io;
     unsigned char ca;
-    ACTION_T action;
+    CONSUMER_ACTION_T action;
 
     BYTE opc=msg[d0];
     // check the OPC if this is an ON or OFF event
@@ -179,7 +179,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         }
     } else {
 	// OFF events work down through the EVs
-        ACTION_T nextAction = getEv(tableIndex, EVperEVT-1);
+        CONSUMER_ACTION_T nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
             action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
@@ -289,7 +289,7 @@ void doAction(unsigned char io, unsigned char action) {
 void processActions(void) {
     unsigned char io;
     unsigned char type;
-    ACTION_T action = getAction();
+    CONSUMER_ACTION_T action = getAction();
     unsigned char simultaneous;
     unsigned char peekItem;
     
@@ -316,7 +316,7 @@ void processActions(void) {
             // now check to see if any others need starting  
             peekItem = 1;
             while (simultaneous) {
-                ACTION_T nextAction;
+                CONSUMER_ACTION_T nextAction;
                 unsigned char nextIo;
                 unsigned char nextType;
             

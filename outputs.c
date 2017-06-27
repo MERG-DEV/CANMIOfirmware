@@ -70,7 +70,7 @@ extern unsigned char pulseDelays[NUM_IO];
  * @param state on/off or position
  * @param type type of output
  */
-void setOutput(unsigned char io, ACTION_T action, unsigned char type) {
+void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen
@@ -99,7 +99,7 @@ void setOutput(unsigned char io, ACTION_T action, unsigned char type) {
  * Indicates if the action needs to be started.
  * @ return true if needs starting
  */
-BOOL needsStarting(unsigned char io, ACTION_T action, unsigned char type) {
+BOOL needsStarting(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen
@@ -128,7 +128,7 @@ BOOL needsStarting(unsigned char io, ACTION_T action, unsigned char type) {
  * Indicates if the action has been completed.
  * @return true if completed
  */
-BOOL completed(unsigned char io, ACTION_T action, unsigned char type) {
+BOOL completed(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen

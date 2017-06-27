@@ -449,7 +449,7 @@ void pollServos(void) {
  * @param io
  * @param action
  */
-void setServoOutput(unsigned char io, ACTION_T action) {
+void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
@@ -471,7 +471,7 @@ void setServoOutput(unsigned char io, ACTION_T action) {
  * @param io
  * @param action
  */
-void setMultiOutput(unsigned char io, ACTION_T action) {
+void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO Position 1
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;

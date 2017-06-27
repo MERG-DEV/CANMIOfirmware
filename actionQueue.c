@@ -42,7 +42,7 @@
 #include "actionQueue.h"
 
 // Forward declarations
-ACTION_T pullAction(void);
+CONSUMER_ACTION_T pullAction(void);
 
 #define BUFFER_SIZE 	32		// The size needs to be big enough to store all the pending actions 
                                 // for CANMIO 16 should be enough but need +1 to separate the ends
@@ -51,11 +51,11 @@ ACTION_T pullAction(void);
 #define POINTER_MASK 	(BUFFER_SIZE-1)
 
 
-ACTION_T buffer[BUFFER_SIZE];   // the actual cyclic buffer space
+CONSUMER_ACTION_T buffer[BUFFER_SIZE];   // the actual cyclic buffer space
 
 BYTE readIdx;                   // index of the next to read
 BYTE writeIdx;                  // index of the next to write
-ACTION_T currentAction;
+CONSUMER_ACTION_T currentAction;
 
 /**
  * Initialise the action queue.
@@ -71,7 +71,7 @@ void actionQueueInit(void) {
  *
  * @param a the action to be processed
  */
-BOOL pushAction(ACTION_T a) {
+BOOL pushAction(CONSUMER_ACTION_T a) {
 	// do we already have an instruction for the IO ?
 	BYTE io = CONSUMER_IO(a);
 	// check it this IO was already in the buffer
@@ -103,7 +103,7 @@ BOOL pushAction(ACTION_T a) {
  *
  * @return the action
  */
-ACTION_T getAction(void) {
+CONSUMER_ACTION_T getAction(void) {
 	if (currentAction == NO_ACTION) {
 		currentAction = pullAction();
 	}
@@ -122,8 +122,8 @@ void doneAction(void) {
  *
  * @return the next action
  */
-ACTION_T pullAction(void) {
-    ACTION_T ret;
+CONSUMER_ACTION_T pullAction(void) {
+    CONSUMER_ACTION_T ret;
 	if (writeIdx == readIdx) {
         return NO_ACTION;	// buffer empty
     }
@@ -137,7 +137,7 @@ ACTION_T pullAction(void) {
  * @param index the item index within the queue
  * @return the Action or NO_ACTION 
  */
-ACTION_T peekAction(unsigned char index) {
+CONSUMER_ACTION_T peekAction(unsigned char index) {
     if (currentAction == NO_ACTION) return NO_ACTION;
     if (index == 0) return currentAction;
     return buffer[readIdx + index -1];
