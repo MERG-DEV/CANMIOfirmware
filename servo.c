@@ -451,7 +451,7 @@ void pollServos(void) {
  */
 void setServoOutput(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_1:  // SERVO OFF
+        case ACTION_IO_CONSUMER_3:  // SERVO OFF
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
             speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
             eventFlags[io] = EVENT_FLAG_OFF & EVENT_FLAG_MID;

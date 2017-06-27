@@ -73,6 +73,9 @@ void initOutputs(void) {
  * @param action
  */
 void setDigitalOutput(unsigned char io, BOOL state) {
+    // State 1 is ON
+    // State 2 is OFF
+    // State 3 is Flash TODO
     state = (state == 1);
     if (NV->io[io].flags & FLAG_INVERTED) {
         state = state?0:1;
