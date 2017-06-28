@@ -209,6 +209,9 @@ void factoryResetGlobalNv() {
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);
+#ifdef NV_CACHE
+    loadNvCache();
+#endif
 }
 
 /**
@@ -250,4 +253,7 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)200);
             break;
     }
+#ifdef NV_CACHE
+    loadNvCache();
+#endif
 }
