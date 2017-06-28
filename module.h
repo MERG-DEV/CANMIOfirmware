@@ -65,6 +65,11 @@ extern "C" {
 
     // Whether NVs are cached in RAM
 #define NV_CACHE
+    
+#define ACTION_QUEUE_SIZE 	64	// The size needs to be big enough to store all the pending actions 
+                                // Need to allow +1 to separate the ends of the cyclic buffer so need to 
+                                // move the next power of two since cyclic wrapping is done with a bitmask.
+                                // 64 is safer as we have wait actions
 /************************* END OF OPTIONS ************************/
 
     // Whether the module uses high or low priority for CAN interrupts

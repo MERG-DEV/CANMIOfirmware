@@ -204,7 +204,7 @@ void actUponNVchange(unsigned char index, unsigned char value) {
 /**
  * Set NVs back to factory defaults.
  */
-void factoryResetGlobalNv() {
+void factoryResetGlobalNv(void) {
     writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);

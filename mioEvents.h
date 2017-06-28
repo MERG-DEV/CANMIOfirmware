@@ -72,7 +72,7 @@ extern "C" {
     // Global consumed actions first
 #define ACTION_CONSUMER_SOD                 1
         // Now Consumed actions per io
-#define ACTION_CONSUMER_IO_BASE             4
+#define ACTION_CONSUMER_IO_BASE             8
 #define ACTION_IO_CONSUMER_1                0
 #define ACTION_IO_CONSUMER_2                1
 #define ACTION_IO_CONSUMER_3                2
@@ -81,20 +81,18 @@ extern "C" {
 #define NUM_CONSUMER_ACTIONS                (ACTION_CONSUMER_IO_BASE + NUM_IO * CONSUMER_ACTIONS_PER_IO)      
     
 /* PRODUCED actions */    
-#define ACTION_PRODUCER_BASE                NUM_CONSUMER_ACTIONS
+#define ACTION_PRODUCER_BASE                0
     // Global produced actions next
-#define ACTION_PRODUCER_SOD                 ACTION_PRODUCER_BASE
+#define ACTION_PRODUCER_SOD                 1
     // produced actions per io
-#define ACTION_PRODUCER_IO_BASE             ACTION_PRODUCER_BASE+4
+#define ACTION_PRODUCER_IO_BASE             8
 #define ACTION_IO_PRODUCER_1                0
 #define ACTION_IO_PRODUCER_2                1
 #define ACTION_IO_PRODUCER_3                2
 #define ACTION_IO_PRODUCER_4                3
 #define PRODUCER_ACTIONS_PER_IO             4
-#define NUM_PRODUCER_ACTIONS                (4 + NUM_IO*PRODUCER_ACTIONS_PER_IO)
+#define NUM_PRODUCER_ACTIONS                (ACTION_PRODUCER_IO_BASE + NUM_IO * PRODUCER_ACTIONS_PER_IO)
     
-
-#define NUM_ACTIONS                         (NUM_CONSUMER_ACTIONS + NUM_PRODUCER_ACTIONS)
 
 #define ACTION_IO_PRODUCER_BASE(i)          (ACTION_PRODUCER_IO_BASE + PRODUCER_ACTIONS_PER_IO*(i))
 #define ACTION_IO_CONSUMER_BASE(i)          (ACTION_CONSUMER_IO_BASE + CONSUMER_ACTIONS_PER_IO*(i))
@@ -140,7 +138,7 @@ extern "C" {
 #define CONSUMER_ACTION(a)                  (((a)-ACTION_CONSUMER_IO_BASE)%CONSUMER_ACTIONS_PER_IO)
 #define CONSUMER_IO(a)                      (((a)-ACTION_CONSUMER_IO_BASE)/CONSUMER_ACTIONS_PER_IO)
 
-
+extern void factoryResetGlobalEvents(void);
 extern void defaultEvents(unsigned char i, unsigned char type);
 extern void clearEvents(unsigned char i);
 

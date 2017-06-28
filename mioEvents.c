@@ -65,6 +65,13 @@ extern BYTE inputState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 
 /**
+ * Set Global Events back to factory defaults.
+ */
+void factoryResetGlobalEvents(void) {
+    // we don't create a default SOD event
+}
+
+/**
  * Reset events for the IO back to default. Called when the Type of the IO
  * is changed.
  * @param io the IO number

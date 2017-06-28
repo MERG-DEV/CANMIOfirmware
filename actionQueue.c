@@ -44,14 +44,10 @@
 // Forward declarations
 CONSUMER_ACTION_T pullAction(void);
 
-#define BUFFER_SIZE 	32		// The size needs to be big enough to store all the pending actions 
-                                // for CANMIO 16 should be enough but need +1 to separate the ends
-                                // of the cyclic buffer so need to move the next power of two since
-                                // cyclic wrapping is done with a bitmask.
-#define POINTER_MASK 	(BUFFER_SIZE-1)
+#define POINTER_MASK 	(ACTION_QUEUE_SIZE-1)
 
 
-CONSUMER_ACTION_T buffer[BUFFER_SIZE];   // the actual cyclic buffer space
+CONSUMER_ACTION_T buffer[ACTION_QUEUE_SIZE];   // the actual cyclic buffer space
 
 BYTE readIdx;                   // index of the next to read
 BYTE writeIdx;                  // index of the next to write
@@ -85,7 +81,7 @@ BOOL pushAction(CONSUMER_ACTION_T a) {
 				buffer[j] = buffer[(j+1)&POINTER_MASK];
 			}
 			if (writeIdx == 0) {
-				writeIdx = BUFFER_SIZE-1;
+				writeIdx = ACTION_QUEUE_SIZE-1;
 			} else {
 				writeIdx--;
 			}

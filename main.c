@@ -353,6 +353,7 @@ void factoryReset(void) {
 void factoryResetFlash(void) {
     unsigned char io;
     factoryResetGlobalNv();
+    factoryResetGlobalEvents();
     clearAllEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
