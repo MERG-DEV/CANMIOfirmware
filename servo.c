@@ -174,18 +174,19 @@ void startServos(void) {
  * @param io
  */
 void setupTimer1(unsigned char io) {
+    WORD ticks = 0xFFFF-(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
 #ifdef __XC8
     TMR1 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #else
-    TMR1L = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
-    TMR1H = 0xFF;
+    TMR1H = ticks >> 8;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+    TMR1L = ticks & 0xFF;
 #endif
     // turn on output
     setOutputPin(io, TRUE);
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
 void setupTimer2(unsigned char io) {
-    WORD ticks = POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io];
+    WORD ticks = POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io];
     TMR2 = 0;                   // start counting at 0
     PR2 = ticks & 0xFF;       // set the duration
     timer2Counter = ticks >> 8;
@@ -194,18 +195,19 @@ void setupTimer2(unsigned char io) {
     T2CONbits.TMR2ON =1;        // enable Timer2
 }
 void setupTimer3(unsigned char io) {
+    WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
 #ifdef __XC8
     TMR3 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #else
-    TMR3L = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
-    TMR3H = 0xFF;
+    TMR3H = ticks >> 8;
+    TMR3L = ticks & 0xFF;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #endif
     // turn on output
     setOutputPin(io, TRUE);
     T3CONbits.TMR3ON = 1;       // enable Timer3
 }
 void setupTimer4(unsigned char io) {
-    WORD ticks = POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io];
+    WORD ticks = POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io];
     TMR4 = 0;                   // start counting at 0
     PR4 = ticks & 0xff;       // set the duration
     timer4Counter = ticks >> 8;
@@ -263,7 +265,7 @@ void pollServos(void) {
     unsigned char midway;
     BOOL beforeMidway;
     unsigned char io;
-    for (io; io<NUM_IO; io++) {
+    for (io=0; io<NUM_IO; io++) {
         switch (NV->io[io].type) {
             case TYPE_SERVO:
                 midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 

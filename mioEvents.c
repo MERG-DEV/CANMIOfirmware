@@ -316,8 +316,7 @@ void processActions(void) {
         action = CONSUMER_ACTION(action);
         type = NV->io[io].type;
 
-        // TODO handle simultaneous - will need to know which direction to look
-        // check if action needs to be started
+        // check if a simultaneous action needs to be started
         if (needsStarting(io, action, type)) {
             setOutput(io, action, type);
             // now check to see if any others need starting  
@@ -328,6 +327,7 @@ void processActions(void) {
                 unsigned char nextType;
             
                 nextAction = peekAction(peekItem);
+                if (nextAction == NO_ACTION) break;
                 simultaneous = nextAction & ACTION_SIMULTANEOUS;
                 nextAction &= ACTION_MASK;
                 nextIo = CONSUMER_IO(nextAction);

@@ -300,14 +300,13 @@ void initialise(void) {
         writeFlashByte((BYTE *)&(NV->nv_version), FLASH_VERSION);
     }
     initTicker(0);  // set low priority
-    // set up io pins based upon type
     // Enable PORT B weak pullups
     INTCON2bits.RBPU = 0;
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
-    initStatusLeds();
     actionQueueInit();
     mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
+    // set up io pins based upon type
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
         configIO(io);
