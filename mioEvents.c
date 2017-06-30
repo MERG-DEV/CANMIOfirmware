@@ -340,6 +340,7 @@ void processActions(void) {
                 if (needsStarting(nextIo, nextAction, nextType)) {
                     setOutput(nextIo, nextAction, nextType);
                 }
+                peekItem++;
             }
         }
         // check if this current action has been completed

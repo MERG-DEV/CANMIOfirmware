@@ -135,6 +135,7 @@ CONSUMER_ACTION_T pullAction(void) {
  */
 CONSUMER_ACTION_T peekAction(unsigned char index) {
     if (currentAction == NO_ACTION) return NO_ACTION;
+    if (index > ACTION_QUEUE_SIZE) return NO_ACTION;
     if (index == 0) return currentAction;
     return buffer[readIdx + index -1];
 }
