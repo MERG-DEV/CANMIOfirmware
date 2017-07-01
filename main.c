@@ -160,7 +160,7 @@ void factoryReset(void);
 void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
 void setOutput(unsigned char i, unsigned char state, unsigned char type);
-void sendProducedEvent(unsigned char action, BOOL on);
+BOOL sendProducedEvent(unsigned char action, BOOL on);
 void factoryResetEE(void);
 void factoryResetFlash(void);
 
@@ -435,10 +435,11 @@ void configIO(unsigned char i) {
 }
 
 
-void sendProducedEvent(PRODUCER_ACTION_T paction, BOOL on) {
+BOOL sendProducedEvent(PRODUCER_ACTION_T paction, BOOL on) {
     if (getProducedEvent(paction)) {
-        cbusSendEvent( 0, producedEvent.NN, producedEvent.EN, on );
+        return cbusSendEvent( 0, producedEvent.NN, producedEvent.EN, on );
     }
+    return TRUE;
 }
 
 #ifdef __18CXX

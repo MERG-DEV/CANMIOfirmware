@@ -57,7 +57,7 @@ void doSOD(void);
 extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
-extern void sendProducedEvent(unsigned char action, BOOL on);
+extern BOOL sendProducedEvent(unsigned char action, BOOL on);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
@@ -363,30 +363,30 @@ void doSOD(void) {
     for (io=0; io < NUM_IO; io++) {
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io]);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io])) ;
                 break;
             case TYPE_OUTPUT:
                 state = ee_read(EE_OP_STATE-io);
-                sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state));
                 break;
             case TYPE_SERVO:
-                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
-                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos));
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos));
                 // send the last mid
                 midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
                          (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
-                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway));
                 break;
             case TYPE_BOUNCE:
                 state = ee_read(EE_OP_STATE-io);
-                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state));
                 break;
             case TYPE_MULTI:
-                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
-                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
-                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1));
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2));
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3));
                 if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                    sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
+                    while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4));
                 }
                 break;
         }
