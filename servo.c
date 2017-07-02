@@ -192,7 +192,7 @@ void setupTimer2(unsigned char io) {
     timer2Counter = ticks >> 8;
     // turn on output
     setOutputPin(io, TRUE);
-    T2CONbits.TMR2ON =1;        // enable Timer2
+    T2CON = (BYTE)0x05;        // enable Timer2 with 1:4 prescale
 }
 void setupTimer3(unsigned char io) {
     WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
@@ -213,7 +213,7 @@ void setupTimer4(unsigned char io) {
     timer4Counter = ticks >> 8;
     // turn on output
     setOutputPin(io, TRUE);
-    T4CONbits.TMR4ON =1;        // enable Timer4
+    T4CON = (BYTE)0x05;        // enable Timer4 with 1:4 prescale
 }
 
 /**
@@ -233,11 +233,12 @@ void timer2DoneInterruptHandler(void) {
         setOutputPin(block*4+1, FALSE);  
     } else {
         // keep counting
+        PR2 = 0xFF;
         timer2Counter--;
     }
 }
 void timer3DoneInterruptHandler(void) {
-    T3CONbits.TMR3ON = 0;       // disable Timer3t
+    T3CONbits.TMR3ON = 0;       // disable Timer3
     setOutputPin(block*4+2, FALSE);    
 }
 void timer4DoneInterruptHandler(void) {
@@ -248,6 +249,7 @@ void timer4DoneInterruptHandler(void) {
         setOutputPin(block*4+3, FALSE);
     } else {
         // keep counting
+        PR4 = 0xFF;
         timer4Counter--;
     }
 }
@@ -344,6 +346,7 @@ void pollServos(void) {
             case TYPE_BOUNCE:
                 switch (servoState[io]) {
                     case STARTING:
+                        initBounce(io);
                         servoState[io] = MOVING;
                         loopCount[io] = 0;
                         // fall through
@@ -355,10 +358,11 @@ void pollServos(void) {
                             break;
                         }
                         // Implement the bounce algorithm here
-                        if (targetPos[io] == NV->io[io].nv_io.nv_bounce.bounce_end_pos) {
+                        if (targetPos[io] == NV->io[io].nv_io.nv_bounce.bounce_upper_pos) {
                             if (bounceUp(io)) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
+                                currentPos[io] = targetPos[io];
                                 sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), TRUE);
                                 ee_write(EE_OP_STATE-io, currentPos[io]);
                             }
@@ -366,6 +370,7 @@ void pollServos(void) {
                             if (bounceDown(io)) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
+                                currentPos[io] = targetPos[io];
                                 sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), FALSE);
                                 ee_write(EE_OP_STATE-io, currentPos[io]);
                             }
@@ -466,6 +471,31 @@ void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
         case ACTION_IO_CONSUMER_2:  // SERVO ON
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
             speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
+//            eventFlags[io] = (EVENT_FLAG_ON | EVENT_FLAG_MID);
+            servoState[io] = STARTING;
+            break;
+    }
+}
+
+/**
+ * Set a servo moving to the required state. 
+ * Called for SERVO and BOUNCE types.
+ * Handles inverted outputs and generates Produced events.
+ * 
+ * @param io
+ * @param action
+ */
+void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
+    switch (action) {
+        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+            targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+            speed[io] = 0;
+//            eventFlags[io] = (EVENT_FLAG_OFF | EVENT_FLAG_MID);
+            servoState[io] = STARTING;
+            break;
+        case ACTION_IO_CONSUMER_2:  // SERVO ON
+            targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
+            speed[io] = PULL_SPEED;
 //            eventFlags[io] = (EVENT_FLAG_ON | EVENT_FLAG_MID);
             servoState[io] = STARTING;
             break;

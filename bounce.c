@@ -71,22 +71,16 @@ BounceState bounceState[NUM_IO];
 
 
 /**
- * A constant force pulling the signal down.
+ * G is a constant force pulling the signal down.
+ * BOUNCE_COEFF is the amount of velocity preserved after a bounce. Units are percent.
  */
-#define G	3	
-/**
- * The amount of velocity preserved after a bounce. Units are percent.
- */
-#define BOUNCE_COEFF 50
+
 /**
  * Used to determine when the signal position is 'good enough' to stop. If this is too small 
  * the due to integer arithmetic rounding errors this can cause the bouncing to repeat for ever.
  */
 #define BOUNDS 3
-/**
- * Indicates how fast the virtual signal operator pulls the signal on.
- */
-#define PULL_SPEED 12
+
 
 void initBounce(unsigned char io) {
     bounceState[io] = STATE_FIRST_PULL;
@@ -105,14 +99,14 @@ BOOL bounceDown(unsigned char io) {
     // check if we still need to move the signal
     if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
         // acceleration due to gravity
-        speed[io] += G;
+        speed[io] += NV->io[io].nv_io.nv_bounce.bounce_g;
         // move position
         currentPos[io] -= speed[io];
         // check for bounce at bottom of signal movement
         if (currentPos[io] < targetPos[io]) {
             currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
             speed[io] = -speed[io];
-            speed[io] = ((int)speed[io] * BOUNCE_COEFF)/100;	// be careful that this doesn't overflow - use int internally
+            speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
         }
         return FALSE;    // still moving
     }         
@@ -133,7 +127,7 @@ BOOL bounceUp(unsigned char io) {
     switch(bounceState[io]) {
     case STATE_FIRST_PULL:
         // first just move to the targetPos[io]
-        currentPos[io] -= speed[io];
+        currentPos[io] += speed[io];
         if (currentPos[io]>=targetPos[io]-BOUNDS) {
             bounceState[io] = STATE_BOUNCE;
         }
@@ -141,14 +135,14 @@ BOOL bounceUp(unsigned char io) {
     case STATE_BOUNCE:
         if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
             // acceleration due to pull using G but really this is wrong maybe a function of PULL_SPEED would be better
-            speed[io] -= G;
+            speed[io] -= NV->io[io].nv_io.nv_bounce.bounce_g;
             // move position
             currentPos[io] -= speed[io];
             // check for bounce
             if (currentPos[io] > targetPos[io]) {
                 currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
                 speed[io] = -speed[io];
-                speed[io] = ((int)speed[io] * BOUNCE_COEFF)/100;	// be careful that this doesn't overflow - use int internally
+                speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
             }
             return FALSE;
         }

@@ -89,7 +89,8 @@ void defaultEvents(unsigned char io, unsigned char type) {
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io));
-            // fall through
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));

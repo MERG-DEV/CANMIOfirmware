@@ -88,10 +88,10 @@ extern "C" {
 #define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// position moved every 100ms
 #define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 5)	// position moved every 100ms
 
-#define NV_IO_BOUNCE_START_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_BOUNCE_END_POS(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_BOUNCE_SE_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 4)	// Starting speed in one direction
-#define NV_IO_BOUNCE_ES_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// Starting speed in other direction
+#define NV_IO_BOUNCE_UPPER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)
+#define NV_IO_BOUNCE_LOWER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 3)
+#define NV_IO_BOUNCE_G(i)               (NV_IO_START + NVS_PER_IO*(i) + 4)	// Starting speed in one direction
+#define NV_IO_BOUNCE_COEFF(i)           (NV_IO_START + NVS_PER_IO*(i) + 5)	// Starting speed in other direction
 #define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + 6)
 
 #define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 2)
@@ -134,10 +134,10 @@ typedef struct {
             unsigned char servo_es_speed;
         } nv_servo;
         struct {
-            unsigned char bounce_start_pos;
-            unsigned char bounce_end_pos;
-            unsigned char bounce_se_speed;
-            unsigned char bounce_es_speed;
+            unsigned char bounce_upper_pos;
+            unsigned char bounce_lower_pos;
+            unsigned char bounce_g;
+            unsigned char bounce_coeff;
             unsigned char bounce_profile;
         } nv_bounce;
         struct {

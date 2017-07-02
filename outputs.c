@@ -80,7 +80,8 @@ void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
             return;
 #ifdef BOUNCE
         case TYPE_BOUNCE:
-               // fall through
+            setBounceOutput(io, action);
+            return;
 #endif
 #ifdef SERVO
         case TYPE_SERVO:

@@ -239,10 +239,10 @@ void defaultNVs(unsigned char i, unsigned char type) {
             break;
         case TYPE_BOUNCE:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_START_POS(i)), (BYTE)0);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_END_POS(i)), (BYTE)90);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_SE_SPEED(i)), (BYTE)5);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_ES_SPEED(i)), (BYTE)5);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)200);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)30);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_G(i)), (BYTE)3);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)50);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
             break;
         case TYPE_MULTI:
