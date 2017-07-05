@@ -64,6 +64,8 @@ extern BOOL completed(unsigned char io, unsigned char action, unsigned char type
 extern BYTE inputState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 
+static TickValue startWait;
+
 /**
  * Set Global Events back to factory defaults.
  */
@@ -306,6 +308,23 @@ void processActions(void) {
     if (action == ACTION_CONSUMER_SOD) {
         // Do the SOD
         doSOD();
+        doneAction();
+        return;
+    }
+    if (action == ACTION_CONSUMER_WAIT05) {
+        doWait(500);
+        return;
+    }
+    if (action == ACTION_CONSUMER_WAIT1) {
+        doWait(1000);
+        return;
+    }
+    if (action == ACTION_CONSUMER_WAIT2) {
+        doWait(2000);
+        return;
+    }
+    if (action == ACTION_CONSUMER_WAIT5) {
+        doWait(5000);
         return;
     }
     simultaneous = action & ACTION_SIMULTANEOUS;
@@ -348,9 +367,27 @@ void processActions(void) {
         if (completed(io, action, type)) {
             doneAction();
         }
+    } else {
+        // shouldn't get here as this is an unknown action
+        // In case we do get here make sure we do the action to prevent endless loop
+        doneAction();
     }
 }
 
+void doWait(unsigned int duration) {
+    // start the timer
+    if (startWait.Val == 0) {
+        startWait.Val = tickGet();
+        return;
+    } else {
+        // check if timer expired
+        if ((tickTimeSince(startWait) > (duration * HUNDRED_MILI_SECOND))) {
+            doneAction();
+            startWait.Val = 0;
+            return;
+        } 
+    }
+}
 /**
  * Do the consumed SOD action. This sends events to indicate current state of the system.
  */

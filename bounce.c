@@ -98,16 +98,28 @@ void initBounce(unsigned char io) {
 BOOL bounceDown(unsigned char io) {
     // check if we still need to move the signal
     if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
+        BOOL reversed = (NV->io[io].nv_io.nv_bounce.bounce_lower_pos > NV->io[io].nv_io.nv_bounce.bounce_upper_pos);
         // acceleration due to gravity
         speed[io] += NV->io[io].nv_io.nv_bounce.bounce_g;
         // move position
-        currentPos[io] -= speed[io];
-        // check for bounce at bottom of signal movement
-        if (currentPos[io] < targetPos[io]) {
-            currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
-            speed[io] = -speed[io];
-            speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+        if (reversed) {
+            currentPos[io] += speed[io];
+            // check for bounce at bottom of signal movement
+            if (currentPos[io] > targetPos[io]) {
+                currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
+                speed[io] = -speed[io];
+                speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+            }
+        } else {
+            currentPos[io] -= speed[io];
+            // check for bounce at bottom of signal movement
+            if (currentPos[io] < targetPos[io]) {
+                currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
+                speed[io] = -speed[io];
+                speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+            }
         }
+        
         return FALSE;    // still moving
     }         
     return TRUE;    // finished moving
@@ -124,12 +136,20 @@ BOOL bounceDown(unsigned char io) {
  */
 
 BOOL bounceUp(unsigned char io) {
+    BOOL reversed = (NV->io[io].nv_io.nv_bounce.bounce_lower_pos > NV->io[io].nv_io.nv_bounce.bounce_upper_pos);
     switch(bounceState[io]) {
     case STATE_FIRST_PULL:
         // first just move to the targetPos[io]
-        currentPos[io] += speed[io];
-        if (currentPos[io]>=targetPos[io]-BOUNDS) {
-            bounceState[io] = STATE_BOUNCE;
+        if (reversed) {
+            currentPos[io] -= speed[io];
+            if (currentPos[io]<=targetPos[io]-BOUNDS) {
+                bounceState[io] = STATE_BOUNCE;
+            }
+        } else {
+            currentPos[io] += speed[io];
+            if (currentPos[io]>=targetPos[io]-BOUNDS) {
+                bounceState[io] = STATE_BOUNCE;
+            }
         }
         break;
     case STATE_BOUNCE:
@@ -137,12 +157,22 @@ BOOL bounceUp(unsigned char io) {
             // acceleration due to pull using G but really this is wrong maybe a function of PULL_SPEED would be better
             speed[io] -= NV->io[io].nv_io.nv_bounce.bounce_g;
             // move position
-            currentPos[io] -= speed[io];
-            // check for bounce
-            if (currentPos[io] > targetPos[io]) {
-                currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
-                speed[io] = -speed[io];
-                speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+            if (reversed) {
+                currentPos[io] += speed[io];
+                // check for bounce
+                if (currentPos[io] < targetPos[io]) {
+                    currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
+                    speed[io] = -speed[io];
+                    speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+                }
+            } else {
+                currentPos[io] -= speed[io];
+                // check for bounce
+                if (currentPos[io] > targetPos[io]) {
+                    currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
+                    speed[io] = -speed[io];
+                    speed[io] = ((int)speed[io] * NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;	// be careful that this doesn't overflow - use int internally
+                }
             }
             return FALSE;
         }

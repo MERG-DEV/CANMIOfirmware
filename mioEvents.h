@@ -71,6 +71,11 @@ extern "C" {
     
     // Global consumed actions first
 #define ACTION_CONSUMER_SOD                 1
+#define ACTION_CONSUMER_WAIT05              2
+#define ACTION_CONSUMER_WAIT1               3
+#define ACTION_CONSUMER_WAIT2               4
+#define ACTION_CONSUMER_WAIT5               5
+
         // Now Consumed actions per io
 #define ACTION_CONSUMER_IO_BASE             8
 #define ACTION_IO_CONSUMER_1                0
