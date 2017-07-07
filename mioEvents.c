@@ -53,6 +53,7 @@
 // forward declarations
 void clearEvents(unsigned char i);
 void doSOD(void);
+void doWait(unsigned int duration);
 
 extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
