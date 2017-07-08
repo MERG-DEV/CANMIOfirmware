@@ -284,12 +284,12 @@ void initialise(void) {
     ANCON1 = 0;
     
     // check if EEPROM is valid
-   if (ee_read((WORD)EE_RESET) != EEPROM_VERSION) {
+   if (ee_read((WORD)EE_VERSION) != EEPROM_VERSION) {
         // may need to upgrade of data in the future
         // set EEPROM to default values
         factoryResetEE();
         // set the reset flag to indicate it has been initialised
-        ee_write((WORD)EE_RESET, EEPROM_VERSION);
+        ee_write((WORD)EE_VERSION, EEPROM_VERSION);
     }
     // check if FLASH is valid
    if (NV->nv_version != FLASH_VERSION) {
