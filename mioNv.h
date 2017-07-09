@@ -74,34 +74,54 @@ extern "C" {
 #define NVS_PER_IO                      7
     
 // NVs per IO
-#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i))		// TYPE and FLAGS always at the start
-#define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + 1)
+#define NV_IO_TYPE_OFFSET               0
+#define NV_IO_FLAGS_OFFSET              1
+#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i) + NV_IO_TYPE_OFFSET)		// TYPE and FLAGS always at the start
+#define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + NV_IO_FLAGS_OFFSET)
 
 // Other NVs depend upon type
-#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 5ms
-#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 3)	// units of 5ms
+#define NV_IO_INPUT_ON_DELAY_OFFSET     2
+#define NV_IO_INPUT_OFF_DELAY_OFFSET    3
+#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_INPUT_ON_DELAY_OFFSET)	// units of 5ms
+#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + NV_IO_INPUT_OFF_DELAY_OFFSET)	// units of 5ms
 
-#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 0.1 seconds
+#define NV_IO_OUTPUT_PULSE_DURATION_OFFSET 2
+#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + NV_IO_OUTPUT_PULSE_DURATION_OFFSET)	// units of 0.1 seconds
 
-#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// position moved every 100ms
-#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 5)	// position moved every 100ms
+#define NV_IO_SERVO_START_POS_OFFSET    2
+#define NV_IO_SERVO_END_POS_OFFSET      3
+#define NV_IO_SERVO_SE_SPEED_OFFSET     4
+#define NV_IO_SERVO_ES_SPEED_OFFSET     5
+#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_START_POS_OFFSET)
+#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_END_POS_OFFSET)
+#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_SE_SPEED_OFFSET)	// position moved every 100ms
+#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_ES_SPEED_OFFSET)	// position moved every 100ms
 
-#define NV_IO_BOUNCE_UPPER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_BOUNCE_LOWER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_BOUNCE_G(i)               (NV_IO_START + NVS_PER_IO*(i) + 4)	// Starting speed in one direction
-#define NV_IO_BOUNCE_COEFF(i)           (NV_IO_START + NVS_PER_IO*(i) + 5)	// Starting speed in other direction
-#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + 6)
+#define NV_IO_BOUNCE_UPPER_POS_OFFSET   2
+#define NV_IO_BOUNCE_LOWER_POS_OFFSET   3
+#define NV_IO_BOUNCE_G_OFFSET           4
+#define NV_IO_BOUNCE_COEFF_OFFSET       5
+#define NV_IO_BOUNCE_PROFILE_OFFSET     6
+#define NV_IO_BOUNCE_UPPER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_UPPER_POS_OFFSET)
+#define NV_IO_BOUNCE_LOWER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_LOWER_POS_OFFSET)
+#define NV_IO_BOUNCE_G(i)               (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_G_OFFSET)	// Starting speed in one direction
+#define NV_IO_BOUNCE_COEFF(i)           (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_COEFF_OFFSET)	// Starting speed in other direction
+#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PROFILE_OFFSET)
 
-#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + 4)
-#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + 5)
-#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + 6)
+#define NV_IO_MULTI_NUM_POS_OFFSET      2
+#define NV_IO_MULTI_POS1_OFFSET         3
+#define NV_IO_MULTI_POS2_OFFSET         4
+#define NV_IO_MULTI_POS3_OFFSET         5
+#define NV_IO_MULTI_POS4_OFFSET         6
+#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_NUM_POS_OFFSET)
+#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS1_OFFSET)
+#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS2_OFFSET)
+#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS3_OFFSET)
+#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS4_OFFSET)
 
 #define IS_NV_TYPE(i)                   (((i-NV_IO_START) % NVS_PER_IO) == 0)
 #define IO_NV(i)                        ((i-NV_IO_START)/NVS_PER_IO)
+#define NV_NV(i)                        ((i-NV_IO_START) % NVS_PER_IO)
   
 // the types
 #define TYPE_INPUT                  0

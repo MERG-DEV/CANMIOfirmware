@@ -47,6 +47,7 @@
 #ifdef NV_CACHE
 #include "nvCache.h"
 #endif
+#include "servo.h"
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
@@ -195,9 +196,40 @@ BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value
 } 
 
 void actUponNVchange(unsigned char index, unsigned char value) {
+    // If the IO type is changed then we need to do a bit or work
     if (IS_NV_TYPE(index)) {
-        // TODO more settings to be done
         setType(IO_NV(index), value);
+    }
+    // if a servo position is changed then move servo to that position
+    if (index >= NV_IO_START) {
+        unsigned char io = IO_NV(index);
+        unsigned char nv = NV_NV(index);
+        switch(NV_IO_TYPE(io)) {
+            case TYPE_SERVO:
+                if (index == NV_IO_SERVO_START_POS(io)) {
+                    setServoOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_SERVO_END_POS(io)) {
+                    setServoOutput(io, ACTION_IO_CONSUMER_2);
+                }
+                break;
+            case TYPE_BOUNCE:
+                if (index == NV_IO_BOUNCE_LOWER_POS(io)) {
+                    setBounceOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_BOUNCE_UPPER_POS(io)) {
+                    setBounceOutput(io, ACTION_IO_CONSUMER_2);
+                }
+                break;
+            case TYPE_MULTI:
+                if (index == NV_IO_MULTI_POS1(io)) {
+                    setMultiOutput(io, ACTION_IO_CONSUMER_1);
+                } else if (index == NV_IO_MULTI_POS2(io)) {
+                    setMultiOutput(io, ACTION_IO_CONSUMER_2);
+                } else if (index == NV_IO_MULTI_POS3(io)) {
+                    setMultiOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_MULTI_POS4(io)) {
+                    setMultiOutput(io, ACTION_IO_CONSUMER_4);
+                }
+        }
     }
 }
 

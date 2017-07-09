@@ -454,7 +454,7 @@ void pollServos(void) {
 
 /**
  * Set a servo moving to the required state. 
- * Called for SERVO and BOUNCE types.
+ * Called for SERVO types.
  * Handles inverted outputs and generates Produced events.
  * 
  * @param io
@@ -479,7 +479,7 @@ void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
 
 /**
  * Set a servo moving to the required state. 
- * Called for SERVO and BOUNCE types.
+ * Called for BOUNCE types.
  * Handles inverted outputs and generates Produced events.
  * 
  * @param io

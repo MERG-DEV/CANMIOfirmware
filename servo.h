@@ -36,6 +36,7 @@
  */
 #include "devincs.h"
 #include "canmio.h"
+#include "actionQueue.h"
 
 typedef enum {
     OFF,            // not generating any pulses
@@ -56,5 +57,9 @@ extern void timer1DoneInterruptHandler(void);
 extern void timer2DoneInterruptHandler(void);
 extern void timer3DoneInterruptHandler(void);
 extern void timer4DoneInterruptHandler(void);
+
+extern void setServoOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
 
 #endif  //__SERVO_H__
