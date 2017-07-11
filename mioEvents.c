@@ -82,7 +82,8 @@ void factoryResetGlobalEvents(void) {
 void defaultEvents(unsigned char io, unsigned char type) {
     WORD nn = ee_read_short((WORD)EE_NODE_ID);
     WORD en = io+1;
-    clearEvents(io);
+    clearEvents(io); 
+#ifdef TEST_DEFAULT_EVENTS
     // add the module's default events for this io
     switch(type) {
         case TYPE_OUTPUT:
@@ -110,6 +111,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
             // no defaults for multi
             break;
     }
+#endif
 }
 
 /**

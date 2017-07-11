@@ -264,15 +264,25 @@ void defaultNVs(unsigned char i, unsigned char type) {
             break;
         case TYPE_SERVO:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
+#ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)200);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)128);
+#endif
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
             break;
         case TYPE_BOUNCE:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
+#ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)200);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)30);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)127);
+#endif
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_G(i)), (BYTE)3);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)50);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
@@ -280,9 +290,15 @@ void defaultNVs(unsigned char i, unsigned char type) {
         case TYPE_MULTI:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
+#ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)110);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)200);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)128);
+#endif
             break;
     }
 #ifdef NV_CACHE

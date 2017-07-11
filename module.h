@@ -51,25 +51,31 @@ extern "C" {
 // BOOTLOADER
 //#define BOOTLOADER_PRESENT
 
-    // We'll be using event hash tables for fast access - at the expense of some RAM
+// We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
 
-    // enable servos
+// Whether to enable servos
 #define SERVO
 
-    // Don't enable MULTI for now
+// Whether to enabe MULTI
 #define MULTI
 
-    // Don't enable BOUNCE for now
+// Whether to enable BOUNCE
 #define BOUNCE
 
-    // Whether NVs are cached in RAM
+// Whether NVs are cached in RAM
 #define NV_CACHE
     
 #define ACTION_QUEUE_SIZE 	64	// The size needs to be big enough to store all the pending actions 
                                 // Need to allow +1 to separate the ends of the cyclic buffer so need to 
                                 // move the next power of two since cyclic wrapping is done with a bitmask.
                                 // 64 is safer as we have wait actions
+    
+// Whether we have default settings useful for testing
+#define TEST_DEFAULT_EVENTS
+#define TEST_DEFAULT_NVS
+    
+    
 /************************* END OF OPTIONS ************************/
 
     // Whether the module uses high or low priority for CAN interrupts
