@@ -435,12 +435,6 @@ void configIO(unsigned char i) {
 }
 
 
-BOOL sendProducedEvent(PRODUCER_ACTION_T paction, BOOL on) {
-    if (getProducedEvent(paction)) {
-        return cbusSendEvent( 0, producedEvent.NN, producedEvent.EN, on );
-    }
-    return TRUE;
-}
 
 #ifdef __18CXX
 // C intialisation - declare a copy here so the library version is not used as it may link down in bootloader area
