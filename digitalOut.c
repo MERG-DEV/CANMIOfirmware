@@ -48,6 +48,7 @@
 
 // Forward declarations
 unsigned char pulseDelays[NUM_IO];
+char flashDelays[NUM_IO];
 void setOutputPin(unsigned char io, BOOL state);
 
 // Externs
@@ -62,6 +63,7 @@ void initOutputs(void) {
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
        pulseDelays[io] = 0;
+       flashDelays[io] = 0;
     }
 }
 
@@ -75,24 +77,45 @@ void initOutputs(void) {
 void setDigitalOutput(unsigned char io, BOOL state) {
     // State 1 is ON
     // State 2 is OFF
-    // State 3 is Flash TODO
-    state = (state == 1);
-    if (NV->io[io].flags & FLAG_INVERTED) {
-        state = state?0:1;
-    }
-    setOutputPin(io, state);
-    ee_write(EE_OP_STATE-io, state);
-    sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
-    // Was this a ON and we have a pulse duration defined?
-    if (state && NV->io[io].nv_io.nv_output.output_pulse_duration) {
-        pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
+    // State 3 is Flash
+    if (state == 3) {
+        flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+        setOutputPin(io, TRUE);
+    } else {
+        state = (state == 1);
+        if (NV->io[io].flags & FLAG_INVERTED) {
+            state = state?0:1;
+        }
+        setOutputPin(io, state);
+        ee_write(EE_OP_STATE-io, state);
+        sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
+        // Was this a ON and we have a pulse duration defined?
+        if (state && NV->io[io].nv_io.nv_output.output_pulse_duration) {
+            pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
+        }
     }
 }
 
+/**
+ * Called regularly to handle pulse and flash.
+ */
 void processOutputs() {
     unsigned char state;
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
+        if (flashDelays[io] == 1) {
+            setOutputPin(io, FALSE);
+            flashDelays[io] = - NV->io[io].nv_io.nv_output.output_flash_period;
+        }
+        if (flashDelays[io] == -1) {
+            setOutputPin(io, TRUE);
+            flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+        }
+        if (flashDelays[io] > 1) {
+            flashDelays[io]--;
+        } else if (flashDelays[io] < -1) {
+            flashDelays[io]++;
+        }
         if (pulseDelays[io] == 1) {
             // time to go off
             state = ee_read(EE_OP_STATE-io);

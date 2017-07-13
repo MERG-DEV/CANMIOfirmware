@@ -86,7 +86,9 @@ extern "C" {
 #define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + NV_IO_INPUT_OFF_DELAY_OFFSET)	// units of 5ms
 
 #define NV_IO_OUTPUT_PULSE_DURATION_OFFSET 2
+#define NV_IO_OUTPUT_FLASH_PERIOD_OFFSET 3
 #define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + NV_IO_OUTPUT_PULSE_DURATION_OFFSET)	// units of 0.1 seconds
+#define NV_IO_OUTPUT_FLASH_PERIOD(i)    (NV_IO_START + NVS_PER_IO*(i) + NV_IO_OUTPUT_FLASH_PERIOD_OFFSET)	// units of 0.1 seconds
 
 #define NV_IO_SERVO_START_POS_OFFSET    2
 #define NV_IO_SERVO_END_POS_OFFSET      3
@@ -146,6 +148,7 @@ typedef struct {
         } nv_input;
         struct {
             unsigned char output_pulse_duration;
+            unsigned char output_flash_period;
         } nv_output;
         struct {
             unsigned char servo_start_pos;

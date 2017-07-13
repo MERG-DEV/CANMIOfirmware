@@ -42,11 +42,12 @@
  * Created on 10 April 2017, 10:26
  */
 /** TODOs
+ * Flash OUTPUT type
  * Bootloader and handling of OPC_BOOT
  * bounce profiles  
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
- * Check handling of NERD is correct and produces correct ENRSP events.c
+ * Fix saved events when doing SNN
  * Check handling of REVAL events.c
  * Check handling of REQEV events.c
  * More validation of NV values
@@ -57,15 +58,18 @@
  * Implement CANID
  * Implement AREQ
  * Implement ASRQ
- * Consider the implementation of Flashing output
  * Consider option to set outputs on or off on powerup in addition to restore previous state
- * Consider a delay action for sequences
+ * needsStarting in Pulse OUTPUT
  * Heartbeat message
- * Extend ActionQueue size
- * Determine how to send lots of CBUS messages without filling TX buffers
+ * Fix INVERTED for all types
+ * Change order of Pin Configs
  * Randomise bounce
  * 
  * DONES:
+ * DONE  Extend ActionQueue size
+ * DONE  Determine how to send lots of CBUS messages without filling TX buffers
+ * DONE  Consider a delay action for sequences
+ * DONE  Check handling of NERD is correct and produces correct ENRSP events.c
  * DONE  change the START_SOD_EVENT for a learned action/event
  * DONE  consumed event processing
  * DONE  validate NV changes
@@ -445,8 +449,8 @@ void __init(void)
 
 // Interrupt service routines
 #if defined(__18CXX)
-    #pragma interruptlow ISRLow
-    void ISRLow(void) {
+#pragma interruptlow ISRLow
+void ISRLow(void) {
 #elif defined(__dsPIC30F__) || defined(__dsPIC33F__) || defined(__PIC24F__) || defined(__PIC24FK__) || defined(__PIC24H__)
     void _ISRFAST __attribute__((interrupt, auto_psv)) _INT1Interrupt(void)
 #elif defined(__PIC32MX__)
@@ -461,8 +465,8 @@ void __init(void)
 // Interrupt service routines
 
 #if defined(__18CXX)
-    #pragma interruptlow ISRHigh
-    void ISRHigh(void) {
+#pragma interruptlow ISRHigh
+void ISRHigh(void) {
 #elif defined(__dsPIC30F__) || defined(__dsPIC33F__) || defined(__PIC24F__) || defined(__PIC24FK__) || defined(__PIC24H__)
     void _ISRFAST __attribute__((interrupt, auto_psv)) _INT1Interrupt(void)
 #elif defined(__PIC32MX__)
@@ -471,7 +475,7 @@ void __init(void)
     void interrupt high_priority high_isr (void) {
 #endif
 
-#ifdef SERVO
+#if defined(SERVO) || defined(BOUNCE) || defined (MULTI)
  /* service the servo pulse width timers */
     if (PIR1bits.TMR1IF) {
         timer1DoneInterruptHandler();
