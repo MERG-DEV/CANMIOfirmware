@@ -395,6 +395,18 @@ void pollServos(void) {
                     case STARTING:
                         servoState[io] = MOVING;
                         loopCount[io] = 0;
+                        if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), FALSE);
+                        }
+                        if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), FALSE);
+                        }
+                        if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), FALSE);
+                        }
+                        if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), FALSE);
+                        }
                         // fall through
                     case MOVING:
                         loopCount[io]++;
@@ -418,16 +430,16 @@ void pollServos(void) {
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
                             // MULTI only sends ON events. Work out which event
-                            if (targetPos[io] == targetPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
+                            if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), TRUE);
                             }
-                            if (targetPos[io] == targetPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
+                            if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), TRUE);
                             }
-                            if (targetPos[io] == targetPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
+                            if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), TRUE);
                             }
-                            if (targetPos[io] == targetPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
+                            if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), TRUE);
                             }
                             ee_write(EE_OP_STATE-io, currentPos[io]);
