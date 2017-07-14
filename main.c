@@ -44,7 +44,6 @@
 /** TODOs
  * Flash OUTPUT type
  * Bootloader and handling of OPC_BOOT
- * bounce profiles  
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
  * Fix saved events when doing SNN

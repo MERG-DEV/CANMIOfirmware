@@ -75,14 +75,14 @@ void initOutputs(void) {
  * @param action
  */
 void setDigitalOutput(unsigned char io, BOOL state) {
-    // State 1 is ON
-    // State 2 is OFF
-    // State 3 is Flash
-    if (state == 3) {
+    // State ACTION_IO_CONSUMER_2 is ON
+    // State ACTION_IO_CONSUMER_3 is OFF
+    // State ACTION_IO_CONSUMER_4 is Flash
+    if (state == ACTION_IO_CONSUMER_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         setOutputPin(io, TRUE);
     } else {
-        state = (state == 1);
+        state = (state == ACTION_IO_CONSUMER_2);
         if (NV->io[io].flags & FLAG_INVERTED) {
             state = state?0:1;
         }

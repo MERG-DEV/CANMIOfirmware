@@ -261,6 +261,7 @@ void defaultNVs(unsigned char i, unsigned char type) {
         case TYPE_OUTPUT:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_FLASH_PERIOD(i)), (BYTE)0);
             break;
         case TYPE_SERVO:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
