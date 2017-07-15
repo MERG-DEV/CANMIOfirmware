@@ -42,11 +42,10 @@
  * Created on 10 April 2017, 10:26
  */
 /** TODOs
- * Flash OUTPUT type
+ * needsStarting in Pulse OUTPUT
  * Bootloader and handling of OPC_BOOT
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
- * Fix saved events when doing SNN
  * Check handling of REVAL events.c
  * Check handling of REQEV events.c
  * More validation of NV values
@@ -55,16 +54,16 @@
  * Implement ENUM
  * Implement NENRD
  * Implement CANID
- * Implement AREQ
- * Implement ASRQ
  * Consider option to set outputs on or off on powerup in addition to restore previous state
- * needsStarting in Pulse OUTPUT
  * Heartbeat message
  * Fix INVERTED for all types
- * Change order of Pin Configs
  * Randomise bounce
  * 
  * DONES:
+ * DONE  Change order of Pin Configs 0-7 done. 8-15 need checking
+ * DONE  Implement AREQ but doesn't handle default events
+ * DONE  Fix saved events when doing SNN - not needed
+ * DONE  Flash OUTPUT type
  * DONE  Extend ActionQueue size
  * DONE  Determine how to send lots of CBUS messages without filling TX buffers
  * DONE  Consider a delay action for sequences
@@ -134,14 +133,15 @@ void ISRHigh(void);
 
 // PIN configs
 Config configs[NUM_IO] = {
-    {18, 'C', 7},   //0
-    {17, 'C', 6},   //1
-    {16, 'C', 5},   //2
-    {15, 'C', 4},   //3
-    {14, 'C', 3},   //4
-    {13, 'C', 2},   //5
-    {12, 'C', 1},   //6
-    {11, 'C', 0},   //7
+    // TODO check ordering of 8-15
+    {11, 'C', 0},   //0
+    {12, 'C', 1},   //1
+    {13, 'C', 2},   //2
+    {14, 'C', 3},   //3
+    {15, 'C', 4},   //4
+    {16, 'C', 5},   //5
+    {17, 'C', 6},   //6
+    {18, 'C', 7},   //7
     {21, 'B', 0},   //8
     {22, 'B', 1},   //9
     {25, 'B', 4},   //10
