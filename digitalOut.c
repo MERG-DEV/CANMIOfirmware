@@ -105,7 +105,8 @@ void processOutputs() {
     for (io=0; io<NUM_IO; io++) {
         if (flashDelays[io] == 1) {
             setOutputPin(io, FALSE);
-            flashDelays[io] = - NV->io[io].nv_io.nv_output.output_flash_period;
+            flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+            flashDelays[io] = - flashDelays[io];
         }
         if (flashDelays[io] == -1) {
             setOutputPin(io, TRUE);
