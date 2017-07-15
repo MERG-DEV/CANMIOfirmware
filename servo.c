@@ -110,7 +110,7 @@ void initServos(void) {
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
         servoState[io] = OFF;
-        currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE-io);   // restore last known positions
+        currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         speed[io] = 0;
     }
     block = 3;
@@ -326,7 +326,7 @@ void pollServos(void) {
                             } else {
                                 sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
                             }
-                            ee_write(EE_OP_STATE-io, currentPos[io]);
+                            ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
                         break;
                     case STOPPED:
@@ -364,7 +364,7 @@ void pollServos(void) {
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
                                 sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), TRUE);
-                                ee_write(EE_OP_STATE-io, currentPos[io]);
+                                ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         } else {
                             if (bounceDown(io)) {
@@ -372,7 +372,7 @@ void pollServos(void) {
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
                                 sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), FALSE);
-                                ee_write(EE_OP_STATE-io, currentPos[io]);
+                                ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         }
                         break;
@@ -442,7 +442,7 @@ void pollServos(void) {
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), TRUE);
                             }
-                            ee_write(EE_OP_STATE-io, currentPos[io]);
+                            ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
                         break;
                     case STOPPED:

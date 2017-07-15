@@ -255,7 +255,7 @@ void doAction(unsigned char io, unsigned char action) {
                             sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io]);
                             break;
                         case TYPE_OUTPUT:
-                            state = ee_read(EE_OP_STATE-io);
+                            state = ee_read(EE_OP_STATE+io);
                             sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
                             break;
                         case TYPE_SERVO:
@@ -267,7 +267,7 @@ void doAction(unsigned char io, unsigned char action) {
                             sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway);
                             break;
                         case TYPE_BOUNCE:
-                            state = ee_read(EE_OP_STATE-io);
+                            state = ee_read(EE_OP_STATE+io);
                             sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state);
                             break;
                         case TYPE_MULTI:
@@ -407,7 +407,7 @@ void doSOD(void) {
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io])) ;
                 break;
             case TYPE_OUTPUT:
-                state = ee_read(EE_OP_STATE-io);
+                state = ee_read(EE_OP_STATE+io);
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state));
                 break;
             case TYPE_SERVO:
@@ -419,7 +419,7 @@ void doSOD(void) {
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway));
                 break;
             case TYPE_BOUNCE:
-                state = ee_read(EE_OP_STATE-io);
+                state = ee_read(EE_OP_STATE+io);
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state));
                 break;
             case TYPE_MULTI:

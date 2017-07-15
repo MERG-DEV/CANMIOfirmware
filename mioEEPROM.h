@@ -51,13 +51,12 @@ extern "C" {
      * is defined here. I.e. module specific storage.
      * Module specific stuff starts at EE_TOP-8
      */
-#define EE_DUMMY            EE_TOP-8    // Dummy entry to do initial write to
+#define EE_DUMMY            EE_APPLICATION    // Dummy entry to do initial write to
     /**
      * Record the current output state for all the IO.
      */
-#define EE_OP_STATE         EE_TOP-9    // Space to store current state of up to 16 outputs
-                                        // You'll probably want to do ee_read(EE_OP_STATE - io)
-                                        // Note the - and not + as the space goes down from EE_TOP
+#define EE_OP_STATE         ((WORD)(EE_APPLICATION)-17)    // Space to store current state of up to 16 outputs
+                                                 // You'll need to do ee_read(EE_OP_STATE + io)
     
 
 #ifdef	__cplusplus
