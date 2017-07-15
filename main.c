@@ -42,7 +42,6 @@
  * Created on 10 April 2017, 10:26
  */
 /** TODOs
- * needsStarting in Pulse OUTPUT
  * Bootloader and handling of OPC_BOOT
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
@@ -60,6 +59,7 @@
  * Randomise bounce
  * 
  * DONES:
+ * DONE  needsStarting in Pulse OUTPUT
  * DONE  Change order of Pin Configs 0-7 done. 8-15 need checking
  * DONE  Implement AREQ but doesn't handle default events
  * DONE  Fix saved events when doing SNN - not needed

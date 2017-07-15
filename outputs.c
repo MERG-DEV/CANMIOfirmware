@@ -106,10 +106,10 @@ BOOL needsStarting(unsigned char io, CONSUMER_ACTION_T action, unsigned char typ
             // this should never happen
             return FALSE;
         case TYPE_OUTPUT:
-            // TODO needs fixing as if doing a pulse we don't need a restart
-//            if (action == ACTION_IO_CONSUMER_OUTPUT(io)) {
-                
-//            }
+            // Normal outputs will complete immediately.
+            // Flashing outputs will complete immediately
+            // pulsed output will complete after pulse has finished
+            // but we need to start them all
             return TRUE;
 #ifdef SERVO
         case TYPE_SERVO:
