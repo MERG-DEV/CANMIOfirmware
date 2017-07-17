@@ -178,9 +178,7 @@ volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVar
 #endif
 
 void mioNvInit() {
-#ifdef NV_CACHE
-    NV = loadNvCache(); // replace pointer with the cache
-#endif
+
 }
 
 /**

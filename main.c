@@ -234,7 +234,11 @@ void main(void) {
 int main(void) @0x800 {
 #endif
     initRomOps();
-    // Both LEDs on to start with
+#ifdef NV_CACHE
+    // If we are using the cache make sure we get the NVs early in initialisation
+    NV = loadNvCache(); // replace pointer with the cache
+#endif
+    // Both LEDs off to start with during initialisation
     initStatusLeds();
     // The very first ee_write seems to not work so I put a dummy write here
     ee_write((WORD)EE_DUMMY, 0xff);
