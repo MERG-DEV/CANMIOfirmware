@@ -304,7 +304,7 @@ void initialise(void) {
         // set Flash to default values
         factoryResetFlash();
         // set the version number to indicate it has been initialised
-        writeFlashByte((BYTE *)&(NV->nv_version), FLASH_VERSION);
+        writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
     }
     initTicker(0);  // set low priority
     // Enable PORT B weak pullups

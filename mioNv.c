@@ -195,13 +195,17 @@ BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value
 
 void actUponNVchange(unsigned char index, unsigned char value) {
     // If the IO type is changed then we need to do a bit or work
+    unsigned char io;
+    unsigned char nv;
     if (IS_NV_TYPE(index)) {
-        setType(IO_NV(index), value);
+        io = index-NV_IO_START;
+        io /= NVS_PER_IO;
+        setType(io, value);
     }
     // if a servo position is changed then move servo to that position
     if (index >= NV_IO_START) {
-        unsigned char io = IO_NV(index);
-        unsigned char nv = NV_NV(index);
+        io = IO_NV(index);
+        nv = NV_NV(index);
         switch(NV_IO_TYPE(io)) {
             case TYPE_SERVO:
                 if (index == NV_IO_SERVO_START_POS(io)) {
@@ -235,7 +239,6 @@ void actUponNVchange(unsigned char index, unsigned char value) {
  * Set NVs back to factory defaults.
  */
 void factoryResetGlobalNv(void) {
-    writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);

@@ -122,8 +122,8 @@ extern "C" {
 #define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS4_OFFSET)
 
 #define IS_NV_TYPE(i)                   (((i-NV_IO_START) % NVS_PER_IO) == 0)
-#define IO_NV(i)                        ((i-NV_IO_START)/NVS_PER_IO)
-#define NV_NV(i)                        ((i-NV_IO_START) % NVS_PER_IO)
+#define IO_NV(i)                        ((unsigned char)((i-NV_IO_START)/NVS_PER_IO))
+#define NV_NV(i)                        ((unsigned char)((i-NV_IO_START) % NVS_PER_IO))
   
 // the types
 #define TYPE_INPUT                  0

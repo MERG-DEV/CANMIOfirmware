@@ -91,6 +91,12 @@ extern "C" {
  * EVENTS
  */
 #include "mioEvents.h"
+    
+/*
+ * FLASH bounds
+ */
+#define MIN_WRITEABLE_FLASH     (AT_EVENTS&0xFFC0)
+#define MAX_WRITEABLE_FLASH     0x7FFF
 
 #include "canmio.h"
 
