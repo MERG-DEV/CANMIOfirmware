@@ -48,8 +48,6 @@
  * Check handling of REVAL events.c
  * Check handling of REQEV events.c
  * More validation of NV values
- * Implement NNRST
- * Implement NNRSM
  * Implement ENUM
  * Implement NENRD
  * Implement CANID
@@ -59,6 +57,8 @@
  * Randomise bounce
  * 
  * DONES:
+ * DONE  Implement NNRST
+ * DONE  Implement NNRSM
  * DONE  needsStarting in Pulse OUTPUT
  * DONE  Change order of Pin Configs 0-7 done. 8-15 need checking
  * DONE  Implement AREQ but doesn't handle default events
@@ -397,8 +397,19 @@ BOOL checkCBUS( void ) {
 
     if (cbusMsgReceived( 0, (BYTE *)msg )) {
 //        LED2G = BlinkLED( 1 );           // Blink LED on whilst processing messages - to give indication how busy module is
-        parseCBUSMsg(msg);               // Process the incoming message
-        return TRUE;
+        if (parseCBUSMsg(msg)) {               // Process the incoming message
+            return TRUE;
+        }
+        // handle the CANMIO specifics
+        switch (msg[d0]) {
+        case OPC_NNRSM: // reset to manufacturer defaults
+            factoryReset();
+            return TRUE;
+        case OPC_NNRST: // restart
+            // if we just call main then the stack won't be reset and we'd also want variables to be nullified
+            // instead call the RESET vector (0x0000)
+            Reset();
+        }
     }
     return FALSE;
 }
