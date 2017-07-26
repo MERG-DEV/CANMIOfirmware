@@ -55,6 +55,8 @@
  * Heartbeat message
  * Fix INVERTED for all types
  * Randomise bounce
+ * RFID input
+ * Analogue inputs for magnetic and current sense detectors
  * 
  * DONES:
  * DONE  Implement NNRST
