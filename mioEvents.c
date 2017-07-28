@@ -92,20 +92,20 @@ void defaultEvents(unsigned char io, unsigned char type) {
              * We create both a Produced and a Consumed event here.
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io));
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
             break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io));
+            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io));
-            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io));
-            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io));
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io));
+            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
         case TYPE_MULTI:
             // no defaults for multi
