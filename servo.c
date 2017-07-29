@@ -393,8 +393,6 @@ void pollServos(void) {
             case TYPE_MULTI:
                 switch (servoState[io]) {
                     case STARTING:
-                        servoState[io] = MOVING;
-                        loopCount[io] = 0;
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
                             sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), FALSE);
                         }
@@ -407,6 +405,8 @@ void pollServos(void) {
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
                             sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), FALSE);
                         }
+                        servoState[io] = MOVING;
+                        loopCount[io] = 0;
                         // fall through
                     case MOVING:
                         loopCount[io]++;
@@ -525,20 +525,20 @@ void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;
             speed[io] = NV->servo_speed;
 //            eventFlags[io] = EVENT_FLAG_POS1;
-            servoState[io] = MOVING;
+            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO Position 2
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos2;
             speed[io] = NV->servo_speed;
 //            eventFlags[io] = EVENT_FLAG_POS2;
-            servoState[io] = MOVING;
+            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_3:  // SERVO Position 3
             if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 3) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos3;
                 speed[io] = NV->servo_speed;
 //                eventFlags[io] = EVENT_FLAG_POS3;
-                servoState[io] = MOVING;
+                servoState[io] = STARTING;
             }
             break;
         case ACTION_IO_CONSUMER_4:  // SERVO Position 4
@@ -546,7 +546,7 @@ void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos4;
                 speed[io] = NV->servo_speed;
 //                eventFlags[io] = EVENT_FLAG_POS4;
-                servoState[io] = MOVING;
+                servoState[io] = STARTING;
             }
             break;
     }
