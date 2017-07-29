@@ -151,7 +151,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
     unsigned char io;
     unsigned char ca;
-    CONSUMER_ACTION_T action;
+    int action;
 
     BYTE opc=msg[d0];
     // check the OPC if this is an ON or OFF event
@@ -160,140 +160,91 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         // EV#0 is for produced event so start at 1
         for (e=1; e<EVperEVT ;e++) { 
             action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
-            if (action != NO_ACTION) {
-                // check this is a consumed action
-                if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
-                    // check global consumed actions
-                    if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
-                        pushAction(action);
-                    } else {
-                        io = CONSUMER_IO(action&ACTION_MASK);
-                        ca = CONSUMER_ACTION(action&ACTION_MASK);
-                        switch (NV->io[io].type) {
-                            case TYPE_OUTPUT:
-                            case TYPE_SERVO:
-                            case TYPE_BOUNCE:
-                                if (ca == ACTION_IO_CONSUMER_1) {
-                                    // action 1 (EV) must be converted to 2(ON)
-                                    action++;
-                                }
-                                pushAction(action);
-                                break;
-                            case TYPE_MULTI:
-                                pushAction(action);
-                                break;
-                            default:
-                                // shouldn't happen - just ignore
-                                break;
+            if (action >= 0) {
+                if (action != NO_ACTION) {
+                    // check this is a consumed action
+                    if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
+                        // check global consumed actions
+                        if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
+                            pushAction((CONSUMER_ACTION_T)action);
+                        } else {
+                            io = CONSUMER_IO(action&ACTION_MASK);
+                            ca = CONSUMER_ACTION(action&ACTION_MASK);
+                            switch (NV->io[io].type) {
+                                case TYPE_OUTPUT:
+                                case TYPE_SERVO:
+                                case TYPE_BOUNCE:
+                                    if (ca == ACTION_IO_CONSUMER_1) {
+                                        // action 1 (EV) must be converted to 2(ON)
+                                        action++;
+                                    }
+                                    pushAction((CONSUMER_ACTION_T)action);
+                                    break;
+                                case TYPE_MULTI:
+                                    pushAction((CONSUMER_ACTION_T)action);
+                                    break;
+                                default:
+                                    // shouldn't happen - just ignore
+                                    break;
+                            }
                         }
                     }
                 }
+            } else {
+                // error getting ev
+                return;
             }
         }
     } else {
 	// OFF events work down through the EVs
-        CONSUMER_ACTION_T nextAction = getEv(tableIndex, EVperEVT-1);
+        int nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
             action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
             
-            // get the Simultaneous flag from the next action
-            if (e > 1) {
-                nextAction = getEv(tableIndex, e-1);
-                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
-            } else {
+            if (action >= 0) {
+                // get the Simultaneous flag from the next action
                 nextSimultaneous = ACTION_SIMULTANEOUS;
-            }
-            if (action != NO_ACTION) {
-                action &= ACTION_MASK;
-                if (action <= NUM_CONSUMER_ACTIONS) {
-                    // check global consumed actions
-                    if (action < ACTION_CONSUMER_IO_BASE) {
+                if (e > 1) {
+                    nextAction = getEv(tableIndex, e-1);
+                    if (nextAction >= 0) {
+                        nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+                    }
+                }
+                if (action != NO_ACTION) {
+                    action &= ACTION_MASK;
+                    if (action <= NUM_CONSUMER_ACTIONS) {
+                        // check global consumed actions
+                        if (action < ACTION_CONSUMER_IO_BASE) {
                         pushAction(action|nextSimultaneous);
-                    } else {
-                        io = CONSUMER_IO(action);
-                        ca = CONSUMER_ACTION(action);
-                        switch (NV->io[io].type) {
-                            case TYPE_OUTPUT:
-                            case TYPE_SERVO:
-                            case TYPE_BOUNCE:
-                                if (ca == ACTION_IO_CONSUMER_1) {
-                                    // action 1 (EV) must be converted to 3(OFF)
-                                    action += 2;
-                                }
-                                pushAction(action|nextSimultaneous);
-                                break;
-                            case TYPE_MULTI:
-                                pushAction(action|nextSimultaneous);
-                                break;
-                            default:
-                                // shouldn't happen - just ignore
-                                break;
+                        } else {
+                            io = CONSUMER_IO(action);
+                            ca = CONSUMER_ACTION(action);
+                            switch (NV->io[io].type) {
+                                case TYPE_OUTPUT:
+                                case TYPE_SERVO:
+                                case TYPE_BOUNCE:
+                                    if (ca == ACTION_IO_CONSUMER_1) {
+                                        // action 1 (EV) must be converted to 3(OFF)
+                                        action += 2;
+                                    }
+                                    pushAction(action|nextSimultaneous);
+                                    break;
+                                case TYPE_MULTI:
+                                    pushAction(action|nextSimultaneous);
+                                    break;
+                                default:
+                                    // shouldn't happen - just ignore
+                                    break;
+                            }
                         }
                     }
                 }
-            }
+            } // ignore getEv errors as we expect CMDERR_NO_EV
         }
     }
 }
 
-/*
-void doAction(unsigned char io, unsigned char action) {
-    unsigned char midway;
-    BOOL state;
-    
-    if (action < ACTION_CONSUMER_IO_BASE) {
-        // this is a global action - not one based on an IO
-        switch (action) {
-            case ACTION_CONSUMER_SOD:
-                // Do the SOD
-                // Agreed with Pete that SOD is only applicable to EV#2 but I actually allow it at any EV#
-                inputScan(TRUE);
-                for (io=0; io < NUM_IO; io++) {
-                    switch(NV->io[io].type) {
-                        case TYPE_INPUT:
-                            sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io]);
-                            break;
-                        case TYPE_OUTPUT:
-                            state = ee_read(EE_OP_STATE+io);
-                            sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
-                            break;
-                        case TYPE_SERVO:
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
-                            // send the last mid
-                            midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
-                                    (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway);
-                            break;
-                        case TYPE_BOUNCE:
-                            state = ee_read(EE_OP_STATE+io);
-                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state);
-                            break;
-                        case TYPE_MULTI:
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
-                            if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
-                            }
-                            break;
-                    }
-                }
-                break;
-        }
-    } else {
-        // this is an IO based action 
-        // check the flags to see if this is sequential
-        if (NV->io[io].flags & FLAG_SEQUENTIAL) {
-            // add to the action queue 
-            pushAction(action);
-        } else {
-            // do it now
-            setOutput(io, CONSUMER_ACTION(action), NV->io[io].type);
-        } 
-    }
-}*/
 
 /**
  * This needs to be called on a regular basis to see if any
