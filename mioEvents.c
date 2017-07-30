@@ -202,15 +202,16 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             unsigned char nextSimultaneous;
             action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
             
-            if (action >= 0) {
-                // get the Simultaneous flag from the next action
-                nextSimultaneous = ACTION_SIMULTANEOUS;
-                if (e > 1) {
-                    nextAction = getEv(tableIndex, e-1);
-                    if (nextAction >= 0) {
-                        nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
-                    }
+
+            // get the Simultaneous flag from the next action
+            nextSimultaneous = ACTION_SIMULTANEOUS;
+            if (e > 1) {
+                nextAction = getEv(tableIndex, e-1);
+                if (nextAction >= 0) {
+                    nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
                 }
+            }
+            if (action >= 0) {
                 if (action != NO_ACTION) {
                     action &= ACTION_MASK;
                     if (action <= NUM_CONSUMER_ACTIONS) {

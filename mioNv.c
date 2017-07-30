@@ -48,6 +48,7 @@
 #include "nvCache.h"
 #endif
 #include "servo.h"
+#include "config.h"
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
@@ -187,8 +188,32 @@ void mioNvInit() {
  */
 BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value) {
     // TODO more validations
+    unsigned char io;
     if (IS_NV_TYPE(index)) {
-        if (value > TYPE_MULTI) return FALSE;
+        switch (value) {
+#ifdef ANALOGUE
+            case TYPE_ANALOGUE_IN:
+                io = IO_NV(index);
+                if (configs[io].an == 0xFF) return FALSE;
+                break;
+#ifdef MULTI
+            case TYPE_MULTI:
+                break;
+#ifdef BOUNCE
+            case TYPE_BOUNCE:
+                break;
+#ifdef SERVO
+            case TYPE_SERVO:
+                break;
+#endif
+#endif
+#endif
+            case TYPE_OUTPUT:
+            case TYPE_INPUT:
+                break;
+            default:
+                return FALSE;
+        }
     }
     return TRUE;
 } 

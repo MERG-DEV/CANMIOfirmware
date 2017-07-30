@@ -45,7 +45,6 @@
  * Bootloader and handling of OPC_BOOT
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
- * Check handling of REVAL events.c
  * Check handling of REQEV events.c
  * More validation of NV values
  * Implement ENUM
@@ -59,6 +58,7 @@
  * Analogue inputs for magnetic and current sense detectors
  * 
  * DONES:
+ * DONE  Check handling of REVAL events.c
  * DONE  Implement NNRST
  * DONE  Implement NNRSM
  * DONE  needsStarting in Pulse OUTPUT
@@ -91,6 +91,16 @@
  * DONE  NV change callback for type change
  * DONE  add needsStarting and completed for OUTPUT types so can be processed sequentially
  * DONE  sequence servos servo.c
+ * 
+ * 
+ * FCU changes needed
+ * The number of event slots used + number of free slots != total number of events
+ * Support for CMDERR(NO_EV) when doing REVAL
+ * Setting of one NV (type) can effect other NVs. Should read back all NVs after setting one
+ * Variable number of EVs per event up to the maximum
+ * Event action sequences
+ * A module can consume its own events
+ * A NN can be upto 65535
  */
 
 /**
@@ -135,23 +145,24 @@ void ISRHigh(void);
 
 // PIN configs
 Config configs[NUM_IO] = {
+    //PIN, PORT, PORT#, AN#
     // TODO check ordering of 8-15
-    {11, 'C', 0},   //0
-    {12, 'C', 1},   //1
-    {13, 'C', 2},   //2
-    {14, 'C', 3},   //3
-    {15, 'C', 4},   //4
-    {16, 'C', 5},   //5
-    {17, 'C', 6},   //6
-    {18, 'C', 7},   //7
-    {21, 'B', 0},   //8
-    {22, 'B', 1},   //9
-    {25, 'B', 4},   //10
-    {26, 'B', 5},   //11
-    {3,  'A', 1},   //12
-    {2,  'A', 0},   //13
-    {5,  'A', 3},   //14
-    {7,  'A', 5}    //15
+    {11, 'C', 0, 0xFF},   //0
+    {12, 'C', 1, 0xFF},   //1
+    {13, 'C', 2, 0xFF},   //2
+    {14, 'C', 3, 0xFF},   //3
+    {15, 'C', 4, 0xFF},   //4
+    {16, 'C', 5, 0xFF},   //5
+    {17, 'C', 6, 0xFF},   //6
+    {18, 'C', 7, 0xFF},   //7
+    {21, 'B', 0, 10},   //8
+    {22, 'B', 1, 8},   //9
+    {25, 'B', 4, 9},   //10
+    {26, 'B', 5, 0xFF},   //11
+    {3,  'A', 1, 1},   //12
+    {2,  'A', 0, 0},   //13
+    {5,  'A', 3, 3},   //14
+    {7,  'A', 5, 4}    //15
 };
 
 // forward declarations

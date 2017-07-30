@@ -131,6 +131,7 @@ extern "C" {
 #define TYPE_SERVO                  2
 #define TYPE_BOUNCE                 3
 #define TYPE_MULTI                  4
+#define TYPE_ANALOGUE_IN            5
 
 // the flags
 #define	FLAG_INVERTED               0x01	// Whether the sense of this input or output inverted
@@ -170,6 +171,10 @@ typedef struct {
             unsigned char multi_pos3;
             unsigned char multi_pos4;
         } nv_multi;
+        struct {
+            unsigned char on_off_threshold;
+            unsigned char off_on_threshold;
+        } nv_analogue_in;
     } nv_io;
 } NvIo;
 

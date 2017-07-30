@@ -62,6 +62,9 @@ extern "C" {
 
 // Whether to enable BOUNCE
 #define BOUNCE
+    
+//Whether to support ANALOGUE INPUTS
+#define ANALOGUE
 
 // Whether NVs are cached in RAM
 #define NV_CACHE
