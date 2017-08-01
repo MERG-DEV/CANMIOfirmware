@@ -286,6 +286,7 @@ void pollServos(void) {
                     case MOVING:
                         loopCount[io]++;
                         if (loopCount[io] > MAX_SERVO_LOOP) {
+                            currentPos[io] = targetPos[io];
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
                             break;
@@ -354,6 +355,7 @@ void pollServos(void) {
                         loopCount[io]++;
                         if (loopCount[io] > MAX_BOUNCE_LOOP) {
                             servoState[io] = STOPPED;
+                            currentPos[io] = targetPos[io];
                             ticksWhenStopped[io].Val = tickGet();
                             break;
                         }
@@ -412,6 +414,7 @@ void pollServos(void) {
                         loopCount[io]++;
                         if (loopCount[io] > MAX_MULTI_LOOP) {
                             servoState[io] = STOPPED;
+                            currentPos[io] = targetPos[io];
                             ticksWhenStopped[io].Val = tickGet();
                             break;
                         }
@@ -465,6 +468,58 @@ void pollServos(void) {
 
 
 /**
+ * Start a servo moving to the required state. 
+ * Called for SERVO types.
+ * Handles inverted outputs and generates Produced events.
+ * 
+ * @param io
+ * @param action
+ */
+void startServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
+    switch (action) {
+        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+            speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;  
+            break;
+        case ACTION_IO_CONSUMER_2:  // SERVO ON
+            speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
+            break;
+    }
+    servoState[io] = STARTING;
+}
+
+/**
+ * Start a servo moving to the required state. 
+ * Called for BOUNCE types.
+ * Handles inverted outputs and generates Produced events.
+ * 
+ * @param io
+ * @param action
+ */
+void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
+    switch (action) {
+        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+            speed[io] = 0;
+            break;
+        case ACTION_IO_CONSUMER_2:  // SERVO ON
+            speed[io] = PULL_SPEED;
+            break;
+    }
+    servoState[io] = STARTING;
+}
+
+/**
+ * Sets a servo multi-position output. generates produced events.
+ * @param io
+ * @param action
+ */
+void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
+
+    speed[io] = NV->servo_speed;
+    servoState[io] = STARTING;
+
+}
+
+/**
  * Set a servo moving to the required state. 
  * Called for SERVO types.
  * Handles inverted outputs and generates Produced events.
@@ -476,15 +531,9 @@ void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
-            speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
-//            eventFlags[io] = (EVENT_FLAG_OFF | EVENT_FLAG_MID);
-            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
             targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
-            speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
-//            eventFlags[io] = (EVENT_FLAG_ON | EVENT_FLAG_MID);
-            servoState[io] = STARTING;
             break;
     }
 }
@@ -501,15 +550,9 @@ void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
             targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
-            speed[io] = 0;
-//            eventFlags[io] = (EVENT_FLAG_OFF | EVENT_FLAG_MID);
-            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
             targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
-            speed[io] = PULL_SPEED;
-//            eventFlags[io] = (EVENT_FLAG_ON | EVENT_FLAG_MID);
-            servoState[io] = STARTING;
             break;
     }
 }
@@ -523,30 +566,18 @@ void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO Position 1
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;
-            speed[io] = NV->servo_speed;
-//            eventFlags[io] = EVENT_FLAG_POS1;
-            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO Position 2
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos2;
-            speed[io] = NV->servo_speed;
-//            eventFlags[io] = EVENT_FLAG_POS2;
-            servoState[io] = STARTING;
             break;
         case ACTION_IO_CONSUMER_3:  // SERVO Position 3
             if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 3) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos3;
-                speed[io] = NV->servo_speed;
-//                eventFlags[io] = EVENT_FLAG_POS3;
-                servoState[io] = STARTING;
             }
             break;
         case ACTION_IO_CONSUMER_4:  // SERVO Position 4
             if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 4) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos4;
-                speed[io] = NV->servo_speed;
-//                eventFlags[io] = EVENT_FLAG_POS4;
-                servoState[io] = STARTING;
             }
             break;
     }

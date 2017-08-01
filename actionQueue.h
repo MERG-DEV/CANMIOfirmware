@@ -46,5 +46,6 @@ extern BOOL pushAction(CONSUMER_ACTION_T a);
 extern CONSUMER_ACTION_T getAction(void);
 extern void doneAction(void);
 extern CONSUMER_ACTION_T pullAction(void);
-extern CONSUMER_ACTION_T peekAction(unsigned char index);
+extern CONSUMER_ACTION_T peekActionQueue(unsigned char index);
+extern void deleteActionQueue(unsigned char index);
 #endif

@@ -133,10 +133,33 @@ CONSUMER_ACTION_T pullAction(void) {
  * @param index the item index within the queue
  * @return the Action or NO_ACTION 
  */
-CONSUMER_ACTION_T peekAction(unsigned char index) {
+CONSUMER_ACTION_T peekActionQueue(unsigned char index) {
     if (currentAction == NO_ACTION) return NO_ACTION;
     if (index > ACTION_QUEUE_SIZE) return NO_ACTION;
     if (index == 0) return currentAction;
-    return buffer[readIdx + index -1];
+    index += readIdx;
+    index -= 1;
+    if (index > ACTION_QUEUE_SIZE) {
+        index -= ACTION_QUEUE_SIZE;
+    }
+    return buffer[index];
+}
+
+/**
+ * Delete an item in the queue. Replace the item with NO_ACTION.
+ * @param index the item index within the queue
+ */
+void deleteActionQueue(unsigned char index) {
+    if (index > ACTION_QUEUE_SIZE) return;
+    if (index == 0) {
+        currentAction = NO_ACTION;
+        return;
+    }
+    index += readIdx;
+    index -= 1;
+    if (index > ACTION_QUEUE_SIZE) {
+        index -= ACTION_QUEUE_SIZE;
+    }
+    buffer[index] = NO_ACTION;
 }
 

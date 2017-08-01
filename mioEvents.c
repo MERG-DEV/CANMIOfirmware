@@ -55,6 +55,7 @@ void clearEvents(unsigned char i);
 void doSOD(void);
 void doWait(unsigned int duration);
 
+extern void startOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
@@ -292,8 +293,9 @@ void processActions(void) {
         type = NV->io[io].type;
 
         // check if a simultaneous action needs to be started
+        setOutput(io, action, type);
         if (needsStarting(io, action, type)) {
-            setOutput(io, action, type);
+            startOutput(io, action, type);
             // now check to see if any others need starting  
             peekItem = 1;
             while (simultaneous) {
@@ -301,7 +303,7 @@ void processActions(void) {
                 unsigned char nextIo;
                 unsigned char nextType;
             
-                nextAction = peekAction(peekItem);
+                nextAction = peekActionQueue(peekItem);
                 if (nextAction == NO_ACTION) break;
                 simultaneous = nextAction & ACTION_SIMULTANEOUS;
                 nextAction &= ACTION_MASK;
@@ -312,8 +314,12 @@ void processActions(void) {
                 }
                 nextAction = CONSUMER_ACTION(nextAction);
                 nextType = NV->io[nextIo].type;
+                setOutput(nextIo, nextAction, nextType);
                 if (needsStarting(nextIo, nextAction, nextType)) {
-                    setOutput(nextIo, nextAction, nextType);
+                    startOutput(nextIo, nextAction, nextType);
+                }
+                if (completed(nextIo, nextAction, nextType)) {
+                    deleteActionQueue(peekItem);
                 }
                 peekItem++;
             }

@@ -66,15 +66,14 @@ void initOutputs(void) {
        flashDelays[io] = 0;
     }
 }
-
 /**
- * Set a digital output. Handles inverted outputs and pulsed outputs. Sends the
+ * Start a digital output. Handles inverted outputs and pulsed outputs. Sends the
  * produced events.
  * 
  * @param io
  * @param action
  */
-void setDigitalOutput(unsigned char io, BOOL state) {
+void startDigitalOutput(unsigned char io, BOOL state) {
     // State ACTION_IO_CONSUMER_2 is ON
     // State ACTION_IO_CONSUMER_3 is OFF
     // State ACTION_IO_CONSUMER_4 is Flash
@@ -94,6 +93,17 @@ void setDigitalOutput(unsigned char io, BOOL state) {
             pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
         }
     }
+}
+
+/**
+ * Set a digital output. Handles inverted outputs and pulsed outputs. Sends the
+ * produced events.
+ * 
+ * @param io
+ * @param action
+ */
+void setDigitalOutput(unsigned char io, BOOL state) {
+
 }
 
 /**

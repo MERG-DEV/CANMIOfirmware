@@ -70,6 +70,39 @@ extern unsigned char pulseDelays[NUM_IO];
  * @param state on/off or position
  * @param type type of output
  */
+void startOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
+    switch(type) {
+        case TYPE_INPUT:
+            // this should never happen
+            return;
+        case TYPE_OUTPUT:
+            startDigitalOutput(io, action);
+            return;
+#ifdef BOUNCE
+        case TYPE_BOUNCE:
+            startBounceOutput(io, action);
+            return;
+#endif
+#ifdef SERVO
+        case TYPE_SERVO:
+            startServoOutput(io, action);
+            return;
+#endif
+#ifdef MULTI
+        case TYPE_MULTI:
+            startMultiOutput(io, action);
+            return;
+#endif
+    }
+}
+
+/**
+ * Set an output to the requested state.
+ *  
+ * @param i the IO
+ * @param state on/off or position
+ * @param type type of output
+ */
 void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
@@ -119,6 +152,7 @@ BOOL needsStarting(unsigned char io, CONSUMER_ACTION_T action, unsigned char typ
 #ifdef MULTI
         case TYPE_MULTI:
 #endif
+            if (targetPos[io] == currentPos[io]) return FALSE;
             return (servoState[io] != MOVING);
 #endif
     }
@@ -145,7 +179,7 @@ BOOL completed(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
 #ifdef MULTI
         case TYPE_MULTI:
 #endif
-            return (servoState[io] != MOVING);
+            return targetPos[io] == currentPos[io];
 #endif
     }
     return TRUE;
