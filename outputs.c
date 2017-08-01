@@ -179,7 +179,7 @@ BOOL completed(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
 #ifdef MULTI
         case TYPE_MULTI:
 #endif
-            return targetPos[io] == currentPos[io];
+            return (targetPos[io] == currentPos[io]) && (servoState[io] == STOPPED);
 #endif
     }
     return TRUE;
