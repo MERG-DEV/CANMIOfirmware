@@ -93,14 +93,15 @@
  * DONE  sequence servos servo.c
  * 
  * 
- * FCU changes needed
- * The number of event slots used + number of free slots != total number of events
- * Support for CMDERR(NO_EV) when doing REVAL
- * Setting of one NV (type) can effect other NVs. Should read back all NVs after setting one
- * Variable number of EVs per event up to the maximum
- * Event action sequences
- * A module can consume its own events
- * A NN can be upto 65535
+ * FCU changes needed:
+ * * The number of event slots used + number of free slots != total number of events
+ * * Support for CMDERR(NO_EV) when doing REVAL
+ * * Setting of one NV (type) can effect other NVs. Should read back all NVs after setting one
+ * * Variable number of EVs per event up to the maximum
+ * * Event action sequences
+ * * A module can consume its own events
+ * * A NN can be upto 65535 (suggestion)
+ * * Depending upon decision on default events changes may be required
  */
 
 /**
