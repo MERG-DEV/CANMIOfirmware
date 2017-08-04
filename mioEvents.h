@@ -155,7 +155,7 @@ extern void clearEvents(unsigned char i);
 #define NUM_EVENTS              255         // must be less than 256 otherwise loops fail
 #define EVENT_TABLE_WIDTH       10          // Width of eventTable
 #define EVperEVT                20          // Max number of EVs per event
-#define AT_EVENTS               0x6F90      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
+#define AT_EVENTS               0x6F80      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
 
 // We'll also be using configurable produced events
 #define PRODUCED_EVENTS
