@@ -62,4 +62,8 @@ extern void setServoOutput(unsigned char io, CONSUMER_ACTION_T action);
 extern void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
 extern void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
 
+extern void startServoOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
+
 #endif  //__SERVO_H__

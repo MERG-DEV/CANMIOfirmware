@@ -48,16 +48,14 @@
 #include "mioEEPROM.h"
 #include "servo.h"
 #include "actionQueue.h"
+#include "digitalOut.h"
 
 // Forward declarations
-void setDigitalOutput(unsigned char io, BOOL state);
+
 
 // Externs
 extern Config configs[NUM_IO];
 extern void sendProducedEvent(unsigned char action, BOOL on);
-extern void setServoOutput(unsigned char io, unsigned char state);
-extern void setBounceOutput(unsigned char io, unsigned char state);
-extern void setMultiOutput(unsigned char io, unsigned char state);
 extern void setOuputPin(unsigned char io, BOOL state);
 
 extern unsigned char pulseDelays[NUM_IO];

@@ -94,7 +94,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
@@ -159,6 +159,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     if ( ! (opc&EVENT_ON_MASK)) {
         // ON events work up through the EVs
         // EV#0 is for produced event so start at 1
+        // TODO would be more efficient to get all the EVs in one go and then work through them. getEV() isn't quick)
         for (e=1; e<EVperEVT ;e++) { 
             action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             if (action >= 0) {
@@ -198,6 +199,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         }
     } else {
 	// OFF events work down through the EVs
+        // TODO would be more efficient to get all the EVs in one go and then work through them. getEV() isn't quick)
         int nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;

@@ -309,8 +309,11 @@ void initialise(void) {
         // may need to upgrade of data in the future
         // set EEPROM to default values
         factoryResetEE();
+        // If the FCU has requested EE rewrite then they also want to reset events and NVs
+        factoryResetFlash();
         // set the reset flag to indicate it has been initialised
         ee_write((WORD)EE_VERSION, EEPROM_VERSION);
+        writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
     }
     // check if FLASH is valid
    if (NV->nv_version != FLASH_VERSION) {

@@ -54,8 +54,8 @@ extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
 const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
 #else
-#pragma romdata myNV=AT_NV
-    rom NodeVarTable nodeVarTable; /* = {
+//#pragma romdata myNV=AT_NV
+/*    rom NodeVarTable nodeVarTable; /* = {
         {    
 #endif
             0,  // NV data version 
