@@ -237,7 +237,7 @@ static TickValue   lastServoStartTime;
 static unsigned char io;
 
 // MAIN APPLICATION
-        
+#pragma code
 /**
  * It is all run from here.
  * Initialise everything and then loop receiving and processing CAN messages.

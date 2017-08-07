@@ -49,7 +49,7 @@ extern "C" {
     
 /*********************** MODULE OPTIONS **************************/
 // BOOTLOADER
-//#define BOOTLOADER_PRESENT
+#define BOOTLOADER_PRESENT
 
 // We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
@@ -102,6 +102,7 @@ extern "C" {
 #define MAX_WRITEABLE_FLASH     0x7FFF
 
 #include "canmio.h"
+    
 
 #ifdef	__cplusplus
 }

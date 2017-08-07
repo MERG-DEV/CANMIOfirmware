@@ -107,7 +107,7 @@ extern BOOL	NV_changed;
 #endif
 
 #ifdef __18CXX
-#pragma code APP
+#pragma code //APP
 #endif
 
 void mioFlimInit(void) {
