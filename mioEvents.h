@@ -63,7 +63,6 @@ extern "C" {
      */
  
 #include "canmio.h"
-#include "events.h"
 
 /* CONSUMED actions */
 #define ACTION_SIMULTANEOUS                 0x80    // default is SEQUENTIAL
@@ -165,6 +164,8 @@ extern void clearEvents(unsigned char i);
 
 extern void processEvent(BYTE eventIndex, BYTE* message);
 extern void processActions(void);
+
+#include "events.h"
 
 #ifdef	__cplusplus
 }

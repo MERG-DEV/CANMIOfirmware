@@ -207,49 +207,48 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char ca;
     int action;
 
-    BYTE opc=msg[d0];
+    BYTE opc = getEVs(tableIndex);
+    if (opc != 0) {
+        return; // error getting EVs. Can't report the error so just return
+    }
+    opc=msg[d0];
     // check the OPC if this is an ON or OFF event
     if ( ! (opc&EVENT_ON_MASK)) {
         // ON events work up through the EVs
         // EV#0 is for produced event so start at 1
         // TODO would be more efficient to get all the EVs in one go and then work through them. getEV() isn't quick)
         for (e=1; e<EVperEVT ;e++) { 
-            action = getEv(tableIndex, e);  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
-            if (action >= 0) {
-                if (action != NO_ACTION) {
-                    // check this is a consumed action
-                    if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
-                        // check global consumed actions
-                        if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
-                            pushAction((CONSUMER_ACTION_T)action);
-                        } else {
-                            io = CONSUMER_IO(action&ACTION_MASK);
-                            ca = CONSUMER_ACTION(action&ACTION_MASK);
-                            switch (NV->io[io].type) {
-                                case TYPE_OUTPUT:
-                                case TYPE_SERVO:
-                                case TYPE_BOUNCE:
-                                    if (ca == ACTION_IO_CONSUMER_1) {
-                                        // action 1 (EV) must be converted to 2(ON)
-                                        action++;
-                                    }
-                                    pushAction((CONSUMER_ACTION_T)action);
-                                    break;
-                                case TYPE_MULTI:
-                                    pushAction((CONSUMER_ACTION_T)action);
-                                    break;
-                                default:
-                                    // shouldn't happen - just ignore
-                                    break;
-                            }
+            action = evs[e];  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
+            if (action != NO_ACTION) {
+                // check this is a consumed action
+                if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
+                    // check global consumed actions
+                    if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
+                        pushAction((CONSUMER_ACTION_T)action);
+                    } else {
+                        io = CONSUMER_IO(action&ACTION_MASK);
+                        ca = CONSUMER_ACTION(action&ACTION_MASK);
+                        switch (NV->io[io].type) {
+                            case TYPE_OUTPUT:
+                            case TYPE_SERVO:
+                            case TYPE_BOUNCE:
+                                if (ca == ACTION_IO_CONSUMER_1) {
+                                    // action 1 (EV) must be converted to 2(ON)
+                                    action++;
+                                }
+                                pushAction((CONSUMER_ACTION_T)action);
+                                break;
+                            case TYPE_MULTI:
+                                pushAction((CONSUMER_ACTION_T)action);
+                                break;
+                            default:
+                                // shouldn't happen - just ignore
+                                break;
                         }
                     }
                 }
-            } else {
-                // error getting ev
-                return;
             }
-        }
+        } 
     } else {
 	// OFF events work down through the EVs
         // TODO would be more efficient to get all the EVs in one go and then work through them. getEV() isn't quick)
@@ -262,43 +261,39 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             // get the Simultaneous flag from the next action
             nextSimultaneous = ACTION_SIMULTANEOUS;
             if (e > 1) {
-                nextAction = getEv(tableIndex, e-1);
-                if (nextAction >= 0) {
+                nextAction = evs[e-1];
                     nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
-                }
             }
-            if (action >= 0) {
-                if (action != NO_ACTION) {
-                    action &= ACTION_MASK;
-                    if (action <= NUM_CONSUMER_ACTIONS) {
-                        // check global consumed actions
-                        if (action < ACTION_CONSUMER_IO_BASE) {
+            if (action != NO_ACTION) {
+                action &= ACTION_MASK;
+                if (action <= NUM_CONSUMER_ACTIONS) {
+                    // check global consumed actions
+                    if (action < ACTION_CONSUMER_IO_BASE) {
                         pushAction(action|nextSimultaneous);
-                        } else {
-                            io = CONSUMER_IO(action);
-                            ca = CONSUMER_ACTION(action);
-                            switch (NV->io[io].type) {
-                                case TYPE_OUTPUT:
-                                case TYPE_SERVO:
-                                case TYPE_BOUNCE:
-                                    if (ca == ACTION_IO_CONSUMER_1) {
-                                        // action 1 (EV) must be converted to 3(OFF)
-                                        action += 2;
-                                    }
-                                    pushAction(action|nextSimultaneous);
-                                    break;
-                                case TYPE_MULTI:
-                                    pushAction(action|nextSimultaneous);
-                                    break;
-                                default:
-                                    // shouldn't happen - just ignore
-                                    break;
-                            }
+                    } else {
+                        io = CONSUMER_IO(action);
+                        ca = CONSUMER_ACTION(action);
+                        switch (NV->io[io].type) {
+                            case TYPE_OUTPUT:
+                            case TYPE_SERVO:
+                            case TYPE_BOUNCE:
+                                if (ca == ACTION_IO_CONSUMER_1) {
+                                    // action 1 (EV) must be converted to 3(OFF)
+                                    action += 2;
+                                }
+                                pushAction(action|nextSimultaneous);
+                                break;
+                            case TYPE_MULTI:
+                                pushAction(action|nextSimultaneous);
+                                break;
+                            default:
+                                // shouldn't happen - just ignore
+                                break;
                         }
                     }
                 }
-            } // ignore getEv errors as we expect CMDERR_NO_EV
-        }
+            }
+        } // ignore getEv errors as we expect CMDERR_NO_EV
     }
 }
 
