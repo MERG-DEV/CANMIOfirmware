@@ -89,12 +89,21 @@ extern "C" {
  */
 #include "mioNv.h"
 #include "mioEEPROM.h"
-    
+   
+/*
+ * Actions
+ */
+
+#define CONSUMER_ACTION_T	unsigned char
+#define PRODUCER_ACTION_T	unsigned char
+
+
 /*
  * EVENTS
  */
 #include "mioEvents.h"
     
+
 /*
  * FLASH bounds
  */

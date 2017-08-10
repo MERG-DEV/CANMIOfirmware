@@ -94,17 +94,17 @@ void defaultEvents(unsigned char io, unsigned char type) {
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+//            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+ //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
-            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
-            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+//            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+//            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+//            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
@@ -113,6 +113,59 @@ void defaultEvents(unsigned char io, unsigned char type) {
             break;
     }
 #endif
+}
+
+/**
+ * If we don't define default produced actions in the eventTable above then
+ * we can generate the event using code. This was requested by PeteB so that
+ * eventTable space isn't used unnecessarily. The downside is that NERD won't
+ * list these events.
+ * If a default event is defined here then it should be written to the global
+ * producedEvent variable.
+ * 
+ * @param action
+ * @return true if there is an event
+ */
+BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
+    if (paction >= ACTION_PRODUCER_IO_BASE) {
+        unsigned char io = PRODUCER_IO(paction);
+
+        switch (NV->io[io].type) {
+            case TYPE_INPUT:
+                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 1;
+                    return TRUE;
+                }
+                break;
+            case TYPE_BOUNCE:
+            case TYPE_OUTPUT:
+                if (paction == ACTION_IO_PRODUCER_OUTPUT(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 101;
+                    return TRUE;
+                }
+                break;
+            case TYPE_SERVO:
+                if (paction == ACTION_IO_PRODUCER_SERVO_START(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 101;
+                    return TRUE;
+                }
+                if (paction == ACTION_IO_PRODUCER_SERVO_MID(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 301;
+                    return TRUE;
+                }
+                if (paction == ACTION_IO_PRODUCER_SERVO_END(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 201;
+                    return TRUE;
+                }
+                break;
+        }
+    } 
+    return FALSE;
 }
 
 /**

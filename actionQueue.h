@@ -35,11 +35,6 @@
 #ifndef __ACTIONQUEUE_H_
 #define __ACTIONQUEUE_H_
 
-#define CONSUMER_ACTION_T	BYTE
-#define PRODUCER_ACTION_T	BYTE
-
-
-
 
 extern void actionQueueInit(void);
 extern BOOL pushAction(CONSUMER_ACTION_T a);
