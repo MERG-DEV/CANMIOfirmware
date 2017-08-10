@@ -79,8 +79,6 @@ The actual CBUSlib files needed by the project are:
   * EEPROM.h
   * events.h
   * Flim.h
-mioSLiM.inc (I don't think this is required nor be in the library but I seem to have it included)
-  * MoreTypes.h
   * romops.h
   * StatusLeds.h
   * TickTime.h
