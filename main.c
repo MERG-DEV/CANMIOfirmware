@@ -236,6 +236,12 @@ static TickValue   lastServoPollTime;
 static TickValue   lastServoStartTime;
 static unsigned char io;
 
+#ifdef BOOTLOADER_PRESENT
+// ensure that the bootflag is zeroed
+#pragma romdata BOOTFLAG
+rom BYTE eeBootFlag = 0;
+#endif
+
 // MAIN APPLICATION
 #pragma code
 /**
