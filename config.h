@@ -51,7 +51,7 @@ typedef struct {
     unsigned char an;
 } Config;
 
-extern Config configs[NUM_IO];
+extern const rom Config configs[NUM_IO];
 
 #ifdef	__cplusplus
 }

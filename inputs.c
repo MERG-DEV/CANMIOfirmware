@@ -45,7 +45,6 @@
 #include "mioEvents.h"
 #include "cbus.h"
 
-extern Config configs[NUM_IO];
 /**
  * The current state of the inputs. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.

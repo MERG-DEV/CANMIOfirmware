@@ -54,7 +54,6 @@
 
 
 // Externs
-extern Config configs[NUM_IO];
 extern void sendProducedEvent(unsigned char action, BOOL on);
 extern void setOuputPin(unsigned char io, BOOL state);
 

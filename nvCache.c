@@ -38,7 +38,7 @@
 #include "romops.h"
 static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
 
-extern const BYTE * NvBytePtr;
+extern const rom near BYTE * NvBytePtr;
 
 ModuleNvDefs* loadNvCache(void) {
     BYTE * np = (BYTE*)(&nvCache);

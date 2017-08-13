@@ -145,7 +145,7 @@ void ISRHigh(void);
 #define TYPE_DEFAULT    TYPE_INPUT
 
 // PIN configs
-Config configs[NUM_IO] = {
+const rom Config configs[NUM_IO] = {
     //PIN, PORT, PORT#, AN#
     // TODO check ordering of 8-15
     {11, 'C', 0, 0xFF},   //0
@@ -320,6 +320,9 @@ void initialise(void) {
         // set the reset flag to indicate it has been initialised
         ee_write((WORD)EE_VERSION, EEPROM_VERSION);
         writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
+#ifdef NV_CACHE
+        loadNvCache();                
+#endif
     }
     // check if FLASH is valid
    if (NV->nv_version != FLASH_VERSION) {
@@ -328,6 +331,9 @@ void initialise(void) {
         factoryResetFlash();
         // set the version number to indicate it has been initialised
         writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
+#ifdef NV_CACHE
+        loadNvCache();                
+#endif
     }
     initTicker(0);  // set low priority
     // Enable PORT B weak pullups
@@ -479,9 +485,15 @@ void configIO(unsigned char i) {
 
 #ifdef __18CXX
 // C intialisation - declare a copy here so the library version is not used as it may link down in bootloader area
+extern const rom near BYTE * NvBytePtr;
+
+extern rom near EventTable * eventTable;
 
 void __init(void)
 {
+    // if using c018.c the routine to initialise data isn't called. Explicitly setting here is more efficient
+    NvBytePtr = (const rom near BYTE*)AT_NV;
+    eventTable = (rom near EventTable*)AT_EVENTS;
 }
 
 // Interrupt service routines
