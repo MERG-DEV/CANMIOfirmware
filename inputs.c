@@ -76,6 +76,11 @@ void initInputScan(void) {
 /**
  * Called regularly to check for changes on the inputs.
  * Generate Produced events upon input change.
+ * Handles:
+ * * Input pin invert
+ * * Toggle
+ * * Output OFF event disable
+ * * Output event invert
  * 
  * @param report always send current status if report is TRUE otherwise send only on change
  *   
@@ -96,19 +101,35 @@ void inputScan(BOOL report) {
                 }
                 if (change) {
                     delayCount[io] = 0;
-                    inputState[io] = input;
-                    // check if input is inverted
-                    if (NV->io[io].flags & FLAG_INVERTED) {
+                    // check if input pin is inverted
+                    if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                         input = !input;
                     }
-                    // send the changed Produced event
-                    if (input) {
-                        sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE);
-                    } else {
-                        // check if OFF events are enabled
-                        if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                    // Check if toggle
+                    if (NV->io[io].flags & FLAGS_TOGGLE) {
+                        if (input) {
+                            inputState[io] = ! inputState[io];
+                            input = inputState[io];
                         }
+                     } else {
+                        inputState[io] = input;
+                    }
+                    // check if OFF events are enabled
+                    if (NV->io[io].flags & FLAG_DISABLE_OFF) {
+                        if (input) {
+                            // only ON
+                            // check if produced event is inverted
+                            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                                input = !input;
+                            }
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), input);
+                        }
+                    } else {
+                        // check if produced event is inverted
+                        if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                            input = !input;
+                        }
+                        sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), input);
                     }
                 } else {
                     delayCount[io]++;
