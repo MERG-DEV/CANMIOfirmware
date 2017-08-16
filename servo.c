@@ -266,6 +266,8 @@ void pollServos(void) {
     unsigned char midway;
     BOOL beforeMidway;
     unsigned char io;
+    unsigned char target;
+    
     for (io=0; io<NUM_IO; io++) {
         switch (NV->io[io].type) {
             case TYPE_SERVO:
@@ -275,9 +277,9 @@ void pollServos(void) {
                 switch (servoState[io]) {
                     case STARTING:
                         if (currentPos[io]==NV->io[io].nv_io.nv_servo.servo_start_pos) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         } else {
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
                         loopCount[io] = 0;
@@ -302,7 +304,7 @@ void pollServos(void) {
                                 // passed through midway point
                                 // we send an ACON/ACOF depending upon direction servo was moving
                                 // This can then be used to drive frog switching relays
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                         } else if (targetPos[io] < currentPos[io]) {
                             if (currentPos[io] > midway) {
@@ -314,7 +316,7 @@ void pollServos(void) {
                             }
                             if ((currentPos[io] <= midway) && beforeMidway) {
                                 // passed through midway point
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), FALSE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                             }
                         }
                         if (targetPos[io] == currentPos[io]) {
@@ -322,9 +324,9 @@ void pollServos(void) {
                             ticksWhenStopped[io].Val = tickGet();
                             // send ON event or OFF
                             if (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos) { //ON means move to End
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             } else {
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
@@ -359,12 +361,16 @@ void pollServos(void) {
                             break;
                         }
                         // Implement the bounce algorithm here
-                        if (targetPos[io] == NV->io[io].nv_io.nv_bounce.bounce_upper_pos) {
+                        target = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
+                        if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+                            target = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+                        }
+                        if (targetPos[io] == target) {
                             if (bounceUp(io)) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
-                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                                 ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         } else {
@@ -372,7 +378,7 @@ void pollServos(void) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
-                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), FALSE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                                 ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         }
@@ -395,16 +401,16 @@ void pollServos(void) {
                 switch (servoState[io]) {
                     case STARTING:
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), FALSE);
+                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
                         loopCount[io] = 0;
@@ -433,16 +439,16 @@ void pollServos(void) {
                             ticksWhenStopped[io].Val = tickGet();
                             // MULTI only sends ON events. Work out which event
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), TRUE);
+                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
@@ -529,10 +535,18 @@ void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
 void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
-            targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
+            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
+            } else {
+                targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
+            }
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
-            targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
+            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
+            } else {
+                targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
+            }
             break;
     }
 }
@@ -548,10 +562,18 @@ void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
 void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
-            targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
+            } else {
+                targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+            }
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
-            targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
+            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+            } else {
+                targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
+            }
             break;
     }
 }
