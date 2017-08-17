@@ -120,7 +120,23 @@ extern "C" {
 #define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS2_OFFSET)
 #define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS3_OFFSET)
 #define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS4_OFFSET)
-
+ 
+#define NV_IO_ANALOGUE_THRESHOLD        2
+#define NV_IO_ANALOGUE_HYSTERESIS       3
+#define NV_IO_ANALOGUE_THRES(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_THRESHOLD)
+#define NV_IO_ANALOGUE_HYST(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_HYSTERESIS)
+ 
+#define NV_IO_MAGNET_DOSETUP          2
+#define NV_IO_MAGNET_THRESHOLD        3
+#define NV_IO_MAGNET_HYSTERESIS       4
+#define NV_IO_MAGNET_OFFSET_H         5
+#define NV_IO_MAGNET_OFFSET_L         6
+#define NV_IO_MAGNET_SETUP(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_DOSETUP)
+#define NV_IO_MAGNET_THRES(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_THRESHOLD)
+#define NV_IO_MAGNET_HYST(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_HYSTERESIS)
+#define NV_IO_MAGNET_OFFSETH(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_OFFSET_H)
+#define NV_IO_MAGNET_OFFSETL(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_OFFSET_L)
+    
 #define IS_NV_TYPE(i)                   (((i-NV_IO_START) % NVS_PER_IO) == 0)
 #define IO_NV(i)                        ((unsigned char)((i-NV_IO_START)/NVS_PER_IO))
 #define NV_NV(i)                        ((unsigned char)((i-NV_IO_START) % NVS_PER_IO))
@@ -132,6 +148,7 @@ extern "C" {
 #define TYPE_BOUNCE                 3
 #define TYPE_MULTI                  4
 #define TYPE_ANALOGUE_IN            5
+#define TYPE_MAGNET                 6
 
 // the flags
 #define	FLAG_TRIGGER_INVERTED               0x01	// Whether the sense of this input or output inverted
@@ -175,8 +192,10 @@ typedef struct {
             unsigned char multi_pos4;
         } nv_multi;
         struct {
-            unsigned char on_off_threshold;
-            unsigned char off_on_threshold;
+            unsigned char analogue_threshold;
+            unsigned char analogue_hysteresis;
+            unsigned char analogue_level_h;
+            unsigned char analogue_level_l;
         } nv_analogue_in;
     } nv_io;
 } NvIo;

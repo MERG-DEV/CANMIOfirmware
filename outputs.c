@@ -103,6 +103,8 @@ void startOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type)
 void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
+        case TYPE_ANALOGUE_IN:
+        case TYPE_MAGNET:
             // this should never happen
             return;
         case TYPE_OUTPUT:

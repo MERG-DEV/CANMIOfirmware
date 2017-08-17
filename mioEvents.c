@@ -111,6 +111,15 @@ void defaultEvents(unsigned char io, unsigned char type) {
         case TYPE_MULTI:
             // no defaults for multi
             break;
+        case TYPE_ANALOGUE_IN:
+            // Produce ACON/ASON and ACOF/ASOF events with en as port number
+ //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+            break;
+        case TYPE_MAGNET:
+            // Produce ACON/ASON and ACOF/ASOF events with en as port number
+ //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
+ //           addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+            break;
     }
 #endif
 }
@@ -131,7 +140,15 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
         unsigned char io = PRODUCER_IO(paction);
 
         switch (NV->io[io].type) {
+            case TYPE_MAGNET:
+                if (paction == ACTION_IO_PRODUCER_MAGNETL(io)) {
+                    producedEvent.NN = nodeID;
+                    producedEvent.EN = io + 101;
+                    return TRUE;
+                }
+                // fall through
             case TYPE_INPUT:
+            case TYPE_ANALOGUE_IN:
                 if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
                     producedEvent.NN = nodeID;
                     producedEvent.EN = io + 1;

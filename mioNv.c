@@ -49,6 +49,7 @@
 #endif
 #include "servo.h"
 #include "config.h"
+#include "cbus.h"
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
@@ -193,9 +194,11 @@ BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value
         switch (value) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
+            case TYPE_MAGNET:
                 io = IO_NV(index);
                 if (configs[io].an == 0xFF) return FALSE;
                 break;
+#endif
 #ifdef MULTI
             case TYPE_MULTI:
                 break;
@@ -232,6 +235,24 @@ void actUponNVchange(unsigned char index, unsigned char value) {
         io = IO_NV(index);
         nv = NV_NV(index);
         switch(NV_IO_TYPE(io)) {
+            case TYPE_MAGNET:
+                if (index == NV_IO_MAGNET_SETUP(io)) {
+                    // read the adc for offset
+                    int adc = 0;
+                    
+                    cbusMsg[d3] = io+1;
+                    cbusMsg[d4] = 0;
+                    cbusMsg[d5] = io+1;
+                    cbusMsg[d6] = (adc >> 8) & 0xFF;
+                    cbusMsg[d7] = (adc & 0xFF);
+                    cbusSendOpcNN(ALL_CBUS, OPC_ARSON3, -1, cbusMsg);
+                    if (value & 0x80) {
+                        // save the offset
+                        writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETH(io)), (BYTE)cbusMsg[d6]);
+                        writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETL(io)), (BYTE)cbusMsg[d7]);
+                    }
+                }
+                break;
             case TYPE_SERVO:
                 if (index == NV_IO_SERVO_START_POS(io)) {
                     setServoOutput(io, ACTION_IO_CONSUMER_3);
@@ -256,9 +277,11 @@ void actUponNVchange(unsigned char index, unsigned char value) {
                 } else if (index == NV_IO_MULTI_POS4(io)) {
                     setMultiOutput(io, ACTION_IO_CONSUMER_4);
                 }
+                break;
         }
     }
 }
+
 
 /**
  * Set NVs back to factory defaults.
@@ -326,6 +349,19 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)128);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)128);
 #endif
+            break;
+        case TYPE_ANALOGUE_IN:  // use 8 bit ADC
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_THRES(i)), (BYTE)0x80);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_HYST(i)), (BYTE)0x10);
+            break;
+        case TYPE_MAGNET:   // use 12 bit ADC
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_SETUP(i)), (BYTE)0);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_THRES(i)), (BYTE)123);    // 150mV
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_HYST(i)), (BYTE)32);      // 39mV
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETH(i)), (BYTE)0x07);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETL(i)), (BYTE)0xFF);
             break;
     }
 #ifdef NV_CACHE

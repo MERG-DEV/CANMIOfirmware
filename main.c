@@ -127,6 +127,9 @@
 #ifdef SERVO
 #include "servo.h"
 #endif
+#ifdef ANALOGUE
+#include "analogue.h"
+#endif
 
 
 extern void initOutputs(void);
@@ -291,8 +294,12 @@ int main(void) @0x800 {
 #endif
                 processActions();
                 processOutputs();
+
                 lastServoPollTime.Val = tickGet();
             }
+#ifdef ANALOGUE
+            pollAnalogue();
+#endif
         }
         // Check for any flashing status LEDs
         checkFlashing();
@@ -306,9 +313,6 @@ int main(void) @0x800 {
 void initialise(void) {
     // enable the 4x PLL
     OSCTUNEbits.PLLEN = 1; 
-    // Digital I/O - disable analogue
-    ANCON0 = 0;
-    ANCON1 = 0;
     
     // check if EEPROM is valid
    if (ee_read((WORD)EE_VERSION) != EEPROM_VERSION) {
@@ -352,6 +356,9 @@ void initialise(void) {
     initServos();
 #endif
     initOutputs();
+#ifdef ANALOGUE
+    initAnalogue();
+#endif
     
     /*
      * Now configure the interrupts.
@@ -414,6 +421,11 @@ void setType(unsigned char io, unsigned char type) {
     defaultNVs(io, type);
     // set up the default events. 
     defaultEvents(io, type);
+#ifdef ANALOGUE
+    if ((type == TYPE_ANALOGUE_IN) || (type == TYPE_MAGNET)) {
+        initAnaloguePort(io);
+    }
+#endif
 }
 
 /**
@@ -454,27 +466,45 @@ void configIO(unsigned char i) {
     // Now actually set it
     switch (configs[i].port) {
         case 'A':
-            if (NV->io[i].type == TYPE_INPUT) {
+            
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
                 TRISA |= (1 << configs[i].no);  // input
             } else {
                 TRISA &= ~(1 << configs[i].no); // output
             }
             break;
         case 'B':
-            if (NV->io[i].type == TYPE_INPUT) {
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
                 TRISB |= (1 << configs[i].no);  // input
             } else {
                 TRISB &= ~(1 << configs[i].no); // output
             }
             break;
         case 'C':
-            if (NV->io[i].type == TYPE_INPUT) {
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
                 TRISC |= (1 << configs[i].no);  // input
             } else {
                 TRISC &= ~(1 << configs[i].no); // output
             }
             break;          
     }
+#ifdef ANALOGUE
+    if ((NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
+        // set analogue
+        if (configs[i].an < 8) {
+            ANCON0 |= (1 << configs[i].an);
+        } else if (configs[i].an < 16) {
+            ANCON1 |= (1 << (configs[i].an - 8));
+        }
+    } else {
+        // set digital
+        if (configs[i].an < 8) {
+            ANCON0 &= ~(1 << configs[i].an);
+        } else if (configs[i].an < 16) {
+            ANCON1 &= ~(1 << (configs[i].an - 8));
+        }
+    }
+#endif
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
     if (NV->io[i].flags & FLAG_STARTUP) {
         setOutput(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
