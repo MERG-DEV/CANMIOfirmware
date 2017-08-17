@@ -121,8 +121,8 @@ extern "C" {
 #define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS3_OFFSET)
 #define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS4_OFFSET)
  
-#define NV_IO_ANALOGUE_THRESHOLD        2
-#define NV_IO_ANALOGUE_HYSTERESIS       3
+#define NV_IO_ANALOGUE_THRESHOLD        3
+#define NV_IO_ANALOGUE_HYSTERESIS       4
 #define NV_IO_ANALOGUE_THRES(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_THRESHOLD)
 #define NV_IO_ANALOGUE_HYST(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_HYSTERESIS)
  
@@ -192,11 +192,17 @@ typedef struct {
             unsigned char multi_pos4;
         } nv_multi;
         struct {
+            unsigned char analogue_unused;
             unsigned char analogue_threshold;
             unsigned char analogue_hysteresis;
-            unsigned char analogue_level_h;
-            unsigned char analogue_level_l;
         } nv_analogue_in;
+        struct {
+            unsigned char magnet_setup;
+            unsigned char magnet_threshold;
+            unsigned char magnet_hysteresis;
+            unsigned char magnet_offset_h;
+            unsigned char magnet_offset_l;
+        } nv_magnet;
     } nv_io;
 } NvIo;
 

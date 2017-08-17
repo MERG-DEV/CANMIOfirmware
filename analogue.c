@@ -69,17 +69,55 @@ void initAnaloguePort(unsigned char io) {
 void pollAnalogue(void) {
     unsigned char io;
     WORD adc;
+    WORD lthreshold;
+    WORD hthreshold;
+    WORD lhysteresis;
+    WORD hhysteresis;
 
     // are we currently doing a conversion on a valid IO?
     if ((NV->io[portInProgress].type == TYPE_ANALOGUE_IN) || (NV->io[portInProgress].type == TYPE_MAGNET)) {
         // is conversion finished?
         if (ADCON0bits.DONE) {
-            // get the result
+            // get the 12 bit result
             adc = ADRESH;
             adc << 8;
             adc |= ADRESL;
-            // compare with thresholds
-            
+            if (NV->io[portInProgress].type == TYPE_MAGNET) {
+                // calculate thresholds
+                lthreshold = NV->io[portInProgress].nv_io.nv_magnet.magnet_offset_h;
+                lthreshold << 8;
+                lthreshold |= NV->io[portInProgress].nv_io.nv_magnet.magnet_offset_l;
+                hthreshold = lthreshold;    // the offset
+                lthreshold -= NV->io[portInProgress].nv_io.nv_magnet.magnet_threshold;
+                hthreshold += NV->io[portInProgress].nv_io.nv_magnet.magnet_threshold;
+                lhysteresis = lthreshold - NV->io[portInProgress].nv_io.nv_magnet.magnet_hysteresis;
+                hhysteresis = hthreshold - NV->io[portInProgress].nv_io.nv_magnet.magnet_hysteresis;
+                // compare with thresholds
+                if ((lastReading[portInProgress] < hthreshold) && (adc >= hthreshold)) {
+                    //High on
+                    sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
+                } else if (( lastReading[portInProgress] > hhysteresis) && (adc <= hhysteresis)) {
+                    //High Off
+                    if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
+                        sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
+                    }
+                }
+            } else {
+                // TYPE_ANALOGUE
+                adc >> 4;   // convert to 8 bit
+                lthreshold = NV->io[portInProgress].nv_io.nv_analogue_in.analogue_threshold;
+                lhysteresis = lthreshold - NV->io[portInProgress].nv_io.nv_analogue_in.analogue_hysteresis; 
+            }
+            // This is common between analogue and magnet despite the names
+            if ((lastReading[portInProgress] < lthreshold) && (adc >= lthreshold)) {
+                // Low on 
+                sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
+            } else if (( lastReading[portInProgress] > lhysteresis) && (adc <= lhysteresis)) {
+                //Low Off
+                if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
+                    sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
+                }
+            }
             //save
             lastReading[portInProgress] = adc;
         } else {
