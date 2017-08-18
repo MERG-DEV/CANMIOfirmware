@@ -81,7 +81,6 @@ void setupTimer3(unsigned char io);
 void setupTimer4(unsigned char io);
 
 // Externs
-extern void sendProducedEvent(unsigned char action, BOOL on);
 extern void setOutputPin(unsigned char io, BOOL state);
 
 // Variables

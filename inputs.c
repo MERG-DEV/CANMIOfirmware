@@ -58,7 +58,6 @@ static BYTE delayCount[NUM_IO];
 // forward declarations
 BOOL readInput(unsigned char io);
 // externs
-extern void sendProducedEvent(unsigned char action, BOOL on);
 
 static unsigned char io;
 

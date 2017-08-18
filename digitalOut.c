@@ -52,7 +52,6 @@ char flashDelays[NUM_IO];
 void setOutputPin(unsigned char io, BOOL state);
 
 // Externs
-extern void sendProducedEvent(unsigned char io, BOOL state);
 
 /**
  * Initialise the IO digital outputs.

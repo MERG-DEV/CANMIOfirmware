@@ -54,7 +54,6 @@
 
 
 // Externs
-extern void sendProducedEvent(unsigned char action, BOOL on);
 extern void setOuputPin(unsigned char io, BOOL state);
 
 extern unsigned char pulseDelays[NUM_IO];
