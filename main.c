@@ -346,6 +346,12 @@ void initialise(void) {
     WPUB = 0x33; 
     actionQueueInit();
     mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
+#ifdef ANALOGUE
+    initAnalogue();
+#endif
+    // default to all digital IO
+    ANCON0 = 0x00;
+    ANCON1 = 0x00;  
     // set up io pins based upon type
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
@@ -356,9 +362,7 @@ void initialise(void) {
     initServos();
 #endif
     initOutputs();
-#ifdef ANALOGUE
-    initAnalogue();
-#endif
+
     
     /*
      * Now configure the interrupts.
@@ -467,21 +471,21 @@ void configIO(unsigned char i) {
     switch (configs[i].port) {
         case 'A':
             
-            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
                 TRISA |= (1 << configs[i].no);  // input
             } else {
                 TRISA &= ~(1 << configs[i].no); // output
             }
             break;
         case 'B':
-            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
                 TRISB |= (1 << configs[i].no);  // input
             } else {
                 TRISB &= ~(1 << configs[i].no); // output
             }
             break;
         case 'C':
-            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
                 TRISC |= (1 << configs[i].no);  // input
             } else {
                 TRISC &= ~(1 << configs[i].no); // output
@@ -489,7 +493,7 @@ void configIO(unsigned char i) {
             break;          
     }
 #ifdef ANALOGUE
-    if ((NV->io[io].type == TYPE_ANALOGUE_IN) || (NV->io[io].type == TYPE_MAGNET)) {
+    if ((NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
         // set analogue
         if (configs[i].an < 8) {
             ANCON0 |= (1 << configs[i].an);

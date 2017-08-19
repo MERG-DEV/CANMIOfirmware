@@ -49,7 +49,7 @@ void initAnalogue(void) {
     ADCON2bits.ACQT = 2;    // Acquisition 4 Tad cycles
     ADCON2bits.ADCS = 6;    // Fosc/64
     
-    portInProgress = 0; 
+    portInProgress = 0;
     ADCON0bits.ADON = 1;
 }
 

@@ -230,12 +230,13 @@ void actUponNVchange(unsigned char index, unsigned char value) {
         io /= NVS_PER_IO;
         setType(io, value);
     }
-    // if a servo position is changed then move servo to that position
+    
     if (index >= NV_IO_START) {
         io = IO_NV(index);
         nv = NV_NV(index);
         switch(NV_IO_TYPE(io)) {
             case TYPE_MAGNET:
+                // if MAGNET setup is written then do the adc and save the result as the offset
                 if (index == NV_IO_MAGNET_SETUP(io)) {
                     // read the adc for offset
                     int adc = 0;
@@ -254,6 +255,7 @@ void actUponNVchange(unsigned char index, unsigned char value) {
                 }
                 break;
             case TYPE_SERVO:
+                // if a servo position is changed then move servo to that position
                 if (index == NV_IO_SERVO_START_POS(io)) {
                     setServoOutput(io, ACTION_IO_CONSUMER_3);
                 } else if (index == NV_IO_SERVO_END_POS(io)) {
