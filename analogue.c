@@ -58,7 +58,7 @@ void initAnaloguePort(unsigned char io) {
     ADCON0bits.CHS = configs[portInProgress].an;
     ADCON0bits.GO = 1;
     // wait for result
-    while (ADCON0bits.NOT_DONE)
+    while (ADCON0bits.GO)
            ;
     // get the reading
     lastReading[io] = ADRESH;
@@ -77,7 +77,7 @@ void pollAnalogue(void) {
     // are we currently doing a conversion on a valid IO?
     if ((NV->io[portInProgress].type == TYPE_ANALOGUE_IN) || (NV->io[portInProgress].type == TYPE_MAGNET)) {
         // is conversion finished?
-        if (ADCON0bits.DONE) {
+        if ( ! ADCON0bits.GO) {
             // get the 12 bit result
             adc = ADRESH;
             adc << 8;
