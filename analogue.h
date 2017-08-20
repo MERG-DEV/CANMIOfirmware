@@ -16,6 +16,14 @@ extern void initAnalogue(void);
 extern void initAnaloguePort(unsigned char io);
 extern void pollAnalogue(void);
 
+extern unsigned char setupIo;
+extern unsigned char setupState;
+
+//setup states
+#define SETUP_NONE              0
+#define SETUP_REPORT            1
+#define SETUP_REPORT_AND_SAVE   2
+
 
 #ifdef	__cplusplus
 }

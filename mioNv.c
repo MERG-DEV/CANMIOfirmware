@@ -50,6 +50,7 @@
 #include "servo.h"
 #include "config.h"
 #include "cbus.h"
+#include "analogue.h"
 
 extern void setType(unsigned char i, unsigned char type);
 #ifdef __XC8
@@ -202,14 +203,14 @@ BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value
 #ifdef MULTI
             case TYPE_MULTI:
                 break;
+#endif
 #ifdef BOUNCE
             case TYPE_BOUNCE:
                 break;
+#endif
 #ifdef SERVO
             case TYPE_SERVO:
                 break;
-#endif
-#endif
 #endif
             case TYPE_OUTPUT:
             case TYPE_INPUT:
@@ -234,26 +235,18 @@ void actUponNVchange(unsigned char index, unsigned char value) {
     if (index >= NV_IO_START) {
         io = IO_NV(index);
         nv = NV_NV(index);
-        switch(NV_IO_TYPE(io)) {
+        switch(NV->io[io].type) {
+#ifdef ANALOGUE
             case TYPE_MAGNET:
                 // if MAGNET setup is written then do the adc and save the result as the offset
                 if (index == NV_IO_MAGNET_SETUP(io)) {
-                    // read the adc for offset
-                    int adc = 0;
-                    
-                    cbusMsg[d3] = io+1;
-                    cbusMsg[d4] = 0;
-                    cbusMsg[d5] = io+1;
-                    cbusMsg[d6] = (adc >> 8) & 0xFF;
-                    cbusMsg[d7] = (adc & 0xFF);
-                    cbusSendOpcNN(ALL_CBUS, OPC_ARSON3, -1, cbusMsg);
-                    if (value & 0x80) {
-                        // save the offset
-                        writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETH(io)), (BYTE)cbusMsg[d6]);
-                        writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETL(io)), (BYTE)cbusMsg[d7]);
-                    }
+                    //setup variables so that the analogue poll will do the correct thing
+                    setupIo = io;
+                    setupState = (value & 0x80)?SETUP_REPORT_AND_SAVE:SETUP_REPORT;
                 }
                 break;
+#endif
+#ifdef SERVO
             case TYPE_SERVO:
                 // if a servo position is changed then move servo to that position
                 if (index == NV_IO_SERVO_START_POS(io)) {
@@ -262,6 +255,8 @@ void actUponNVchange(unsigned char index, unsigned char value) {
                     setServoOutput(io, ACTION_IO_CONSUMER_2);
                 }
                 break;
+#endif
+#ifdef BOUNCE
             case TYPE_BOUNCE:
                 if (index == NV_IO_BOUNCE_LOWER_POS(io)) {
                     setBounceOutput(io, ACTION_IO_CONSUMER_3);
@@ -269,6 +264,8 @@ void actUponNVchange(unsigned char index, unsigned char value) {
                     setBounceOutput(io, ACTION_IO_CONSUMER_2);
                 }
                 break;
+#endif
+#ifdef MULTI
             case TYPE_MULTI:
                 if (index == NV_IO_MULTI_POS1(io)) {
                     setMultiOutput(io, ACTION_IO_CONSUMER_1);
@@ -280,6 +277,7 @@ void actUponNVchange(unsigned char index, unsigned char value) {
                     setMultiOutput(io, ACTION_IO_CONSUMER_4);
                 }
                 break;
+#endif
         }
     }
 }
@@ -314,6 +312,7 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_FLASH_PERIOD(i)), (BYTE)0);
             break;
+#ifdef SERVO
         case TYPE_SERVO:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
 #ifdef TEST_DEFAULT_NVS
@@ -326,6 +325,8 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
             break;
+#endif
+#ifdef BOUNCE
         case TYPE_BOUNCE:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
 #ifdef TEST_DEFAULT_NVS
@@ -339,6 +340,8 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)50);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
             break;
+#endif
+#ifdef MULTI      
         case TYPE_MULTI:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
@@ -352,6 +355,8 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)128);
 #endif
             break;
+#endif
+#ifdef ANALOGUE
         case TYPE_ANALOGUE_IN:  // use 8 bit ADC
             writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_THRES(i)), (BYTE)0x80);
@@ -365,6 +370,7 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETH(i)), (BYTE)0x07);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETL(i)), (BYTE)0xFF);
             break;
+#endif
     }
 #ifdef NV_CACHE
     loadNvCache();

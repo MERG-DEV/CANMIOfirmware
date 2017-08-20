@@ -141,7 +141,7 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
 
         switch (NV->io[io].type) {
             case TYPE_MAGNET:
-                if (paction == ACTION_IO_PRODUCER_MAGNETL(io)) {
+                if (paction == ACTION_IO_PRODUCER_MAGNETH(io)) {
                     producedEvent.NN = nodeID;
                     producedEvent.EN = io + 101;
                     return TRUE;
@@ -149,6 +149,7 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
                 // fall through
             case TYPE_INPUT:
             case TYPE_ANALOGUE_IN:
+                // Also ACTION_IO_PRODUCER_MAGNETL(io) and ACTION_IO_PRODUCER_ANALOGUE(io))
                 if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
                     producedEvent.NN = nodeID;
                     producedEvent.EN = io + 1;
