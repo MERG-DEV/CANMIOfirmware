@@ -52,7 +52,12 @@
 
 extern void mioNvInit();
 
-#define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+NV_NUM+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
+#ifdef __18F25K80
+#define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+NV_NUM+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+P18F25K80+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
+#else
+#define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+NV_NUM+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+P18F26K80+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
+#endif
+
 
 
 const rom ParamVals     FLiMparams = { 
@@ -67,7 +72,11 @@ const rom ParamVals     FLiMparams = {
     CPU,            // Processor Id 
     PB_CAN,         // Interface protocol
     LOAD_ADDRESS,   //  load address
+#ifdef __18F25K80
     P18F25K80,      // processor code
+#else
+    P18F26K80,      // processor code
+#endif
     CPUM_MICROCHIP, // manufacturer code
     BETA           // beta release flag
     // rest of parameters are filled in by doRqnpn in FLiM.c
