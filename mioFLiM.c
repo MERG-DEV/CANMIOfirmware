@@ -52,7 +52,7 @@
 
 extern void mioNvInit();
 
-#define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+NV_NUM+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
+#define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+(NV_NUM-1)+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
 
 
 
@@ -62,7 +62,7 @@ const rom ParamVals     FLiMparams = {
     MODULE_ID,      // module id
     NUM_EVENTS,     // number of events
     EVperEVT,       // number of event variable per event
-    NV_NUM,         // number of node variables
+    (NV_NUM-1),     // number of node variables -1 since NV#0 is reserved for version
     MAJOR_VER,      // Major version
     MODULE_FLAGS,   // flags
     CPU,            // Processor Id 

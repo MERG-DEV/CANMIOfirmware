@@ -191,7 +191,7 @@ void mioNvInit() {
 BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value) {
     // TODO more validations
     unsigned char io;
-    if (IS_NV_TYPE(index)) {
+    if ((index >= NV_IO_START) && IS_NV_TYPE(index)) {
         switch (value) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
