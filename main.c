@@ -42,20 +42,16 @@
  * Created on 10 April 2017, 10:26
  */
 /** TODOs
- * Bootloader and handling of OPC_BOOT
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
  * Check handling of REQEV events.c
  * More validation of NV values
- * Implement ENUM
- * Implement NENRD
- * Implement CANID
+ * Implement ENUM    force of self enumeration
+ * Implement CANID   set canId
  * Consider option to set outputs on or off on powerup in addition to restore previous state
  * Heartbeat message
- * Fix INVERTED for all types
  * Randomise bounce
  * RFID input
- * Analogue inputs for magnetic and current sense detectors
  * 
  * DONES:
  * DONE  Check handling of REVAL events.c
@@ -66,6 +62,7 @@
  * DONE  Implement AREQ but doesn't handle default events
  * DONE  Fix saved events when doing SNN - not needed
  * DONE  Flash OUTPUT type
+ * DONE  Implement NENRD
  * DONE  Extend ActionQueue size
  * DONE  Determine how to send lots of CBUS messages without filling TX buffers
  * DONE  Consider a delay action for sequences
@@ -91,6 +88,9 @@
  * DONE  NV change callback for type change
  * DONE  add needsStarting and completed for OUTPUT types so can be processed sequentially
  * DONE  sequence servos servo.c
+ * DONE  Bootloader and handling of OPC_BOOT
+ * DONE  Fix INVERTED for all types
+ * DONE  Analogue inputs for magnetic and current sense detectors
  * 
  * 
  * FCU changes needed:
