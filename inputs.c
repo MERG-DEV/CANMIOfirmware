@@ -122,6 +122,11 @@ void inputScan(BOOL report) {
                                 input = !input;
                             }
                             sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), input);
+                        } else {
+                            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                                input = !input;
+                            }
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT_INVERT(io), !input);
                         }
                     } else {
                         // check if produced event is inverted
