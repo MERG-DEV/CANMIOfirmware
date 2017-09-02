@@ -336,19 +336,19 @@ void processActions(void) {
         return;
     }
     if (action == ACTION_CONSUMER_WAIT05) {
-        doWait(500);
+        doWait(5);
         return;
     }
     if (action == ACTION_CONSUMER_WAIT1) {
-        doWait(1000);
+        doWait(10);
         return;
     }
     if (action == ACTION_CONSUMER_WAIT2) {
-        doWait(2000);
+        doWait(20);
         return;
     }
     if (action == ACTION_CONSUMER_WAIT5) {
-        doWait(5000);
+        doWait(50);
         return;
     }
     simultaneous = action & ACTION_SIMULTANEOUS;
@@ -403,6 +403,11 @@ void processActions(void) {
     }
 }
 
+/**
+ * Stop processing actions for a while.
+ * 
+ * @param duration in 0.1second units
+ */
 void doWait(unsigned int duration) {
     // start the timer
     if (startWait.Val == 0) {
@@ -410,7 +415,7 @@ void doWait(unsigned int duration) {
         return;
     } else {
         // check if timer expired
-        if ((tickTimeSince(startWait) > (duration * HUNDRED_MILI_SECOND))) {
+        if ((tickTimeSince(startWait) > ((long)duration * (long)HUNDRED_MILI_SECOND))) {
             doneAction();
             startWait.Val = 0;
             return;
