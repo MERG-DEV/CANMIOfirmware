@@ -94,6 +94,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
+            addEvent(nn, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
 //            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
         case TYPE_INPUT:
@@ -315,7 +316,8 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     }
 }
 
-
+// record the last action started so we can tell if we are starting a new action 
+static unsigned char lastAction = NO_ACTION;
 /**
  * This needs to be called on a regular basis to see if any
  * actions have finished and the next needs to be started.
@@ -324,8 +326,10 @@ void processActions(void) {
     unsigned char io;
     unsigned char type;
     CONSUMER_ACTION_T action = getAction();
+    CONSUMER_ACTION_T ioAction;
     unsigned char simultaneous;
     unsigned char peekItem;
+    
     
     if (action == NO_ACTION) return;
     // Check for SOD
@@ -352,18 +356,22 @@ void processActions(void) {
         return;
     }
     simultaneous = action & ACTION_SIMULTANEOUS;
-    action &= ACTION_MASK;
-    if ((action >= ACTION_CONSUMER_IO_BASE) && (action < NUM_CONSUMER_ACTIONS)) {
+    ioAction = action&ACTION_MASK;
+    if ((ioAction >= ACTION_CONSUMER_IO_BASE) && (ioAction < NUM_CONSUMER_ACTIONS)) {
         // process IO based consumed actions
         
-        io = CONSUMER_IO(action);
-        action = CONSUMER_ACTION(action);
+        io = CONSUMER_IO(ioAction);
+        ioAction = CONSUMER_ACTION(ioAction);
         type = NV->io[io].type;
 
         // check if a simultaneous action needs to be started
-        setOutput(io, action, type);
-        if (needsStarting(io, action, type)) {
-            startOutput(io, action, type);
+        setOutput(io, ioAction, type);
+        if (needsStarting(io, ioAction, type)) {
+            startOutput(io, ioAction, type);
+        }
+        // is this the start of a new action?
+        if (lastAction != action) {
+            lastAction = action;
             // now check to see if any others need starting  
             peekItem = 1;
             while (simultaneous) {
@@ -393,7 +401,7 @@ void processActions(void) {
             }
         }
         // check if this current action has been completed
-        if (completed(io, action, type)) {
+        if (completed(io, ioAction, type)) {
             doneAction();
         }
     } else {
