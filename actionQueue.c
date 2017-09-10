@@ -68,7 +68,7 @@ void actionQueueInit(void) {
  * @param a the action to be processed
  */
 BOOL pushAction(CONSUMER_ACTION_T a) {
-	// do we already have an instruction for the IO ?
+/*	// do we already have an instruction for the IO ?
 	BYTE io = CONSUMER_IO(a);
 	// check it this IO was already in the buffer
     BYTE i;
@@ -87,7 +87,7 @@ BOOL pushAction(CONSUMER_ACTION_T a) {
 			}
 			i--;
 		}
-	}
+	} */
 	if (((writeIdx+1)&POINTER_MASK) == readIdx) return FALSE;	// buffer full
 	buffer[writeIdx++] = a;
 	writeIdx &= POINTER_MASK;
