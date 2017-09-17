@@ -139,11 +139,11 @@ void defaultEvents(unsigned char io, unsigned char type) {
 BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
     if (paction >= ACTION_PRODUCER_IO_BASE) {
         unsigned char io = PRODUCER_IO(paction);
-
+        producedEvent.NN = nodeID;
+        
         switch (NV->io[io].type) {
             case TYPE_MAGNET:
                 if (paction == ACTION_IO_PRODUCER_MAGNETH(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 101;
                     return TRUE;
                 }
@@ -152,7 +152,6 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
             case TYPE_ANALOGUE_IN:
                 // Also ACTION_IO_PRODUCER_MAGNETL(io) and ACTION_IO_PRODUCER_ANALOGUE(io))
                 if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 1;
                     return TRUE;
                 }
@@ -160,24 +159,20 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
             case TYPE_BOUNCE:
             case TYPE_OUTPUT:
                 if (paction == ACTION_IO_PRODUCER_OUTPUT(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 101;
                     return TRUE;
                 }
                 break;
             case TYPE_SERVO:
                 if (paction == ACTION_IO_PRODUCER_SERVO_START(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 101;
                     return TRUE;
                 }
                 if (paction == ACTION_IO_PRODUCER_SERVO_MID(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 301;
                     return TRUE;
                 }
                 if (paction == ACTION_IO_PRODUCER_SERVO_END(io)) {
-                    producedEvent.NN = nodeID;
                     producedEvent.EN = io + 201;
                     return TRUE;
                 }

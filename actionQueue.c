@@ -142,6 +142,7 @@ CONSUMER_ACTION_T peekActionQueue(unsigned char index) {
     if (index > ACTION_QUEUE_SIZE) {
         index -= ACTION_QUEUE_SIZE;
     }
+    if (index == writeIdx) return NO_ACTION;
     return buffer[index];
 }
 
