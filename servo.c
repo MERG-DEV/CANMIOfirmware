@@ -531,7 +531,7 @@ void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void setServoState(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
@@ -558,7 +558,7 @@ void setServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void setBounceState(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
@@ -582,7 +582,7 @@ void setBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void setMultiState(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_1:  // SERVO Position 1
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;
@@ -602,5 +602,11 @@ void setMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
             break;
     }
 }
+
+void setServoPosition(unsigned char io, unsigned char pos) {
+    targetPos[io] = pos;
+    currentPos[io] = pos;
+}
+
 #endif
 

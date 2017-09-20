@@ -56,7 +56,7 @@ void doSOD(void);
 void doWait(unsigned int duration);
 
 extern void startOutput(unsigned char io, unsigned char action, unsigned char type);
-extern void setOutput(unsigned char io, unsigned char action, unsigned char type);
+extern void setOutputState(unsigned char io, unsigned char action, unsigned char type);
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
 extern BOOL sendProducedEvent(unsigned char action, BOOL on);
@@ -360,7 +360,7 @@ void processActions(void) {
         type = NV->io[io].type;
 
         // check if a simultaneous action needs to be started
-        setOutput(io, ioAction, type);
+        setOutputState(io, ioAction, type);
         if (needsStarting(io, ioAction, type)) {
             startOutput(io, ioAction, type);
         }
@@ -385,7 +385,7 @@ void processActions(void) {
                 }
                 nextAction = CONSUMER_ACTION(nextAction);
                 nextType = NV->io[nextIo].type;
-                setOutput(nextIo, nextAction, nextType);
+                setOutputState(nextIo, nextAction, nextType);
                 if (needsStarting(nextIo, nextAction, nextType)) {
                     startOutput(nextIo, nextAction, nextType);
                 }

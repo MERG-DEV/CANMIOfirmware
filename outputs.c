@@ -99,7 +99,7 @@ void startOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type)
  * @param state on/off or position
  * @param type type of output
  */
-void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
+void setOutputState(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
         case TYPE_ANALOGUE_IN:
@@ -107,23 +107,55 @@ void setOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
             // this should never happen
             return;
         case TYPE_OUTPUT:
-            setDigitalOutput(io, action);
+//            setDigitalOutput(io, action);
             return;
 #ifdef BOUNCE
         case TYPE_BOUNCE:
-            setBounceOutput(io, action);
+            setBounceState(io, action);
             return;
 #endif
 #ifdef SERVO
         case TYPE_SERVO:
-            setServoOutput(io, action);
+            setServoState(io, action);
             return;
 #endif
 #ifdef MULTI
         case TYPE_MULTI:
-            setMultiOutput(io, action);
+            setMultiState(io, action);
             return;
 #endif
+    }
+}
+
+/**
+ * Set an output to the requested position.
+ *  
+ * @param i the IO
+ * @param state on/off or position
+ * @param type type of output
+ */
+void setOutputPosition(unsigned char io, unsigned char pos, unsigned char type) {
+    switch(type) {
+        case TYPE_INPUT:
+        case TYPE_ANALOGUE_IN:
+        case TYPE_MAGNET:
+            // this should never happen
+            return;
+        case TYPE_OUTPUT:
+            setDigitalOutput(io, pos);
+            return;
+#ifdef BOUNCE
+        case TYPE_BOUNCE:
+#endif
+#ifdef MULTI
+        case TYPE_MULTI:
+#endif
+#ifdef SERVO
+        case TYPE_SERVO:
+            setServoPosition(io, pos);
+            return;
+#endif
+
     }
 }
 

@@ -179,7 +179,7 @@ void configIO(unsigned char io);
 void factoryReset(void);
 void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
-void setOutput(unsigned char i, unsigned char state, unsigned char type);
+void setOutputPosition(unsigned char i, unsigned char state, unsigned char type);
 BOOL sendProducedEvent(unsigned char action, BOOL on);
 void factoryResetEE(void);
 void factoryResetFlash(void);
@@ -511,7 +511,7 @@ void configIO(unsigned char i) {
 #endif
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
     if (NV->io[i].flags & FLAG_STARTUP) {
-        setOutput(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
+        setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
     }
 }
 

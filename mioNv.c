@@ -250,31 +250,39 @@ void actUponNVchange(unsigned char index, unsigned char value) {
             case TYPE_SERVO:
                 // if a servo position is changed then move servo to that position
                 if (index == NV_IO_SERVO_START_POS(io)) {
-                    setServoOutput(io, ACTION_IO_CONSUMER_3);
+                    setServoState(io, ACTION_IO_CONSUMER_3);
+                    startServoOutput(io, ACTION_IO_CONSUMER_3);
                 } else if (index == NV_IO_SERVO_END_POS(io)) {
-                    setServoOutput(io, ACTION_IO_CONSUMER_2);
+                    setServoState(io, ACTION_IO_CONSUMER_2);
+                    startServoOutput(io, ACTION_IO_CONSUMER_2);
                 }
                 break;
 #endif
 #ifdef BOUNCE
             case TYPE_BOUNCE:
                 if (index == NV_IO_BOUNCE_LOWER_POS(io)) {
-                    setBounceOutput(io, ACTION_IO_CONSUMER_3);
+                    setBounceState(io, ACTION_IO_CONSUMER_3);
+                    startBounceOutput(io, ACTION_IO_CONSUMER_3);
                 } else if (index == NV_IO_BOUNCE_UPPER_POS(io)) {
-                    setBounceOutput(io, ACTION_IO_CONSUMER_2);
+                    setBounceState(io, ACTION_IO_CONSUMER_2);
+                    startBounceOutput(io, ACTION_IO_CONSUMER_2);
                 }
                 break;
 #endif
 #ifdef MULTI
             case TYPE_MULTI:
                 if (index == NV_IO_MULTI_POS1(io)) {
-                    setMultiOutput(io, ACTION_IO_CONSUMER_1);
+                    setMultiState(io, ACTION_IO_CONSUMER_1);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_1);
                 } else if (index == NV_IO_MULTI_POS2(io)) {
-                    setMultiOutput(io, ACTION_IO_CONSUMER_2);
+                    setMultiState(io, ACTION_IO_CONSUMER_2);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_2);
                 } else if (index == NV_IO_MULTI_POS3(io)) {
-                    setMultiOutput(io, ACTION_IO_CONSUMER_3);
+                    setMultiState(io, ACTION_IO_CONSUMER_3);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_3);
                 } else if (index == NV_IO_MULTI_POS4(io)) {
-                    setMultiOutput(io, ACTION_IO_CONSUMER_4);
+                    setMultiState(io, ACTION_IO_CONSUMER_4);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_4);
                 }
                 break;
 #endif
@@ -301,20 +309,18 @@ void factoryResetGlobalNv(void) {
  */
 void defaultNVs(unsigned char i, unsigned char type) {
     // add the module's default nv for this io
+    writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF | FLAG_STARTUP));
     switch(type) {
         case TYPE_INPUT:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)4);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)4);
             break;
         case TYPE_OUTPUT:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_FLASH_PERIOD(i)), (BYTE)0);
             break;
 #ifdef SERVO
         case TYPE_SERVO:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
 #ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)200);
@@ -328,7 +334,6 @@ void defaultNVs(unsigned char i, unsigned char type) {
 #endif
 #ifdef BOUNCE
         case TYPE_BOUNCE:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
 #ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)200);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)30);
@@ -343,7 +348,6 @@ void defaultNVs(unsigned char i, unsigned char type) {
 #endif
 #ifdef MULTI      
         case TYPE_MULTI:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
 #ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)25);
@@ -358,12 +362,10 @@ void defaultNVs(unsigned char i, unsigned char type) {
 #endif
 #ifdef ANALOGUE
         case TYPE_ANALOGUE_IN:  // use 8 bit ADC
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_THRES(i)), (BYTE)0x80);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_HYST(i)), (BYTE)0x10);
             break;
         case TYPE_MAGNET:   // use 12 bit ADC
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_SETUP(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_THRES(i)), (BYTE)123);    // 150mV
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_HYST(i)), (BYTE)32);      // 39mV
