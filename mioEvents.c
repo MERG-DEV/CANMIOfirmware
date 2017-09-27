@@ -81,7 +81,6 @@ void factoryResetGlobalEvents(void) {
  * @param io the IO number
  */
 void defaultEvents(unsigned char io, unsigned char type) {
-    WORD nn = ee_read_short((WORD)EE_NODE_ID);
     WORD en = io+1;
     clearEvents(io); 
 #ifdef TEST_DEFAULT_EVENTS
@@ -93,33 +92,33 @@ void defaultEvents(unsigned char io, unsigned char type) {
              * We create both a Produced and a Consumed event here.
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
-            addEvent(nn, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
-//            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+            addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
+            addEvent(nodeID, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
+//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+ //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-//            addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
-//            addEvent(nn, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
-//            addEvent(nn, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+//            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+//            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nn, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
+            addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
         case TYPE_MULTI:
             // no defaults for multi
             break;
         case TYPE_ANALOGUE_IN:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+ //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
             break;
         case TYPE_MAGNET:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nn, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
- //           addEvent(nn, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+ //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
+ //           addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
             break;
     }
 #endif
@@ -186,14 +185,10 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
  * Clear the events for the IO. Called prior to setting the default events.
  * @param i the IO number
  */
-void clearEvents(unsigned char i) {
-    unsigned char e;
-    for (e=0; e<CONSUMER_ACTIONS_PER_IO; e++) {
-        deleteAction(ACTION_IO_CONSUMER_BASE(i)+e);
-    }
-    for (e=0; e<PRODUCER_ACTIONS_PER_IO; e++) {
-        deleteAction(ACTION_IO_PRODUCER_BASE(i)+e);
-    }
+void clearEvents(unsigned char io) {
+    deleteConsumerActionRange(ACTION_IO_CONSUMER_BASE(io),                       CONSUMER_ACTIONS_PER_IO);
+    deleteConsumerActionRange(ACTION_IO_CONSUMER_BASE(io) | ACTION_SIMULTANEOUS, CONSUMER_ACTIONS_PER_IO);
+    deleteProducerActionRange(ACTION_IO_PRODUCER_BASE(io),                       PRODUCER_ACTIONS_PER_IO);
 }
 
 /**
