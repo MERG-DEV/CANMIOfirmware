@@ -51,7 +51,7 @@ extern "C" {
      * is defined here. I.e. module specific storage.
      * Module specific stuff starts at EE_TOP-8
      */
-#define EE_DUMMY            EE_APPLICATION    // Dummy entry to do initial write to
+#define EE_SPARE            EE_APPLICATION    // spare location
     /**
      * Record the current output state for all the IO.
      */

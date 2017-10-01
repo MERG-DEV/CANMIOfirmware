@@ -263,8 +263,6 @@ int main(void) @0x800 {
 #endif
     // Both LEDs off to start with during initialisation
     initStatusLeds();
-    // The very first ee_write seems to not work so I put a dummy write here
-    ee_write((WORD)EE_DUMMY, 0xff);
 
     initialise(); 
     startTime.Val = tickGet();
@@ -351,19 +349,19 @@ void initialise(void) {
 #endif
     // default to all digital IO
     ANCON0 = 0x00;
-    ANCON1 = 0x00;  
+    ANCON1 = 0x00; 
+    // set the servo state and positions before configuring IO so we reduce the startup twitch
+#ifdef SERVO
+    initServos();
+#endif
+    initOutputs();
     // set up io pins based upon type
     // set the ports to the correct type
     for (io=0; io< NUM_IO; io++) {
         configIO(io);
     }
     initInputScan();
-#ifdef SERVO
-    initServos();
-#endif
-    initOutputs();
 
-    
     /*
      * Now configure the interrupts.
      * Interrupt priority is enabled with the High priority interrupt used for
@@ -467,6 +465,10 @@ BOOL checkCBUS( void ) {
  */
 void configIO(unsigned char i) {
     if (i >= NUM_IO) return;
+    // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
+    if (NV->io[i].flags & FLAG_STARTUP) {
+        setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
+    }
     // Now actually set it
     switch (configs[i].port) {
         case 'A':
@@ -509,10 +511,6 @@ void configIO(unsigned char i) {
         }
     }
 #endif
-    // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
-    if (NV->io[i].flags & FLAG_STARTUP) {
-        setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
-    }
 }
 
 
