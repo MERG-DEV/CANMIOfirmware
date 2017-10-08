@@ -46,14 +46,14 @@
  * Work out what to do if all CANIDs are taken can18.c
  * Check handling of REQEV events.c
  * More validation of NV values
- * Implement ENUM    force of self enumeration
- * Implement CANID   set canId
  * Consider option to set outputs on or off on powerup in addition to restore previous state
  * Heartbeat message
  * Randomise bounce
  * RFID input
  * 
  * DONES:
+ * DONE  Implement ENUM    force of self enumeration
+ * DONE  Implement CANID   set canId
  * DONE  Check handling of REVAL events.c
  * DONE  Implement NNRST
  * DONE  Implement NNRSM
