@@ -443,15 +443,17 @@ BOOL checkCBUS( void ) {
         if (parseCBUSMsg(msg)) {               // Process the incoming message
             return TRUE;
         }
-        // handle the CANMIO specifics
-        switch (msg[d0]) {
-        case OPC_NNRSM: // reset to manufacturer defaults
-            factoryReset();
-            return TRUE;
-        case OPC_NNRST: // restart
-            // if we just call main then the stack won't be reset and we'd also want variables to be nullified
-            // instead call the RESET vector (0x0000)
-            Reset();
+        if (thisNN(msg)) {
+            // handle the CANMIO specifics
+            switch (msg[d0]) {
+            case OPC_NNRSM: // reset to manufacturer defaults
+                factoryReset();
+                return TRUE;
+            case OPC_NNRST: // restart
+                // if we just call main then the stack won't be reset and we'd also want variables to be nullified
+                // instead call the RESET vector (0x0000)
+                Reset();
+            }
         }
     }
     return FALSE;
