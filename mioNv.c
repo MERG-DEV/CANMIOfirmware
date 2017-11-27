@@ -229,7 +229,9 @@ void actUponNVchange(unsigned char index, unsigned char value) {
     if (IS_NV_TYPE(index)) {
         io = index-NV_IO_START;
         io /= NVS_PER_IO;
-        setType(io, value);
+        if (NV->io[io].type  != value) {
+            setType(io, value);
+        }
     }
     
     if (index >= NV_IO_START) {

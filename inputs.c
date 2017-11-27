@@ -46,10 +46,14 @@
 #include "cbus.h"
 
 /**
- * The current state of the inputs. This may not be the actual read state uas we
+ * The current state of the input pins. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.
  */
 BYTE inputState[NUM_IO];
+/**
+ * The effective state of the inputs after handling toggle. 
+ */
+BYTE outputState[NUM_IO];
 /*
  * Counts the number of cycles since the input changed state.
  */
@@ -69,6 +73,7 @@ static unsigned char io;
 void initInputScan(void) {
     for (io=0; io<NUM_IO; io++) {
         inputState[io] = readInput(io);
+        outputState[io] = inputState[io];
     }
 }
 
@@ -99,7 +104,9 @@ void inputScan(BOOL report) {
                     change = TRUE;
                 }
                 if (change) {
+                    // input been steady long enough to be treated as a real change
                     delayCount[io] = 0;
+                    inputState[io] = input;
                     // check if input pin is inverted
                     if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                         input = !input;
@@ -107,33 +114,30 @@ void inputScan(BOOL report) {
                     // Check if toggle
                     if (NV->io[io].flags & FLAGS_TOGGLE) {
                         if (input) {
-                            inputState[io] = ! inputState[io];
-                            input = inputState[io];
+                            outputState[io] = ! outputState[io];
                         }
                      } else {
-                        inputState[io] = input;
+                        outputState[io] = input;
                     }
+                    
                     // check if OFF events are enabled
                     if (NV->io[io].flags & FLAG_DISABLE_OFF) {
-                        if (input) {
+                        if (outputState[io]) {
                             // only ON
                             // check if produced event is inverted
                             if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                                input = !input;
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                            } else {
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE);
                             }
-                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), input);
-                        } else {
-                            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                                input = !input;
-                            }
-                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT_INVERT(io), !input);
                         }
                     } else {
                         // check if produced event is inverted
                         if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                            input = !input;
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), !outputState[io]);
+                        } else {
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), outputState[io]);
                         }
-                        sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), input);
                     }
                 } else {
                     delayCount[io]++;
