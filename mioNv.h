@@ -225,7 +225,7 @@ extern void mioNvInit();
 extern unsigned int getNodeVar(unsigned int index);
 extern void setNodeVar(unsigned int index, unsigned int value);
 extern BOOL validateNV(BYTE nvIndex, BYTE oldValue, BYTE value);
-void actUponNVchange(unsigned char index, unsigned char value);
+void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char value);
 extern void defaultNVs(unsigned char i, unsigned char type);        
 
 

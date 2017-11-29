@@ -222,14 +222,14 @@ BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value
     return TRUE;
 } 
 
-void actUponNVchange(unsigned char index, unsigned char value) {
+void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char value) {
     // If the IO type is changed then we need to do a bit or work
     unsigned char io;
     unsigned char nv;
     if (IS_NV_TYPE(index)) {
         io = index-NV_IO_START;
         io /= NVS_PER_IO;
-        if (NV->io[io].type  != value) {
+        if (oldValue != value) {
             setType(io, value);
         }
     }
