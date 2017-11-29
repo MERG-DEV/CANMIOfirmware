@@ -115,6 +115,8 @@ void inputScan(BOOL report) {
                     if (NV->io[io].flags & FLAGS_TOGGLE) {
                         if (input) {
                             outputState[io] = ! outputState[io];
+                        } else {
+                            continue;
                         }
                      } else {
                         outputState[io] = input;

@@ -141,13 +141,23 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
         producedEvent.NN = nodeID;
         
         switch (NV->io[io].type) {
+            case TYPE_INPUT:
+                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
+                    producedEvent.EN = io + 1;
+                    return TRUE;
+                }
+                if (paction == ACTION_IO_PRODUCER_INPUT_TWO_ON(io)) {
+                    // this will not send an event by default
+                    producedEvent.EN = 0;
+                    return TRUE;
+                }
+                break;
             case TYPE_MAGNET:
                 if (paction == ACTION_IO_PRODUCER_MAGNETH(io)) {
                     producedEvent.EN = io + 101;
                     return TRUE;
                 }
                 // fall through
-            case TYPE_INPUT:
             case TYPE_ANALOGUE_IN:
                 // Also ACTION_IO_PRODUCER_MAGNETL(io) and ACTION_IO_PRODUCER_ANALOGUE(io))
                 if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
