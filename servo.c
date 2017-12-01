@@ -70,7 +70,7 @@
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
 
-#define MAX_SERVO_LOOP          120      // Max number of loops 
+#define MAX_SERVO_LOOP          250      // Max number of loops 
 #define MAX_BOUNCE_LOOP          50      // Max number of loops 
 #define MAX_MULTI_LOOP          100      // Max number of loops 
 
