@@ -26,24 +26,41 @@
 	
 */ 
 /* 
- * File:   actionQueue.h
+ * File:   actionQueue.c
  * Author: Ian
  *
- * Created on 1 June 2017, 13:14
+ * Created on 04 December 2017, 21:45
  *
+ * A queue of consumed actions.
  */
-#ifndef __ACTIONQUEUE_H_
-#define __ACTIONQUEUE_H_
 
+#ifndef QUEUE_H
+#define	QUEUE_H
 
-
-extern void actionQueueInit(void);
-extern BOOL pushAction(CONSUMER_ACTION_T a);
-extern CONSUMER_ACTION_T getAction(void);
-extern void doneAction(void);
-extern CONSUMER_ACTION_T pullAction(void);
-extern CONSUMER_ACTION_T peekActionQueue(unsigned char index);
-extern void deleteActionQueue(unsigned char index);
-extern void setExpeditedActions(void);
-extern void setNormalActions(void);
+#ifdef	__cplusplus
+extern "C" {
 #endif
+
+#include "GenericTypeDefs.h"
+#include "module.h"
+
+    typedef struct Queue {
+        unsigned char size;
+        unsigned char readIdx;
+        unsigned char writeIdx;
+        CONSUMER_ACTION_T * queue;
+    } Queue;
+    
+extern BOOL push(Queue * q, CONSUMER_ACTION_T a);
+extern CONSUMER_ACTION_T pop(Queue * q);
+extern CONSUMER_ACTION_T peek(Queue * q, unsigned char index);
+extern unsigned char quantity(Queue * q);
+extern void delete(Queue * q, unsigned char index);
+
+
+#ifdef	__cplusplus
+}
+#endif
+
+#endif	/* QUEUE_H */
+

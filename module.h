@@ -69,10 +69,11 @@ extern "C" {
 // Whether NVs are cached in RAM
 #define NV_CACHE
     
-#define ACTION_QUEUE_SIZE 	64	// The size needs to be big enough to store all the pending actions 
+#define ACTION_NORMAL_QUEUE_SIZE 	64	// The size needs to be big enough to store all the pending actions 
                                 // Need to allow +1 to separate the ends of the cyclic buffer so need to 
                                 // move the next power of two since cyclic wrapping is done with a bitmask.
                                 // 64 is safer as we have wait actions
+#define ACTION_EXPEDITED_QUEUE_SIZE 8
     
 // Whether we have default settings useful for testing
 #define TEST_DEFAULT_EVENTS

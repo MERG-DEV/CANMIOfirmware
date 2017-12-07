@@ -331,7 +331,10 @@ void processActions(void) {
     unsigned char peekItem;
     
     
-    if (action == NO_ACTION) return;
+    if (action == NO_ACTION) {
+        doneAction();
+        return;
+    }
     // Check for SOD
     if (action == ACTION_CONSUMER_SOD) {
         // Do the SOD

@@ -26,24 +26,81 @@
 	
 */ 
 /* 
- * File:   actionQueue.h
+ * File:   actionQueue.c
  * Author: Ian
  *
- * Created on 1 June 2017, 13:14
+ * Created on 04 December 2017, 21:45
  *
+ * A queue of consumed actions.
  */
-#ifndef __ACTIONQUEUE_H_
-#define __ACTIONQUEUE_H_
+
+#include "module.h"
+#include "queue.h"
+
+/**
+ * Push an item onto the action queue.
+ * @param q
+ * @param a
+ * @return 
+ */
+BOOL push(Queue * q, CONSUMER_ACTION_T a) {
+    if (((q->writeIdx+1)&((q->size)-1)) == q->readIdx) return FALSE;	// buffer full
+    q->queue[q->writeIdx++] = a;
+    q->writeIdx &= (q->size-1);
+    return TRUE;
+}
 
 
+/**
+ * Pull the next action from the buffer.
+ *
+ * @return the next action
+ */
+CONSUMER_ACTION_T pop(Queue * q) {
+    CONSUMER_ACTION_T ret;
+	if (q->writeIdx == q->readIdx) {
+        return NO_ACTION;	// buffer empty
+    }
+	ret = q->queue[q->readIdx++];
+	q->readIdx &= (q->size-1);
+	return ret;
+}
 
-extern void actionQueueInit(void);
-extern BOOL pushAction(CONSUMER_ACTION_T a);
-extern CONSUMER_ACTION_T getAction(void);
-extern void doneAction(void);
-extern CONSUMER_ACTION_T pullAction(void);
-extern CONSUMER_ACTION_T peekActionQueue(unsigned char index);
-extern void deleteActionQueue(unsigned char index);
-extern void setExpeditedActions(void);
-extern void setNormalActions(void);
-#endif
+/**
+ * Peek into the buffer.
+ *
+ * @return the action
+ */
+CONSUMER_ACTION_T peek(Queue * q, unsigned char index) {
+    if (q->readIdx == q->writeIdx) return NO_ACTION;    // empty
+    index += q->readIdx;
+//    index -= 1;
+    if (index > q->size) {
+        index -= q->size;
+    }
+    if (index == q->writeIdx) return NO_ACTION; // at end
+    return q->queue[index];
+}
+
+
+/**
+ * Return number of items in the queue.
+ */
+unsigned char quantity(Queue * q) {
+    return (q->writeIdx - q->readIdx) & (q->size -1);
+}
+
+/**
+ * Delete an item in the queue. Replace the item with NO_ACTION.
+ * @param index the item index within the queue
+ */
+void delete(Queue * q, unsigned char index) {
+    if (index > q->size) return;
+
+    index += q->readIdx;
+    index -= 1;
+    if (index > q->size) {
+        index -= q->size;
+    }
+    q->queue[index] = NO_ACTION;
+}
