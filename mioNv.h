@@ -158,6 +158,7 @@ extern "C" {
 #define FLAGS_TOGGLE                0x10    // whether an INPUT operates as a pushbutton toggle
 #define FLAG_RESULT_ACTION_INVERTED 0x20    // whether the resulting action is inverted
 #define FLAG_RESULT_EVENT_INVERTED  0x40    // whether the generated event is inverted
+#define FLAG_EXPEDITED_ACTIONS      0x80    // whether consumed actions are expedited
 
 typedef struct {
     unsigned char type;

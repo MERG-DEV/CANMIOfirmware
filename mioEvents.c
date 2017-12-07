@@ -249,6 +249,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                         ca = CONSUMER_ACTION(action&ACTION_MASK);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
+                                if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
+                                    setExpeditedActions();
+                                }
+                                // fall through
                             case TYPE_SERVO:
                             case TYPE_BOUNCE:
                                 if (ca == ACTION_IO_CONSUMER_1) {
@@ -256,6 +260,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                     action++;
                                 }
                                 pushAction((CONSUMER_ACTION_T)action);
+                                setNormalActions();
                                 break;
                             case TYPE_MULTI:
                                 pushAction((CONSUMER_ACTION_T)action);
@@ -294,6 +299,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                         ca = CONSUMER_ACTION(action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
+                                if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
+                                    setExpeditedActions();
+                                }
+                                // fall through
                             case TYPE_SERVO:
                             case TYPE_BOUNCE:
                                 if (ca == ACTION_IO_CONSUMER_1) {
@@ -301,6 +310,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                     action += 2;
                                 }
                                 pushAction(action|nextSimultaneous);
+                                setNormalActions();
                                 break;
                             case TYPE_MULTI:
                                 pushAction(action|nextSimultaneous);
