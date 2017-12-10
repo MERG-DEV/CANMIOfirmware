@@ -74,6 +74,7 @@ void initInputScan(void) {
     for (io=0; io<NUM_IO; io++) {
         inputState[io] = readInput(io);
         outputState[io] = inputState[io];
+        delayCount[io] = 0;
     }
 }
 
@@ -108,7 +109,7 @@ void inputScan(BOOL report) {
                     delayCount[io] = 0;
                     inputState[io] = input;
                     // check if input pin is inverted
-                    if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                    if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
                         input = !input;
                     }
                     // Check if toggle

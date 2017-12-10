@@ -110,6 +110,7 @@ void initServos(void) {
         servoState[io] = OFF;
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         speed[io] = 0;
+        loopCount[io] = 0;
         setOutputPin(io, FALSE);
     }
     block = 3;

@@ -180,7 +180,7 @@ volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVar
 #endif
 #endif
 
-void mioNvInit() {
+void mioNvInit(void) {
 
 }
 

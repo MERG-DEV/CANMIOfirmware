@@ -133,7 +133,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
 /**
  * Called regularly to handle pulse and flash.
  */
-void processOutputs() {
+void processOutputs(void) {
     BOOL state;
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {

@@ -343,7 +343,8 @@ void initialise(void) {
     // RB bits 0,1,4,5 need pullups
     WPUB = 0x33; 
     actionQueueInit();
-    mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit
+    mioEventsInit();
+    mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit, cbusInit
 #ifdef ANALOGUE
     initAnalogue();
 #endif

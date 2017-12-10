@@ -150,6 +150,7 @@ extern "C" {
 #define CONSUMER_ACTION(a)                  (((a)-ACTION_CONSUMER_IO_BASE)%CONSUMER_ACTIONS_PER_IO)
 #define CONSUMER_IO(a)                      (((a)-ACTION_CONSUMER_IO_BASE)/CONSUMER_ACTIONS_PER_IO)
 
+extern void mioEventsInit(void);
 extern void factoryResetGlobalEvents(void);
 extern void defaultEvents(unsigned char i, unsigned char type);
 extern void clearEvents(unsigned char i);

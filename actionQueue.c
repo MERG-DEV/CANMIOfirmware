@@ -40,20 +40,14 @@
 #include "actionQueue.h"
 #include "queue.h"
 
-// Forward declarations
-CONSUMER_ACTION_T pullAction(void);
-
-#define NORMAL_POINTER_MASK 	(ACTION_NORMAL_QUEUE_SIZE-1)
 BYTE normalReadIdx;                   // index of the next to read
 BYTE normalWriteIdx;                  // index of the next to write
 CONSUMER_ACTION_T normalQueueBuf[ACTION_NORMAL_QUEUE_SIZE];   // the actual cyclic buffer space
 Queue normalQueue;
 
-#define EXPEDITED_POINTER_MASK 	(ACTION_EXPEDITED_QUEUE_SIZE-1)
 BYTE expeditedReadIdx;                   // index of the next to read
 BYTE expeditedWriteIdx;                  // index of the next to write
 CONSUMER_ACTION_T expeditedQueueBuf[ACTION_EXPEDITED_QUEUE_SIZE];   // the actual cyclic buffer space
-
 Queue expeditedQueue;
 
 static BOOL expedited;

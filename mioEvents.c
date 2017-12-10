@@ -68,6 +68,10 @@ extern unsigned char currentPos[NUM_IO];
 
 static TickValue startWait;
 
+void mioEventsInit(void) {
+    startWait.Val = 0;
+}
+
 /**
  * Set Global Events back to factory defaults.
  */

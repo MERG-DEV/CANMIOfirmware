@@ -46,7 +46,7 @@
 BOOL push(Queue * q, CONSUMER_ACTION_T a) {
     if (((q->writeIdx+1)&((q->size)-1)) == q->readIdx) return FALSE;	// buffer full
     q->queue[q->writeIdx++] = a;
-    q->writeIdx &= (q->size-1);
+    if (q->writeIdx >= q->size) q->writeIdx = 0;
     return TRUE;
 }
 
@@ -62,7 +62,7 @@ CONSUMER_ACTION_T pop(Queue * q) {
         return NO_ACTION;	// buffer empty
     }
 	ret = q->queue[q->readIdx++];
-	q->readIdx &= (q->size-1);
+	if (q->readIdx >= q->size) q->readIdx = 0;
 	return ret;
 }
 
@@ -75,7 +75,7 @@ CONSUMER_ACTION_T peek(Queue * q, unsigned char index) {
     if (q->readIdx == q->writeIdx) return NO_ACTION;    // empty
     index += q->readIdx;
 //    index -= 1;
-    if (index > q->size) {
+    if (index >= q->size) {
         index -= q->size;
     }
     if (index == q->writeIdx) return NO_ACTION; // at end
@@ -95,11 +95,11 @@ unsigned char quantity(Queue * q) {
  * @param index the item index within the queue
  */
 void delete(Queue * q, unsigned char index) {
-    if (index > q->size) return;
+    if (index >= q->size) return;
 
     index += q->readIdx;
-    index -= 1;
-    if (index > q->size) {
+    //index -= 1;
+    if (index >= q->size) {
         index -= q->size;
     }
     q->queue[index] = NO_ACTION;
