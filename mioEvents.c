@@ -48,7 +48,8 @@
 #include "mioEvents.h"
 #include "cbus.h"
 #include "actionQueue.h"
-#include "FliM.h" 
+#include "FliM.h"
+#include "analogue.h"
 
 // forward declarations
 void clearEvents(unsigned char i);
@@ -231,9 +232,11 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     int action;
 
     BYTE opc = getEVs(tableIndex);
+#ifdef SAFETY
     if (opc != 0) {
         return; // error getting EVs. Can't report the error so just return
     }
+#endif
     opc=msg[d0];
     // check the OPC if this is an ON or OFF event
     if ( ! (opc&EVENT_ON_MASK)) {
@@ -278,8 +281,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             }
         } 
     } else {
-	// OFF events work down through the EVs
-        // TODO would be more efficient to get all the EVs in one go and then work through them. getEV() isn't quick)
+        // OFF events work down through the EVs
         int nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
@@ -466,6 +468,7 @@ void doSOD(void) {
                 state = ee_read(EE_OP_STATE+io);
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state));
                 break;
+#ifdef SERVO
             case TYPE_SERVO:
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos));
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos));
@@ -474,10 +477,13 @@ void doSOD(void) {
                          (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway));
                 break;
+#ifdef BOUNCE
             case TYPE_BOUNCE:
                 state = ee_read(EE_OP_STATE+io);
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state));
                 break;
+#endif
+#ifdef MULTI
             case TYPE_MULTI:
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1));
                 while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2));
@@ -486,6 +492,15 @@ void doSOD(void) {
                     while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4));
                 }
                 break;
+#endif
+#endif
+#ifdef ANALOGUE
+            case TYPE_ANALOGUE_IN:
+            case TYPE_MAGNET:
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER));
+                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER));
+                break;
+#endif
         }
     }
 }

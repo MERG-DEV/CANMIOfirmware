@@ -65,6 +65,9 @@ extern "C" {
     
 //Whether to support ANALOGUE INPUTS
 #define ANALOGUE
+    
+// enable this for additional validation checks
+//#define SAFETY
 
 // Whether NVs are cached in RAM
 #define NV_CACHE

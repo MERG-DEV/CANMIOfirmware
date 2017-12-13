@@ -42,10 +42,10 @@
 #ifdef ANALOGUE
 static unsigned char portInProgress;
 static WORD lastReading[NUM_IO];
-static unsigned char eventState[NUM_IO];
-#define EVENTS_OFF      0
-#define EVENTS_LOWER    1
-#define EVENTS_UPPER    2
+unsigned char eventState[NUM_IO];
+#define ANALOGUE_EVENT_OFF      0
+#define ANALOGUE_EVENT_LOWER    1
+#define ANALOGUE_EVENT_UPPER    2
 
 unsigned char setupIo;
 unsigned char setupState;
@@ -76,7 +76,7 @@ void initAnaloguePort(unsigned char io) {
     lastReading[io] = ADRESH;
     lastReading[io] << 8;
     lastReading[io] |= ADRESL;
-    eventState[io] = EVENTS_OFF;
+    eventState[io] = ANALOGUE_EVENT_OFF;
 }
 
 
@@ -110,18 +110,18 @@ void pollAnalogue(void) {
                     hhysteresis = hthreshold - NV->io[portInProgress].nv_io.nv_magnet.magnet_hysteresis;
                     // compare with thresholds
                     if ((lastReading[portInProgress] < hthreshold) && (adc >= hthreshold)) {
-                        if (eventState[portInProgress] != EVENTS_UPPER) {
+                        if (eventState[portInProgress] != ANALOGUE_EVENT_UPPER) {
                             //High on
                             sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
-                            eventState[portInProgress] = EVENTS_UPPER;
+                            eventState[portInProgress] = ANALOGUE_EVENT_UPPER;
                         }
                     } else if (( lastReading[portInProgress] > hhysteresis) && (adc <= hhysteresis)) {
-                        if (eventState[portInProgress] == EVENTS_UPPER) {
+                        if (eventState[portInProgress] == ANALOGUE_EVENT_UPPER) {
                             //High Off
                             if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
                                 sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
                             }
-                            eventState[portInProgress] = EVENTS_OFF;
+                            eventState[portInProgress] = ANALOGUE_EVENT_OFF;
                         }
                     }
                 } else {
@@ -132,18 +132,18 @@ void pollAnalogue(void) {
                 }
                 // This is common between analogue and magnet despite the names
                 if (( lastReading[portInProgress] > lhysteresis) && (adc <= lhysteresis)) {
-                    if (eventState[portInProgress] != EVENTS_LOWER) {
+                    if (eventState[portInProgress] != ANALOGUE_EVENT_LOWER) {
                         // Low on 
                         sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
-                        eventState[portInProgress] = EVENTS_LOWER;
+                        eventState[portInProgress] = ANALOGUE_EVENT_LOWER;
                     }
                 } else if ((lastReading[portInProgress] < lthreshold) && (adc >= lthreshold)) {
-                    if (eventState[portInProgress] == EVENTS_LOWER) {
+                    if (eventState[portInProgress] == ANALOGUE_EVENT_LOWER) {
                         //Low Off
                         if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
                             sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
-                        eventState[portInProgress] = EVENTS_OFF;
+                        eventState[portInProgress] = ANALOGUE_EVENT_OFF;
                     }
                 }
             } else {
@@ -179,11 +179,12 @@ void pollAnalogue(void) {
         ADCON0bits.GO = 1;
     }
 }
-
+/*
 WORD getChannel(unsigned char ch) {
     if ((NV->io[ch].type == TYPE_ANALOGUE_IN) || (NV->io[ch].type == TYPE_MAGNET)) {
         return lastReading[ch];
     }
     return 0;
 }
+*/
 #endif

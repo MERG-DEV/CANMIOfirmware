@@ -45,11 +45,14 @@
  * Flicker LED on CAN activity can18.c
  * Work out what to do if all CANIDs are taken can18.c
  * Check handling of REQEV events.c
- * More validation of NV values
  * Consider option to set outputs on or off on powerup in addition to restore previous state
  * Heartbeat message
  * Randomise bounce
  * RFID input
+ * CHECK DOCS
+SERVO/Bounce/MULT invert action
+two on produced event
+
  * 
  * DONES:
  * DONE  Implement ENUM    force of self enumeration
@@ -417,7 +420,7 @@ void setType(unsigned char io, unsigned char type) {
     addr = AT_NV+NV_IO_TYPE(io);
     writeFlashByte((BYTE*)addr, type);
 #ifdef NV_CACHE
-    loadNvCache();
+    NV->io[io].type = type;
 #endif
     configIO(io);
     // set to default NVs

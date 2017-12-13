@@ -24,6 +24,12 @@ extern unsigned char setupState;
 #define SETUP_REPORT            1
 #define SETUP_REPORT_AND_SAVE   2
 
+// Event states
+extern unsigned char eventState[NUM_IO];
+#define ANALOGUE_EVENT_OFF      0
+#define ANALOGUE_EVENT_LOWER    1
+#define ANALOGUE_EVENT_UPPER    2
+
 
 #ifdef	__cplusplus
 }

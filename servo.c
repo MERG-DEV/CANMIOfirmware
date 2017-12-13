@@ -182,7 +182,7 @@ void setupTimer1(unsigned char io) {
     TMR1L = ticks & 0xFF;
 #endif
     // turn on output
-    setOutputPin(io, TRUE);
+    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
 void setupTimer2(unsigned char io) {
@@ -191,7 +191,7 @@ void setupTimer2(unsigned char io) {
     PR2 = ticks & 0xFF;       // set the duration
     timer2Counter = ticks >> 8;
     // turn on output
-    setOutputPin(io, TRUE);
+    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T2CON = (BYTE)0x05;        // enable Timer2 with 1:4 prescale
 }
 void setupTimer3(unsigned char io) {
@@ -203,7 +203,7 @@ void setupTimer3(unsigned char io) {
     TMR3L = ticks & 0xFF;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #endif
     // turn on output
-    setOutputPin(io, TRUE);
+    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T3CONbits.TMR3ON = 1;       // enable Timer3
 }
 void setupTimer4(unsigned char io) {
@@ -212,7 +212,7 @@ void setupTimer4(unsigned char io) {
     PR4 = ticks & 0xff;       // set the duration
     timer4Counter = ticks >> 8;
     // turn on output
-    setOutputPin(io, TRUE);
+    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T4CON = (BYTE)0x05;        // enable Timer4 with 1:4 prescale
 }
 
@@ -223,14 +223,14 @@ void setupTimer4(unsigned char io) {
  */
 void timer1DoneInterruptHandler(void) {
     T1CONbits.TMR1ON = 0;       // disable Timer1
-    setOutputPin(block*4, FALSE);    
+    setOutputPin(block*4, NV->io[block*4].flags & FLAG_RESULT_ACTION_INVERTED);    
 }
 void timer2DoneInterruptHandler(void) {
     // Is the 16bit counter now at 0?
     if (timer2Counter == 0) {
         // stop counting
         T2CONbits.TMR2ON =0;        // disable Timer2
-        setOutputPin(block*4+1, FALSE);  
+        setOutputPin(block*4+1, NV->io[block*4+1].flags & FLAG_RESULT_ACTION_INVERTED);  
     } else {
         // keep counting
         PR2 = 0xFF;
@@ -239,14 +239,14 @@ void timer2DoneInterruptHandler(void) {
 }
 void timer3DoneInterruptHandler(void) {
     T3CONbits.TMR3ON = 0;       // disable Timer3
-    setOutputPin(block*4+2, FALSE);    
+    setOutputPin(block*4+2, NV->io[block*4+2].flags & FLAG_RESULT_ACTION_INVERTED);    
 }
 void timer4DoneInterruptHandler(void) {
     // Is the 16bit counter now at 0?
     if (timer4Counter == 0) {
         // stop counting
         T4CONbits.TMR4ON =0;        // disable Timer4
-        setOutputPin(block*4+3, FALSE);
+        setOutputPin(block*4+3, NV->io[block*4+3].flags & FLAG_RESULT_ACTION_INVERTED);
     } else {
         // keep counting
         PR4 = 0xFF;
@@ -332,18 +332,6 @@ void pollServos(void) {
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
                         break;
-                    case STOPPED:
-                        // if we have been stopped for more than 1 sec then change to OFF
-                        if (NV->io[io].flags & FLAG_CUTOFF) {
-                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
-                                servoState[io] = OFF;
-                            }
-                        }
-                        break;
-                    case OFF:
-                        // output off
-                        // no need to do anything since if output is OFF we don't start the timer in startServos
-                        break;
                 }
                 break;
             case TYPE_BOUNCE:
@@ -363,9 +351,9 @@ void pollServos(void) {
                         }
                         // Implement the bounce algorithm here
                         target = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
-                        if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
-                            target = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
-                        }
+//                        if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+//                            target = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
+//                        }
                         if (targetPos[io] == target) {
                             if (bounceUp(io)) {
                                 servoState[io] = STOPPED;
@@ -383,18 +371,6 @@ void pollServos(void) {
                                 ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         }
-                        break;
-                    case STOPPED:
-                        // if we have been stopped for more than 1 sec then change to OFF
-                        if (NV->io[io].flags & FLAG_CUTOFF) {
-                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
-                                servoState[io] = OFF;
-                            }
-                        }
-                        break;
-                    case OFF:
-                        // output off
-                        // no need to do anything since if output is OFF we don't start the timer in startServos
                         break;
                 }
                 break;
@@ -454,20 +430,22 @@ void pollServos(void) {
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
                         break;
-                    case STOPPED:
-                        // if we have been stopped for more than 1 sec then change to OFF
-                        if (NV->io[io].flags & FLAG_CUTOFF) {
-                            if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
-                                servoState[io] = OFF;
-                            }
-                        }
-                        break;
-                    case OFF:
-                        // output off
-                        // no need to do anything since if output is OFF we don't start the timer in startServos
-                        break;
                 }
                 break;
+        }
+        switch (servoState[io]) {
+        case STOPPED:
+            // if we have been stopped for more than 1 sec then change to OFF
+            if (NV->io[io].flags & FLAG_CUTOFF) {
+                if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
+                    servoState[io] = OFF;
+                }
+            }
+            break;
+        case OFF:
+            // output off
+            // no need to do anything since if output is OFF we don't start the timer in startServos
+            break;
         }
     }
 }
