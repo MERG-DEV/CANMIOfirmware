@@ -80,7 +80,7 @@ extern "C" {
     
 // Whether we have default settings useful for testing
 #define TEST_DEFAULT_EVENTS
-#define TEST_DEFAULT_NVS
+//#define TEST_DEFAULT_NVS
     
     
 /************************* END OF OPTIONS ************************/
