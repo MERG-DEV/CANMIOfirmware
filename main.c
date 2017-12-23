@@ -148,7 +148,9 @@ void ISRHigh(void);
 #endif
 
 // Default type is INPUT
+#ifndef TYPE_DEFAULT
 #define TYPE_DEFAULT    TYPE_INPUT
+#endif
 
 // PIN configs
 const rom Config configs[NUM_IO] = {
