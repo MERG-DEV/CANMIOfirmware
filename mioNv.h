@@ -220,7 +220,12 @@ typedef struct {
 } ModuleNvDefs;
 
 #define NV_NUM  sizeof(ModuleNvDefs)     // Number of node variables
+#ifdef __18F25K80
 #define AT_NV   0x7F80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+#endif
+#ifdef __18F26K80
+#define AT_NV   0xFF80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+#endif
 
 extern void mioNvInit(void);
 extern unsigned int getNodeVar(unsigned int index);

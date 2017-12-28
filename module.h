@@ -112,8 +112,13 @@ extern "C" {
  * FLASH bounds
  */
 #define MIN_WRITEABLE_FLASH     (AT_EVENTS&0xFFC0)
+#ifdef __18F25K80
 #define MAX_WRITEABLE_FLASH     0x7FFF
-
+#endif
+ #ifdef __18F26K80
+#define MAX_WRITEABLE_FLASH     0xFFFF
+#endif 
+    
 #include "canmio.h"
     
 
