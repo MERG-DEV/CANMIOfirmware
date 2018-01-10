@@ -82,20 +82,20 @@
 #pragma config XINST = OFF      // Extended Instruction Set (Disabled)
 
 // CONFIG1H
-#pragma config FOSC = HS2       // Oscillator (HS oscillator (Medium power, 4 MHz - 16 MHz))
+#pragma config FOSC = HS1       // Oscillator (HS oscillator (Medium power, 4 MHz - 16 MHz))
 #pragma config PLLCFG = ON      // PLL x4 Enable bit (Enabled)
 #pragma config FCMEN = OFF      // Fail-Safe Clock Monitor (Disabled)
 #pragma config IESO = OFF       // Internal External Oscillator Switch Over Mode (Disabled)
 
 // CONFIG2L
 #pragma config PWRTEN = ON      // Power Up Timer (Enabled)
-#pragma config BOREN = OFF      // Brown Out Detect (Disabled in hardware, SBOREN disabled)
+#pragma config BOREN = SBORDIS      // Brown Out Detect (Disabled in hardware, SBOREN disabled)
 #pragma config BORV = 0         // Brown-out Reset Voltage bits (3.0V)
 #pragma config BORPWR = ZPBORMV // BORMV Power level (ZPBORMV instead of BORMV is selected)
 
 // CONFIG2H
 #pragma config WDTEN = OFF      // Watchdog Timer (WDT disabled in hardware; SWDTEN bit disabled)
-#pragma config WDTPS = 256      // Watchdog Postscaler (1:256)
+#pragma config WDTPS = 1048576      // Watchdog Postscaler (1:1048576)
 
 // CONFIG3H
 #pragma config CANMX = PORTB    // ECAN Mux bit (ECAN TX and RX pins are located on RB2 and RB3, respectively)
