@@ -308,6 +308,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                 if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
                                     setExpeditedActions();
                                 }
+                                if (ca == ACTION_IO_CONSUMER_4) {
+                                    // action 4 (Flash) must be converted to 3(OFF)
+                                    action--;
+                                }
                                 // fall through
                             case TYPE_SERVO:
                             case TYPE_BOUNCE:
