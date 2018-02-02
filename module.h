@@ -62,9 +62,11 @@ extern "C" {
 
 // Whether to enable BOUNCE
 #define BOUNCE
-    
+
+#ifdef __18F26K80
 //Whether to support ANALOGUE INPUTS
 #define ANALOGUE
+#endif
     
 // enable this for additional validation checks
 //#define SAFETY
