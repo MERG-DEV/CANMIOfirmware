@@ -58,7 +58,7 @@ extern "C" {
 #define NV_SOD_DELAY                    1
 #define NV_HB_DELAY                     2  
 #define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_SPARE1                       4
+#define NV_PULLUPS                      4
 #define NV_SPARE2                       5
 #define NV_SPARE3                       6
 #define NV_SPARE4                       7
@@ -215,7 +215,8 @@ typedef struct {
         BYTE sendSodDelay;               // Time after start in 100mS (plus 2 seconds) to send an automatic SoD. Set to zero for no auto SoD
         BYTE hbDelay;                    // Interval in 100mS for automatic heartbeat. Set to zero for no heartbeat.
         BYTE servo_speed;               // default servo speed
-        BYTE spare[12];
+        BYTE pullups;                   // weak pullup resistors
+        BYTE spare[11];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 
