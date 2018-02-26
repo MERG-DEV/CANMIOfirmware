@@ -170,6 +170,7 @@ void processOutputs(void) {
                     }
                     sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), state);
                 }
+                doneAction();
             }
             if (pulseDelays[io] != 0) {
                 pulseDelays[io]--;
