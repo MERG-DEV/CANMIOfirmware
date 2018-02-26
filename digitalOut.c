@@ -45,6 +45,7 @@
 #include "romops.h"
 #include "mioEEPROM.h"
 #include "config.h"
+#include "actionQueue.h"
 
 // Forward declarations
 unsigned char pulseDelays[NUM_IO];
