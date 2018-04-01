@@ -72,7 +72,7 @@
 
 #define MAX_SERVO_LOOP          250      // Max number of loops 
 #define MAX_BOUNCE_LOOP          50      // Max number of loops 
-#define MAX_MULTI_LOOP          100      // Max number of loops 
+//#define MAX_MULTI_LOOP          100      // Max number of loops 
 
 // forward definitions
 void setupTimer1(unsigned char io);
@@ -87,9 +87,13 @@ extern void setOutputPin(unsigned char io, BOOL state);
 ServoState servoState[NUM_IO];
 unsigned char currentPos[NUM_IO];
 unsigned char targetPos[NUM_IO];
+unsigned char stepsPerPollSpeed[NUM_IO];
+unsigned char pollsPerStepSpeed[NUM_IO];
+unsigned char pollCount[NUM_IO];
 char speed[NUM_IO];
-//unsigned char eventFlags[NUM_IO];
 unsigned char loopCount[NUM_IO];
+
+#define MAX_BOUNCE_LOOPS    255
 
 #define EVENT_FLAG_ON       0x01
 #define EVENT_FLAG_OFF      0x02
@@ -109,8 +113,7 @@ void initServos(void) {
     for (io=0; io<NUM_IO; io++) {
         servoState[io] = OFF;
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
-        speed[io] = 0;
-        loopCount[io] = 0;
+        stepsPerPollSpeed[io] = 0;
         setOutputPin(io, FALSE);
     }
     block = 3;
@@ -283,21 +286,23 @@ void pollServos(void) {
                             sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
-                        loopCount[io] = 0;
                         // fall through
                     case MOVING:
-                        loopCount[io]++;
-                        if (loopCount[io] > MAX_SERVO_LOOP) {
-                            currentPos[io] = targetPos[io];
-                            servoState[io] = STOPPED;
-                            ticksWhenStopped[io].Val = tickGet();
-                            break;
-                        }
                         if (targetPos[io] > currentPos[io]) {
                             if (currentPos[io] < midway) {
                                 beforeMidway = TRUE;
                             }
-                            currentPos[io] += speed[io];
+                            
+                            if (stepsPerPollSpeed[io]) {
+                                currentPos[io] += stepsPerPollSpeed[io];
+                            } else {
+                                pollCount[io]--;
+                                if (pollCount[io] == 0) {
+                                    currentPos[io]++;
+                                    pollCount[io] = pollsPerStepSpeed[io];
+                                }
+                            }
+                            
                             if (currentPos[io] > targetPos[io]) {
                                 currentPos[io] = targetPos[io];
                             }
@@ -311,9 +316,19 @@ void pollServos(void) {
                             if (currentPos[io] > midway) {
                                 beforeMidway = TRUE;
                             }
-                            currentPos[io] -= speed[io];
+                            
+                            if (stepsPerPollSpeed[io]) {
+                                currentPos[io] -= stepsPerPollSpeed[io];
+                            } else {
+                                pollCount[io]--;
+                                if (pollCount[io] == 0) {
+                                    currentPos[io]--;
+                                    pollCount[io] = pollsPerStepSpeed[io];
+                                }
+                            }
+
                             if (currentPos[io] < targetPos[io]) {
-                                currentPos[io = targetPos[io]];
+                                currentPos[io] = targetPos[io];
                             }
                             if ((currentPos[io] <= midway) && beforeMidway) {
                                 // passed through midway point
@@ -340,13 +355,16 @@ void pollServos(void) {
                         initBounce(io);
                         servoState[io] = MOVING;
                         loopCount[io] = 0;
+                        
                         // fall through
                     case MOVING:
                         loopCount[io]++;
-                        if (loopCount[io] > MAX_BOUNCE_LOOP) {
+                        if (loopCount[io] >= MAX_BOUNCE_LOOPS) {
                             servoState[io] = STOPPED;
-                            currentPos[io] = targetPos[io];
                             ticksWhenStopped[io].Val = tickGet();
+                            currentPos[io] = targetPos[io];
+                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                            ee_write(EE_OP_STATE+io, currentPos[io]);
                             break;
                         }
                         // Implement the bounce algorithm here
@@ -390,23 +408,32 @@ void pollServos(void) {
                             sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
-                        loopCount[io] = 0;
                         // fall through
                     case MOVING:
-                        loopCount[io]++;
-                        if (loopCount[io] > MAX_MULTI_LOOP) {
-                            servoState[io] = STOPPED;
-                            currentPos[io] = targetPos[io];
-                            ticksWhenStopped[io].Val = tickGet();
-                            break;
-                        }
                         if (targetPos[io] > currentPos[io]) {
-                            currentPos[io] += speed[io];
+                            if (stepsPerPollSpeed[io]) {
+                                currentPos[io] += stepsPerPollSpeed[io];
+                            } else {
+                                pollCount[io]--;
+                                if (pollCount[io] == 0) {
+                                    currentPos[io]++;
+                                    pollCount[io] = pollsPerStepSpeed[io];
+                                }
+                            }
                             if (currentPos[io] > targetPos[io]) {
                                 currentPos[io] = targetPos[io];
                             }
                         } else if (targetPos[io] < currentPos[io]) {
-                            currentPos[io] -= speed[io];
+                              
+                            if (stepsPerPollSpeed[io]) {
+                                currentPos[io] -= stepsPerPollSpeed[io];
+                            } else {
+                                pollCount[io]--;
+                                if (pollCount[io] == 0) {
+                                    currentPos[io]--;
+                                    pollCount[io] = pollsPerStepSpeed[io];
+                                }
+                            }
                             if (currentPos[io] < targetPos[io]) {
                                 currentPos[io = targetPos[io]];
                             }
@@ -462,11 +489,19 @@ void pollServos(void) {
 void startServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
     switch (action) {
         case ACTION_IO_CONSUMER_3:  // SERVO OFF
-            speed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;  
+            stepsPerPollSpeed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
             break;
         case ACTION_IO_CONSUMER_2:  // SERVO ON
-            speed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
+            stepsPerPollSpeed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
             break;
+    }
+    if (stepsPerPollSpeed[io] > PIVOT) {
+        stepsPerPollSpeed[io] -= PIVOT;
+        pollsPerStepSpeed[io] = 0;
+    } else {
+        pollsPerStepSpeed[io] = PIVOT - stepsPerPollSpeed[io] +1;
+        pollCount[io] = 1;
+        stepsPerPollSpeed[io] = 0;
     }
     servoState[io] = STARTING;
 }
@@ -489,6 +524,7 @@ void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
             break;
     }
     servoState[io] = STARTING;
+    loopCount[io] = 0;
 }
 
 /**
@@ -498,9 +534,16 @@ void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
  */
 void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
 
-    speed[io] = NV->servo_speed;
+    stepsPerPollSpeed[io] = NV->servo_speed;
+    if (stepsPerPollSpeed[io] > PIVOT) {
+        stepsPerPollSpeed[io] -= PIVOT;
+        pollsPerStepSpeed[io] = 0;
+    } else {
+        pollsPerStepSpeed[io] = PIVOT - stepsPerPollSpeed[io] +1;
+        pollCount[io] = 0;
+        stepsPerPollSpeed[io] = 0;   
+    }
     servoState[io] = STARTING;
-
 }
 
 /**

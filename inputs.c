@@ -53,7 +53,7 @@ BYTE inputState[NUM_IO];
 /**
  * The effective state of the inputs after handling toggle. 
  */
-BYTE outputState[NUM_IO];
+static BYTE outputState[NUM_IO];
 /*
  * Counts the number of cycles since the input changed state.
  */

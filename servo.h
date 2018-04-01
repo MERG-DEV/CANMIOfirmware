@@ -48,6 +48,7 @@ typedef enum {
 extern ServoState servoState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 extern unsigned char targetPos[NUM_IO];
+extern unsigned char stepsPerPollSpeed[NUM_IO];
 extern char speed[NUM_IO];
 
 extern void startServos(void);
@@ -67,5 +68,7 @@ extern void setServoPosition(unsigned char io, unsigned char pos);
 extern void startServoOutput(unsigned char io, CONSUMER_ACTION_T action);
 extern void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
 extern void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
+
+#define PIVOT                   234     // the value at which we switch from steps per poll to polls per step
 
 #endif  //__SERVO_H__

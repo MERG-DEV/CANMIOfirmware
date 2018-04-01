@@ -242,6 +242,7 @@ static TickValue   startTime;
 static BOOL        started = FALSE;
 static TickValue   lastServoPollTime;
 static TickValue   lastServoStartTime;
+static TickValue   lastActionPollTime;
 static unsigned char io;
 
 #ifdef BOOTLOADER_PRESENT
@@ -291,14 +292,16 @@ int main(void) @0x800 {
                 inputScan(FALSE);    // Strobe inputs for changes
                 lastServoStartTime.Val = tickGet();
             }
-            if (tickTimeSince(lastServoPollTime) > 100*ONE_MILI_SECOND) {
 #ifdef SERVO
+            if (tickTimeSince(lastServoPollTime) > 20*ONE_MILI_SECOND) {
                 pollServos();
+                lastServoPollTime.Val = tickGet();
+            }
 #endif
+            if (tickTimeSince(lastActionPollTime) > 100*ONE_MILI_SECOND) {
                 processActions();
                 processOutputs();
-
-                lastServoPollTime.Val = tickGet();
+                lastActionPollTime.Val = tickGet();
             }
 #ifdef ANALOGUE
             pollAnalogue();
@@ -427,6 +430,11 @@ void setType(unsigned char io, unsigned char type) {
     configIO(io);
     // set to default NVs
     defaultNVs(io, type);
+#ifdef SERVO
+    if ((type == TYPE_SERVO) || (type== TYPE_BOUNCE) || (type == TYPE_MULTI)) {
+        currentPos[io] = 128;
+    }
+#endif
     // set up the default events. 
     defaultEvents(io, type);
 #ifdef ANALOGUE

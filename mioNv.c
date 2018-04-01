@@ -299,7 +299,7 @@ void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char 
 void factoryResetGlobalNv(void) {
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
-    writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);
+    writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)PIVOT);
     writeFlashByte((BYTE*)(AT_NV + NV_PULLUPS), (BYTE)0x33);
 #ifdef NV_CACHE
     loadNvCache();
@@ -331,8 +331,8 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)128);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)128);
 #endif
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)PIVOT);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)PIVOT);
             break;
 #endif
 #ifdef BOUNCE
