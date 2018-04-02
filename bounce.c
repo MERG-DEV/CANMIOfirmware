@@ -111,7 +111,7 @@ BOOL bounceDown(unsigned char io) {
         if (! reversed) {
             
             // check for bounce at bottom
-            if ((currentPos[io] - speed[io]/SPEED_FACTOR) < NV->io[io].nv_io.nv_bounce.bounce_lower_pos) {
+            if (currentPos[io] < NV->io[io].nv_io.nv_bounce.bounce_lower_pos + speed[io]/SPEED_FACTOR) {
                 // bounce
                 // calculate new speed
                 speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;
@@ -129,7 +129,7 @@ BOOL bounceDown(unsigned char io) {
         } else {
             // Reversed i.e. upper is less than lower
             // check for bounce at bottom
-            if ((currentPos[io] + speed[io]/SPEED_FACTOR) > NV->io[io].nv_io.nv_bounce.bounce_lower_pos) {
+            if (currentPos[io] > NV->io[io].nv_io.nv_bounce.bounce_lower_pos - speed[io]/SPEED_FACTOR) {
                 // bounce
                 // calculate new speed
                 speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;

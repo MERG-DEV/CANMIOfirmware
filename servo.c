@@ -435,7 +435,7 @@ void pollServos(void) {
                                 }
                             }
                             if (currentPos[io] < targetPos[io]) {
-                                currentPos[io = targetPos[io]];
+                                currentPos[io] = targetPos[io];
                             }
                         }
                         if (targetPos[io] == currentPos[io]) {
@@ -540,7 +540,7 @@ void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
         pollsPerStepSpeed[io] = 0;
     } else {
         pollsPerStepSpeed[io] = PIVOT - stepsPerPollSpeed[io] +1;
-        pollCount[io] = 0;
+        pollCount[io] = 1;
         stepsPerPollSpeed[io] = 0;   
     }
     servoState[io] = STARTING;
