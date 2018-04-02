@@ -49,7 +49,7 @@ extern ServoState servoState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 extern unsigned char targetPos[NUM_IO];
 extern unsigned char stepsPerPollSpeed[NUM_IO];
-extern char speed[NUM_IO];
+extern int speed[NUM_IO];
 
 extern void startServos(void);
 extern void initServos(void);

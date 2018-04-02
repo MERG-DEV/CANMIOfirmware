@@ -71,7 +71,7 @@
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
 
 #define MAX_SERVO_LOOP          250      // Max number of loops 
-#define MAX_BOUNCE_LOOP          50      // Max number of loops 
+#define MAX_BOUNCE_LOOP         250      // Max number of loops 
 //#define MAX_MULTI_LOOP          100      // Max number of loops 
 
 // forward definitions
@@ -90,7 +90,7 @@ unsigned char targetPos[NUM_IO];
 unsigned char stepsPerPollSpeed[NUM_IO];
 unsigned char pollsPerStepSpeed[NUM_IO];
 unsigned char pollCount[NUM_IO];
-char speed[NUM_IO];
+int speed[NUM_IO];
 unsigned char loopCount[NUM_IO];
 
 #define MAX_BOUNCE_LOOPS    255

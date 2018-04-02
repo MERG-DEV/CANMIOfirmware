@@ -58,9 +58,9 @@ extern "C" {
 #define NV_SOD_DELAY                    1
 #define NV_HB_DELAY                     2  
 #define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_PULLUPS                      4
-#define NV_SPARE2                       5
-#define NV_SPARE3                       6
+#define NV_PULL_SPEED                   4
+#define NV_PULL_PAUSE                   5
+#define NV_PULLUPS                      6
 #define NV_SPARE4                       7
 #define NV_SPARE5                       8
 #define NV_SPARE6                       9
@@ -101,14 +101,14 @@ extern "C" {
 
 #define NV_IO_BOUNCE_UPPER_POS_OFFSET   2
 #define NV_IO_BOUNCE_LOWER_POS_OFFSET   3
-#define NV_IO_BOUNCE_G_OFFSET           4
-#define NV_IO_BOUNCE_COEFF_OFFSET       5
-#define NV_IO_BOUNCE_PROFILE_OFFSET     6
+#define NV_IO_BOUNCE_COEFF_OFFSET       4
+#define NV_IO_BOUNCE_PULL_SPEED_OFFSET  5
+#define NV_IO_BOUNCE_PULL_PAUSE_OFFSET  6
 #define NV_IO_BOUNCE_UPPER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_UPPER_POS_OFFSET)
 #define NV_IO_BOUNCE_LOWER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_LOWER_POS_OFFSET)
-#define NV_IO_BOUNCE_G(i)               (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_G_OFFSET)	// Starting speed in one direction
 #define NV_IO_BOUNCE_COEFF(i)           (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_COEFF_OFFSET)	// Starting speed in other direction
-#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PROFILE_OFFSET)
+#define NV_IO_BOUNCE_PULL_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PULL_SPEED_OFFSET)
+#define NV_IO_BOUNCE_PULL_PAUSE(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PULL_PAUSE_OFFSET)
 
 #define NV_IO_MULTI_NUM_POS_OFFSET      2
 #define NV_IO_MULTI_POS1_OFFSET         3
@@ -181,9 +181,9 @@ typedef struct {
         struct {
             unsigned char bounce_upper_pos;
             unsigned char bounce_lower_pos;
-            unsigned char bounce_g;
             unsigned char bounce_coeff;
-            unsigned char bounce_profile;
+            unsigned char bounce_pull_speed;
+            unsigned char bounce_pull_pause;
         } nv_bounce;
         struct {
             unsigned char multi_num_pos;

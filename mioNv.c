@@ -344,9 +344,9 @@ void defaultNVs(unsigned char i, unsigned char type) {
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)128);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)127);
 #endif
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_G(i)), (BYTE)3);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)50);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)64);
+            writeFlashByte((BYTE*)(AT_NV + NV_IO_BOUNCE_PULL_SPEED(i)), (BYTE)3);
+            writeFlashByte((BYTE*)(AT_NV + NV_IO_BOUNCE_PULL_PAUSE(i)), (BYTE)60);
             break;
 #endif
 #ifdef MULTI      
