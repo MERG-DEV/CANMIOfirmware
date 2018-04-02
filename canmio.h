@@ -63,7 +63,7 @@ extern "C" {
  * Module parameters
  */ 
 #define MAJOR_VER 	1
-#define MINOR_VER 	'h'        // Minor version character
+#define MINOR_VER 	'i'        // Minor version character
 #define BETA        1
 
 #include "GenericTypeDefs.h"
