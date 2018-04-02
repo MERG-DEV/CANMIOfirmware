@@ -58,9 +58,9 @@ extern "C" {
 #define NV_SOD_DELAY                    1
 #define NV_HB_DELAY                     2  
 #define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_PULL_SPEED                   4
-#define NV_PULL_PAUSE                   5
-#define NV_PULLUPS                      6
+#define NV_PULLUPS                      4
+#define NV_BOUNCE_RANDOM                5
+#define NV_SPARE3                       6
 #define NV_SPARE4                       7
 #define NV_SPARE5                       8
 #define NV_SPARE6                       9
