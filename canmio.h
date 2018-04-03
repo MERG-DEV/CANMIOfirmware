@@ -62,9 +62,9 @@ extern "C" {
 /*******************************************************************
  * Module parameters
  */ 
-#define MAJOR_VER 	1
-#define MINOR_VER 	'i'        // Minor version character
-#define BETA        1
+#define MAJOR_VER 	2
+#define MINOR_VER 	'a'        // Minor version character
+#define BETA        0
 
 #include "GenericTypeDefs.h"
 #include "cbusdefs8q.h"
