@@ -292,12 +292,6 @@ int main(void) @0x800 {
                 inputScan(FALSE);    // Strobe inputs for changes
                 lastServoStartTime.Val = tickGet();
             }
-#ifdef SERVO
-            if (tickTimeSince(lastServoPollTime) > 20*ONE_MILI_SECOND) {
-                pollServos();
-                lastServoPollTime.Val = tickGet();
-            }
-#endif
             if (tickTimeSince(lastActionPollTime) > 100*ONE_MILI_SECOND) {
                 processActions();
                 processOutputs();

@@ -152,7 +152,10 @@ void startServos(void) {
     // increment block before calling setup so that block is left as the current block whilst the
     // timers expire
     block++;
-    if (block > 3) block = 0;
+    if (block > 3) {
+        block = 0;
+        pollServos();
+    }
     type = NV->io[block*4].type;
     if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         if (servoState[block*4] != OFF) setupTimer1(block*4);
