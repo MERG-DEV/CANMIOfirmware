@@ -128,7 +128,7 @@ void setOutputState(unsigned char io, CONSUMER_ACTION_T action, unsigned char ty
 }
 
 /**
- * Set an output to the requested position.
+ * Set an output to the requested position Called during initialisation
  *  
  * @param i the IO
  * @param state on/off or position
@@ -153,6 +153,7 @@ void setOutputPosition(unsigned char io, unsigned char pos, unsigned char type) 
 #ifdef SERVO
         case TYPE_SERVO:
             setServoPosition(io, pos);
+            setOutputPin(io, NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED);
             return;
 #endif
 

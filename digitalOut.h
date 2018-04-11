@@ -14,7 +14,7 @@ extern "C" {
 
 extern void startDigitalOutput(unsigned char io, BOOL state);
 extern void setDigitalOutput(unsigned char io, BOOL state);
-
+extern void setOutputPin(unsigned char io, BOOL state);
 
 #ifdef	__cplusplus
 }

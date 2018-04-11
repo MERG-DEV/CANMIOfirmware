@@ -114,7 +114,6 @@ void initServos(void) {
         servoState[io] = OFF;
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         stepsPerPollSpeed[io] = 0;
-        setOutputPin(io, FALSE);
     }
     block = 3;
     // initialise the timers for one-shot mode with interrupts and clocked from Fosc/4
