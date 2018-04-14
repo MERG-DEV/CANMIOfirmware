@@ -240,8 +240,8 @@ void LOW_INT_VECT(void)
 
 static TickValue   startTime;
 static BOOL        started = FALSE;
-static TickValue   lastServoPollTime;
 static TickValue   lastServoStartTime;
+static TickValue   lastInputScanTime;
 static TickValue   lastActionPollTime;
 static unsigned char io;
 
@@ -285,12 +285,15 @@ int main(void) @0x800 {
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
         if (started) {
-            if (tickTimeSince(lastServoStartTime) > 5*ONE_MILI_SECOND) {
 #ifdef SERVO
-                startServos();  // call every 5ms
-#endif
-                inputScan(FALSE);    // Strobe inputs for changes
+            if (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) {
+                startServos();  // call every 2.5ms
                 lastServoStartTime.Val = tickGet();
+            }
+#endif
+            if (tickTimeSince(lastInputScanTime) > 5*ONE_MILI_SECOND) {
+                inputScan(FALSE);    // Strobe inputs for changes
+                lastInputScanTime.Val = tickGet();
             }
             if (tickTimeSince(lastActionPollTime) > 100*ONE_MILI_SECOND) {
                 processActions();
@@ -572,17 +575,9 @@ void ISRHigh(void) {
         timer1DoneInterruptHandler();
         PIR1bits.TMR1IF = 0;
     }
-    if (PIR1bits.TMR2IF) {
-        timer2DoneInterruptHandler();
-        PIR1bits.TMR2IF = 0;
-    }
     if (PIR2bits.TMR3IF) {
         timer3DoneInterruptHandler();
         PIR2bits.TMR3IF = 0;
-    }
-    if (PIR4bits.TMR4IF) {
-        timer4DoneInterruptHandler();
-        PIR4bits.TMR4IF = 0;
     }
 #endif
 }

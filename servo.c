@@ -74,6 +74,8 @@
 #define MAX_BOUNCE_LOOP         250      // Max number of loops 
 //#define MAX_MULTI_LOOP          100      // Max number of loops 
 
+#define SERVOS_IN_BLOCK         8
+
 // forward definitions
 void setupTimer1(unsigned char io);
 void setupTimer2(unsigned char io);
@@ -104,9 +106,7 @@ unsigned char loopCount[NUM_IO];
 #define EVENT_FLAG_POS4     0x40
 TickValue  ticksWhenStopped[NUM_IO];
 
-static unsigned char block;
-static unsigned char timer2Counter; // the High order byte to make T2 16bit
-static unsigned char timer4Counter; // the High order byte to make T4 16bit
+static unsigned char servoInBlock;
 
 void initServos(void) {
     unsigned char io;
@@ -115,7 +115,7 @@ void initServos(void) {
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         stepsPerPollSpeed[io] = 0;
     }
-    block = 3;
+    servoInBlock = SERVOS_IN_BLOCK;
     // initialise the timers for one-shot mode with interrupts and clocked from Fosc/4
     T1GCONbits.TMR1GE = 0;      // gating disabled
     T1CONbits.TMR1CS = 0;       // clock source Fosc/4
@@ -124,25 +124,15 @@ void initServos(void) {
     T1CONbits.RD16 = 1;         // 16bit read/write
     PIE1bits.TMR1IE = 1;        // enable interrupt
     
-    T2CONbits.T2CKPS = 1;       // 4x prescalar
-                                // only supports Fosc/4 clock source
-    T2CONbits.T2OUTPS = 0;      // 1x postscalar - not used as we get the interrupt before postscalar
-    PIE1bits.TMR2IE = 1;        // enable interrupt
-    
     T3GCONbits.TMR3GE = 0;      // gating disabled
     T3CONbits.TMR3CS = 0;       // clock source Fosc/4
     T3CONbits.T3CKPS = 2;       // 1:4 prescalar
     T3CONbits.SOSCEN = 1;       // clock source Fosc
     T3CONbits.RD16 = 1;         // 16bit read/write
     PIE2bits.TMR3IE = 1;        // enable interrupt
-    
-    T4CONbits.T4CKPS = 1;       // 4x prescalar
-                                // only supports Fosc/4 clock source
-    T4CONbits.T4OUTPS = 0;      // 1x postscalar
-    PIE4bits.TMR4IE = 1;        // enable interrupt
 }
 /**
- * This gets called ever approx 5ms so start the next set of servo pulses.
+ * This gets called ever approx 2.5ms so start the next set of servo pulses.
  * Checks that the servo isn't OFF
  * @param io
  */
@@ -150,26 +140,18 @@ void startServos(void) {
     unsigned char type;
     // increment block before calling setup so that block is left as the current block whilst the
     // timers expire
-    block++;
-    if (block > 3) {
-        block = 0;
+    servoInBlock++;
+    if (servoInBlock >= SERVOS_IN_BLOCK) {
+        servoInBlock = 0;
         pollServos();
     }
-    type = NV->io[block*4].type;
+    type = NV->io[servoInBlock].type;
     if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
-        if (servoState[block*4] != OFF) setupTimer1(block*4);
+        if (servoState[servoInBlock] != OFF) setupTimer1(servoInBlock);
     }
-    type = NV->io[block*4+1].type;
+    type = NV->io[servoInBlock+SERVOS_IN_BLOCK].type;
     if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
-        if (servoState[block*4+1] != OFF) setupTimer2(block*4+1);
-    }
-    type = NV->io[block*4+2].type;
-    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
-        if (servoState[block*4+2] != OFF) setupTimer3(block*4+2);
-    }
-    type = NV->io[block*4+3].type;
-    if ((type == TYPE_SERVO) || (type == TYPE_BOUNCE) || (type == TYPE_MULTI)) {
-        if (servoState[block*4+3] != OFF) setupTimer4(block*4+3);
+        if (servoState[servoInBlock+SERVOS_IN_BLOCK] != OFF) setupTimer3(servoInBlock+SERVOS_IN_BLOCK);
     }
 }
 
@@ -190,15 +172,6 @@ void setupTimer1(unsigned char io) {
     setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
-void setupTimer2(unsigned char io) {
-    WORD ticks = POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io];
-    TMR2 = 0;                   // start counting at 0
-    PR2 = ticks & 0xFF;       // set the duration
-    timer2Counter = ticks >> 8;
-    // turn on output
-    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
-    T2CON = (BYTE)0x05;        // enable Timer2 with 1:4 prescale
-}
 void setupTimer3(unsigned char io) {
     WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
 #ifdef __XC8
@@ -211,15 +184,7 @@ void setupTimer3(unsigned char io) {
     setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
     T3CONbits.TMR3ON = 1;       // enable Timer3
 }
-void setupTimer4(unsigned char io) {
-    WORD ticks = POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io];
-    TMR4 = 0;                   // start counting at 0
-    PR4 = ticks & 0xff;       // set the duration
-    timer4Counter = ticks >> 8;
-    // turn on output
-    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
-    T4CON = (BYTE)0x05;        // enable Timer4 with 1:4 prescale
-}
+
 
 /**
  * These TimerDone routines are called when the on-shot timer expires so we
@@ -228,35 +193,12 @@ void setupTimer4(unsigned char io) {
  */
 void timer1DoneInterruptHandler(void) {
     T1CONbits.TMR1ON = 0;       // disable Timer1
-    setOutputPin(block*4, NV->io[block*4].flags & FLAG_RESULT_ACTION_INVERTED);    
+    setOutputPin(servoInBlock, NV->io[servoInBlock].flags & FLAG_RESULT_ACTION_INVERTED);    
 }
-void timer2DoneInterruptHandler(void) {
-    // Is the 16bit counter now at 0?
-    if (timer2Counter == 0) {
-        // stop counting
-        T2CONbits.TMR2ON =0;        // disable Timer2
-        setOutputPin(block*4+1, NV->io[block*4+1].flags & FLAG_RESULT_ACTION_INVERTED);  
-    } else {
-        // keep counting
-        PR2 = 0xFF;
-        timer2Counter--;
-    }
-}
+
 void timer3DoneInterruptHandler(void) {
     T3CONbits.TMR3ON = 0;       // disable Timer3
-    setOutputPin(block*4+2, NV->io[block*4+2].flags & FLAG_RESULT_ACTION_INVERTED);    
-}
-void timer4DoneInterruptHandler(void) {
-    // Is the 16bit counter now at 0?
-    if (timer4Counter == 0) {
-        // stop counting
-        T4CONbits.TMR4ON =0;        // disable Timer4
-        setOutputPin(block*4+3, NV->io[block*4+3].flags & FLAG_RESULT_ACTION_INVERTED);
-    } else {
-        // keep counting
-        PR4 = 0xFF;
-        timer4Counter--;
-    }
+    setOutputPin(servoInBlock+SERVOS_IN_BLOCK, NV->io[servoInBlock+SERVOS_IN_BLOCK].flags & FLAG_RESULT_ACTION_INVERTED);    
 }
 
 /**
