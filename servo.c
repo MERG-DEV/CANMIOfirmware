@@ -112,7 +112,13 @@ static unsigned char servoInBlock;
 void initServos(void) {
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
-        servoState[io] = OFF;
+        // try STOPPED state to reduced or correct power on jump
+        if (NV->io[io].flags & FLAG_STARTUP) {
+            servoState[io] = STOPPED;
+        } else {
+            servoState[io] = OFF;
+        }
+        ticksWhenStopped[io].Val = tickGet();
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         stepsPerPollSpeed[io] = 0;
     }
@@ -426,6 +432,7 @@ void pollServos(void) {
         switch (servoState[io]) {
         case STOPPED:
             // if we have been stopped for more than 1 sec then change to OFF
+            // If FLAG_CUTOFF isn't set then we never reach OFF
             if (NV->io[io].flags & FLAG_CUTOFF) {
                 if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
                     servoState[io] = OFF;
