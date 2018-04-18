@@ -240,7 +240,7 @@ void LOW_INT_VECT(void)
 
 static TickValue   startTime;
 static BOOL        started = FALSE;
-static TickValue   lastServoStartTime;
+TickValue   lastServoStartTime;
 static TickValue   lastInputScanTime;
 static TickValue   lastActionPollTime;
 static unsigned char io;
@@ -270,8 +270,12 @@ int main(void) @0x800 {
     // Both LEDs off to start with during initialisation
     initStatusLeds();
 
-    initialise(); 
     startTime.Val = tickGet();
+    lastServoStartTime.Val = startTime.Val;
+    lastInputScanTime.Val = startTime.Val;
+    lastActionPollTime.Val = startTime.Val;
+    
+    initialise(); 
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
@@ -479,6 +483,7 @@ BOOL checkCBUS( void ) {
 void configIO(unsigned char i) {
     if (i >= NUM_IO) return;
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
+    // servos will also force this in servo.c without checking STARTUP
     if (NV->io[i].flags & FLAG_STARTUP) {
         setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
     }

@@ -84,6 +84,7 @@ void setupTimer4(unsigned char io);
 
 // Externs
 extern void setOutputPin(unsigned char io, BOOL state);
+extern TickValue   lastServoStartTime;
 
 // Variables
 ServoState servoState[NUM_IO];
@@ -115,7 +116,7 @@ void initServos(void) {
         currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
         stepsPerPollSpeed[io] = 0;
     }
-    servoInBlock = SERVOS_IN_BLOCK;
+    
     // initialise the timers for one-shot mode with interrupts and clocked from Fosc/4
     T1GCONbits.TMR1GE = 0;      // gating disabled
     T1CONbits.TMR1CS = 0;       // clock source Fosc/4
@@ -130,6 +131,24 @@ void initServos(void) {
     T3CONbits.SOSCEN = 1;       // clock source Fosc
     T3CONbits.RD16 = 1;         // 16bit read/write
     PIE2bits.TMR3IE = 1;        // enable interrupt
+    
+    servoInBlock = io -1;
+    /* 
+     * This will produce 1 pulse per servo (if its STARTUP flag is set).
+     * This should reduce the power-on jump with some servo types.
+     */
+    /* Actually doesn't seem to help
+    for (io=0; io<SERVOS_IN_BLOCK; io++) { 
+        if ((NV->io[io].flags & FLAG_STARTUP) || (NV->io[io+SERVOS_IN_BLOCK].flags & FLAG_STARTUP)) {// THIS IS WRONG
+            if (io != 0) {
+                while (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) { ; }  // 2.5ms delay
+            }
+            lastServoStartTime.Val = tickGet();
+            servoInBlock = io -1;
+            startServos();  // call every 2.5ms
+        }
+    }
+     */
 }
 /**
  * This gets called ever approx 2.5ms so start the next set of servo pulses.
