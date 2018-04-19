@@ -185,7 +185,7 @@ BOOL needsStarting(unsigned char io, CONSUMER_ACTION_T action, unsigned char typ
         case TYPE_MULTI:
 #endif
             if (targetPos[io] == currentPos[io]) {
-                servoState[io] = OFF;
+                //servoState[io] = OFF;
                 return FALSE;
             }
             return (servoState[io] != MOVING);
