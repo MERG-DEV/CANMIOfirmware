@@ -54,6 +54,17 @@ void setOutputPin(unsigned char io, BOOL state);
 
 // Externs
 
+/* 
+ * Dimming only takes place when the output is 'ON', this will be LOW if ACTION_INVERTED is set
+ * The output is ON under the following conditions:
+ *  o last action (after TRIGGER_INVERT) was ON and output_pulse_duration == 0
+ *  o last action (after TRIGGER_INVERT) was ON and output_pulse_duration > 0 and pulseDelay > 0
+ *  o last action was FLASH and output_flash_period > 0 and flashDelay > 0
+ * If any of the above are true then the output needs to be dimmed.
+ * every 5ms increment dimCounter
+ * if dimCounter < dim_setting turn pin ON else turn pin OFF
+ * if (dimCount >= 20) dimCount = 0
+ * 
 /**
  * Initialise the IO digital outputs.
  * Set up the pulse data structures.
@@ -190,6 +201,9 @@ void processOutputs(void) {
 void setDigitalOutput(unsigned char io, unsigned char state) {
     BOOL pinState;
     switch (state) {
+        default: // After TYPE change could be invalid
+            state = ACTION_IO_CONSUMER_3;   // default OFF
+            // fall through
         case ACTION_IO_CONSUMER_2:
         case ACTION_IO_CONSUMER_3:
             pinState = (state == ACTION_IO_CONSUMER_2);

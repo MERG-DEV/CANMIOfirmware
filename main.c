@@ -428,9 +428,10 @@ void setType(unsigned char io, unsigned char type) {
 #ifdef NV_CACHE
     NV->io[io].type = type;
 #endif
-    configIO(io);
     // set to default NVs
     defaultNVs(io, type);
+    // set the pin input/output
+    configIO(io);
 #ifdef SERVO
     if ((type == TYPE_SERVO) || (type== TYPE_BOUNCE) || (type == TYPE_MULTI)) {
         currentPos[io] = 128;
