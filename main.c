@@ -455,8 +455,9 @@ BOOL checkCBUS( void ) {
     BYTE    msg[20];
 
     if (cbusMsgReceived( 0, (BYTE *)msg )) {
-//        LED2G = BlinkLED( 1 );           // Blink LED on whilst processing messages - to give indication how busy module is
+        shortFlicker();         // short flicker LED when a CBUS message is seen on the bus
         if (parseCBUSMsg(msg)) {               // Process the incoming message
+            longFlicker();      // extend the flicker if we processed the message
             return TRUE;
         }
         if (thisNN(msg)) {
