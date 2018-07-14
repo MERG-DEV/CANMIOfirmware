@@ -128,17 +128,11 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         if (pinState) {
             // only ON
             // check if produced event is inverted
-            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                pinState = !pinState;
-            }
-            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState);
+            sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
         }
     } else {
         // check if produced event is inverted
-        if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-            pinState = !pinState;
-        }
-        sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState);
+        sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
     }
 }
 
@@ -175,12 +169,8 @@ void processOutputs(void) {
                 }
                 // check if OFF events are enabled
                 if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
-                    state = FALSE;
                     // check if produced event is inverted
-                    if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                        state = !state;
-                    }
-                    sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), state);
+                    sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), !NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                 }
                 doneAction();
             }

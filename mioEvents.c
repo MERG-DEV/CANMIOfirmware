@@ -61,10 +61,11 @@ extern void setOutputState(unsigned char io, unsigned char action, unsigned char
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
 extern BOOL sendProducedEvent(unsigned char action, BOOL on);
+BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
-extern BYTE inputState[NUM_IO];
+extern BYTE outputState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 
 static TickValue startWait;
@@ -461,39 +462,41 @@ void doSOD(void) {
     BOOL state;
     unsigned char io;
     
-    // Agreed with Pete that SOD is only applicable to EV#2 but I actually allow it at any EV#
-    inputScan(TRUE);    // ensure we have current input status
+    // Although I agreed with Pete that SOD is only applicable to EV#2 I actually allow it at any EV#
+
     for (io=0; io < NUM_IO; io++) {
+        unsigned char event_inverted = NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED;
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), inputState[io])) ;
+                /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), outputState[io], event_inverted)) ;
                 break;
             case TYPE_OUTPUT:
                 state = ee_read(EE_OP_STATE+io);
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state!=ACTION_IO_CONSUMER_3, event_inverted));
                 break;
 #ifdef SERVO
             case TYPE_SERVO:
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos));
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted));
                 // send the last mid
                 midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
                          (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway, event_inverted));
                 break;
 #ifdef BOUNCE
             case TYPE_BOUNCE:
                 state = ee_read(EE_OP_STATE+io);
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state, event_inverted));
                 break;
 #endif
 #ifdef MULTI
             case TYPE_MULTI:
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1));
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2));
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted));
                 if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                    while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4));
+                    while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted));
                 }
                 break;
 #endif
@@ -501,10 +504,14 @@ void doSOD(void) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
             case TYPE_MAGNET:
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER));
-                while ( ! sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted));
+                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted));
                 break;
 #endif
         }
     }
+}
+
+BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert) {
+    return sendProducedEvent(action, invert?!state:state);
 }

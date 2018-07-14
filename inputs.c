@@ -49,11 +49,11 @@
  * The current state of the input pins. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.
  */
-BYTE inputState[NUM_IO];
+static BYTE inputState[NUM_IO];
 /**
  * The effective state of the inputs after handling toggle. 
  */
-static BYTE outputState[NUM_IO];
+BYTE outputState[NUM_IO];
 /*
  * Counts the number of cycles since the input changed state.
  */
@@ -86,17 +86,15 @@ void initInputScan(void) {
  * * Toggle
  * * Output OFF event disable
  * * Output event invert
- * 
- * @param report always send current status if report is TRUE otherwise send only on change
  *   
  */
-void inputScan(BOOL report) {
+void inputScan(void) {
     volatile rom near Event * ev;
     for (io=0; io< NUM_IO; io++) {
         if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);
             if (input != inputState[io]) {
-                BOOL change = report;
+                BOOL change = FALSE;
                 // check if we have reached the debounce count
                 if (inputState[io] && (delayCount[io] == NV->io[io].nv_io.nv_input.input_on_delay)) {
                     change = TRUE;

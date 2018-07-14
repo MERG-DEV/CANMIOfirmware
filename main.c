@@ -175,7 +175,6 @@ const rom Config configs[NUM_IO] = {
 };
 
 // forward declarations
-void inputScan(BOOL report);
 void __init(void);
 BOOL checkCBUS( void);
 void ISRHigh(void);
@@ -296,7 +295,7 @@ int main(void) @0x800 {
             }
 #endif
             if (tickTimeSince(lastInputScanTime) > 5*ONE_MILI_SECOND) {
-                inputScan(FALSE);    // Strobe inputs for changes
+                inputScan();    // Strobe inputs for changes
                 lastInputScanTime.Val = tickGet();
             }
             if (tickTimeSince(lastActionPollTime) > 100*ONE_MILI_SECOND) {
