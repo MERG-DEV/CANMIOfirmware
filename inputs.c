@@ -72,8 +72,12 @@ static unsigned char io;
  */
 void initInputScan(void) {
     for (io=0; io<NUM_IO; io++) {
-        inputState[io] = readInput(io);
-        outputState[io] = inputState[io];
+        BYTE input = readInput(io);
+        inputState[io] = input;
+        if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
+            input = !input;
+        }
+        outputState[io] = input;
         delayCount[io] = 0;
     }
 }

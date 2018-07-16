@@ -42,7 +42,7 @@
  * Created on 10 April 2017, 10:26
  */
 /** TODOs
- * Flicker LED on CAN activity can18.c
+
  * Work out what to do if all CANIDs are taken can18.c
  * Check handling of REQEV events.c
  * Consider option to set outputs on or off on powerup in addition to restore previous state
@@ -50,11 +50,12 @@
  * Randomise bounce
  * RFID input
  * CHECK DOCS
-SERVO/Bounce/MULT invert action
-two on produced event
-
+ *
  * 
  * DONES:
+ * DONE  Flicker LED on CAN activity 
+ * DONE  SERVO/Bounce/MULT invert action
+ * DONE  two on produced event
  * DONE  Implement ENUM    force of self enumeration
  * DONE  Implement CANID   set canId
  * DONE  Check handling of REVAL events.c
