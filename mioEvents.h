@@ -179,6 +179,8 @@ extern void processActions(void);
 
 #include "events.h"
 
+extern BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert);
+
 #ifdef	__cplusplus
 }
 #endif

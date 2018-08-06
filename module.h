@@ -102,6 +102,7 @@ extern "C" {
 
 #define CONSUMER_ACTION_T	unsigned char
 #define PRODUCER_ACTION_T	unsigned char
+#define NO_ACTION   0
 
 
 /*
