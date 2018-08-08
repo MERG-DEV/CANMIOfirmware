@@ -338,7 +338,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
 }
 
 // record the last action started so we can tell if we are starting a new action 
-static unsigned char lastAction = NO_ACTION;
+//static unsigned char lastAction = NO_ACTION;
 /**
  * This needs to be called on a regular basis to see if any
  * actions have finished and the next needs to be started.
@@ -394,8 +394,8 @@ void processActions(void) {
             startOutput(io, ioAction, type);
         }
         // is this the start of a new action?
-        if (lastAction != action) {
-            lastAction = action;
+//        if (lastAction != action) {
+//            lastAction = action;
             // now check to see if any others need starting  
             peekItem = 1;
             while (simultaneous) {
@@ -423,7 +423,7 @@ void processActions(void) {
                 }
                 peekItem++;
             }
-        }
+//        }
         // check if this current action has been completed
         if (completed(io, ioAction, type)) {
             doneAction();
