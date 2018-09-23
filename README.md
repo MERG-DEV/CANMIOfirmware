@@ -1,6 +1,7 @@
 # CANMIOfirmware
 PIC firmware for CANMIO with configurable IO. Uses the CBUSlib https://github.com/MERG-DEV/CBUSlib.
 
+
 Currently work in progress.
 ToDos and DONEs:
 TODOs
@@ -16,7 +17,7 @@ TODOs
   * Heartbeat message
   * Fix INVERTED for all types
   * Randomise bounce
-  * RFID input
+  * RFID input - PNB now taken on this task - branch PNB
   * Analogue inputs for magnetic and current sense detectors 
 
 DONES:
