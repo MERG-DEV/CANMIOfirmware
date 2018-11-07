@@ -148,9 +148,16 @@ void ISRLow(void);
 void ISRHigh(void);
 #endif
 
-// Default type is INPUT
-#ifndef TYPE_DEFAULT
-#define TYPE_DEFAULT    TYPE_INPUT
+// Default type is INPUT for all on CANMIO, 
+// on the CANBIP it is OUTPUT for the main board and INPUT for the expansion (daughterboard) connections)
+#ifndef TYPE_DEFAULT_MAIN
+#ifdef CANBIP
+#define TYPE_DEFAULT_MAIN   TYPE_OUTPUT
+#else
+#define TYPE_DEFAULT_MAIN   TYPE_INPUT
+#endif
+
+#define TYPE_DEFAULT_EXP    TYPE_INPUT
 #endif
 
 // PIN configs
@@ -411,7 +418,7 @@ void factoryResetFlash(void) {
     clearAllEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
-        setType(io, TYPE_DEFAULT);
+        setType(io, (io < NUM_IO_MAIN) ? TYPE_DEFAULT_MAIN : TYPE_DEFAULT_EXP);
     } 
     flushFlashImage();
 }
