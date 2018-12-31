@@ -263,7 +263,12 @@ void pollServos(void) {
                             }
                             
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] += stepsPerPollSpeed[io];
+                                if (currentPos[io] + stepsPerPollSpeed[io] < currentPos[io]) {
+                                    // will wrap
+                                    currentPos[io] =255;
+                                } else {
+                                    currentPos[io] += stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {
@@ -287,7 +292,12 @@ void pollServos(void) {
                             }
                             
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] -= stepsPerPollSpeed[io];
+                                if (currentPos[io] - stepsPerPollSpeed[io] > currentPos[io]) {
+                                    // would under wrap
+                                    currentPos[io] = 0;
+                                } else {
+                                    currentPos[io] -= stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {

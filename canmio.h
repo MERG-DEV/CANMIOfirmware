@@ -64,7 +64,7 @@ extern "C" {
  */ 
 #define MAJOR_VER 	2
 #define MINOR_VER 	'b'        // Minor version character
-#define BETA        3
+#define BETA        4
 
 #include "GenericTypeDefs.h"
 #include "cbusdefs8q.h"
