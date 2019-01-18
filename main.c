@@ -464,7 +464,14 @@ BOOL checkCBUS( void ) {
             // handle the CANMIO specifics
             switch (msg[d0]) {
             case OPC_NNRSM: // reset to manufacturer defaults
-                factoryReset();
+                if (flimState == fsFLiMLearn) {
+                    factoryReset();
+                }
+                else 
+                {
+                    cbusMsg[d3] = CMDERR_NOT_LRN;
+                    cbusSendOpcMyNN( 0, OPC_CMDERR, cbusMsg);
+                }
                 return TRUE;
             case OPC_NNRST: // restart
                 // if we just call main then the stack won't be reset and we'd also want variables to be nullified
