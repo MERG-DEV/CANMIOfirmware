@@ -89,7 +89,6 @@ void factoryResetGlobalEvents(void) {
 void defaultEvents(unsigned char io, unsigned char type) {
     WORD en = io+1;
     clearEvents(io); 
-#ifdef TEST_DEFAULT_EVENTS
     // add the module's default events for this io
     switch(type) {
         case TYPE_OUTPUT:
@@ -100,17 +99,23 @@ void defaultEvents(unsigned char io, unsigned char type) {
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
             addEvent(nodeID, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+#ifdef TABLED_DEFAULT_EVENTS
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+#endif
             break;
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+#ifdef TABLED_DEFAULT_EVENTS
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+#endif
             break;
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
-//            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
-//            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+#ifdef TABLED_DEFAULT_EVENTS
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+#endif
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
@@ -119,16 +124,20 @@ void defaultEvents(unsigned char io, unsigned char type) {
             break;
         case TYPE_ANALOGUE_IN:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+#ifdef TABLED_DEFAULT_EVENTS
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+#endif
             break;
         case TYPE_MAGNET:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
- //           addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+#ifdef TABLED_DEFAULT_EVENTS
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+#endif
             break;
     }
-#endif
 }
+
 
 /**
  * If we don't define default produced actions in the eventTable above then
@@ -142,6 +151,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
  * @return true if there is an event
  */
 BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
+#ifndef TABLED_DEFAULT_EVENTS
     if (paction >= ACTION_PRODUCER_IO_BASE) {
         unsigned char io = PRODUCER_IO(paction);
         producedEvent.NN = nodeID;
@@ -194,6 +204,7 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
                 break;
         }
     } 
+#endif
     return FALSE;
 }
 

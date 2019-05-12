@@ -81,8 +81,10 @@ extern "C" {
 #define ACTION_EXPEDITED_QUEUE_SIZE 8
     
 // Whether we have default settings useful for testing
-#define TEST_DEFAULT_EVENTS
 //#define TEST_DEFAULT_NVS
+    
+// Whether default events are supported using the event table or code
+#define TABLED_DEFAULT_EVENTS
     
     
 /************************* END OF OPTIONS ************************/
