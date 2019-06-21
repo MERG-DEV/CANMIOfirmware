@@ -1,4 +1,3 @@
-
 /*
  Routines for CBUS FLiM operations - part of CBUS libraries for PIC 18F
   This work is licensed under the:
@@ -26,27 +25,42 @@
 	using these libraries.
 	
 */ 
-/*
- * File:   nvCache.c
- * Author: Ian Hogg
+/* 
+ * File:   actionQueue.c
+ * Author: Ian
  *
- * Created on 03 June 2016, 08:12
+ * Created on 04 December 2017, 21:45
+ *
+ * A queue of consumed actions.
  */
+
+#ifndef QUEUE_H
+#define	QUEUE_H
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
+#include "GenericTypeDefs.h"
 #include "module.h"
-#ifdef NV_CACHE
-#include "mioNv.h"
-#include "romops.h"
-static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
 
-extern const rom near BYTE * NvBytePtr;
+    typedef struct Queue {
+        unsigned char size;
+        unsigned char readIdx;
+        unsigned char writeIdx;
+        CONSUMER_ACTION_T * queue;
+    } Queue;
+    
+extern BOOL push(Queue * q, CONSUMER_ACTION_T a);
+extern CONSUMER_ACTION_T pop(Queue * q);
+extern CONSUMER_ACTION_T peek(Queue * q, unsigned char index);
+extern unsigned char quantity(Queue * q);
+extern void delete(Queue * q, unsigned char index);
 
-ModuleNvDefs* loadNvCache(void) {
-    BYTE * np = (BYTE*)(&nvCache);
-    unsigned char i;
-    // do whole blocks
-    for (i=0; i<sizeof(ModuleNvDefs); i++) {
-        *(np+i) = readFlashBlock((WORD)(NvBytePtr+i));
-    }
-    return &nvCache;
+
+#ifdef	__cplusplus
 }
 #endif
+
+#endif	/* QUEUE_H */
+

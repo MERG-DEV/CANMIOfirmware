@@ -1,4 +1,3 @@
-
 /*
  Routines for CBUS FLiM operations - part of CBUS libraries for PIC 18F
   This work is licensed under the:
@@ -26,27 +25,82 @@
 	using these libraries.
 	
 */ 
-/*
- * File:   nvCache.c
- * Author: Ian Hogg
+/* 
+ * File:   actionQueue.c
+ * Author: Ian
  *
- * Created on 03 June 2016, 08:12
+ * Created on 04 December 2017, 21:45
+ *
+ * A queue of consumed actions.
  */
+
 #include "module.h"
-#ifdef NV_CACHE
-#include "mioNv.h"
-#include "romops.h"
-static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
+#include "queue.h"
 
-extern const rom near BYTE * NvBytePtr;
-
-ModuleNvDefs* loadNvCache(void) {
-    BYTE * np = (BYTE*)(&nvCache);
-    unsigned char i;
-    // do whole blocks
-    for (i=0; i<sizeof(ModuleNvDefs); i++) {
-        *(np+i) = readFlashBlock((WORD)(NvBytePtr+i));
-    }
-    return &nvCache;
+/**
+ * Push an item onto the action queue.
+ * @param q
+ * @param a
+ * @return 
+ */
+BOOL push(Queue * q, CONSUMER_ACTION_T a) {
+    if (((q->writeIdx+1)&((q->size)-1)) == q->readIdx) return FALSE;	// buffer full
+    q->queue[q->writeIdx++] = a;
+    if (q->writeIdx >= q->size) q->writeIdx = 0;
+    return TRUE;
 }
-#endif
+
+
+/**
+ * Pull the next action from the buffer.
+ *
+ * @return the next action
+ */
+CONSUMER_ACTION_T pop(Queue * q) {
+    CONSUMER_ACTION_T ret;
+	if (q->writeIdx == q->readIdx) {
+        return NO_ACTION;	// buffer empty
+    }
+	ret = q->queue[q->readIdx++];
+	if (q->readIdx >= q->size) q->readIdx = 0;
+	return ret;
+}
+
+/**
+ * Peek into the buffer.
+ *
+ * @return the action
+ */
+CONSUMER_ACTION_T peek(Queue * q, unsigned char index) {
+    if (q->readIdx == q->writeIdx) return NO_ACTION;    // empty
+    index += q->readIdx;
+//    index -= 1;
+    if (index >= q->size) {
+        index -= q->size;
+    }
+    if (index == q->writeIdx) return NO_ACTION; // at end
+    return q->queue[index];
+}
+
+
+/**
+ * Return number of items in the queue.
+ */
+unsigned char quantity(Queue * q) {
+    return (q->writeIdx - q->readIdx) & (q->size -1);
+}
+
+/**
+ * Delete an item in the queue. Replace the item with NO_ACTION.
+ * @param index the item index within the queue
+ */
+void delete(Queue * q, unsigned char index) {
+    if (index >= q->size) return;
+
+    index += q->readIdx;
+    //index -= 1;
+    if (index >= q->size) {
+        index -= q->size;
+    }
+    q->queue[index] = NO_ACTION;
+}

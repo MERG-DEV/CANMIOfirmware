@@ -45,22 +45,139 @@
 #include "romops.h"
 #include "mioEEPROM.h"
 #include "config.h"
+#include "actionQueue.h"
 
 // Forward declarations
 unsigned char pulseDelays[NUM_IO];
+char flashDelays[NUM_IO];
 void setOutputPin(unsigned char io, BOOL state);
 
 // Externs
-extern void sendProducedEvent(unsigned char io, BOOL state);
-extern Config configs[NUM_IO];
+
+/* 
+ * Dimming only takes place when the output is 'ON', this will be LOW if ACTION_INVERTED is set
+ * The output is ON under the following conditions:
+ *  o last action (after TRIGGER_INVERT) was ON and output_pulse_duration == 0
+ *  o last action (after TRIGGER_INVERT) was ON and output_pulse_duration > 0 and pulseDelay > 0
+ *  o last action was FLASH and output_flash_period > 0 and flashDelay > 0
+ * If any of the above are true then the output needs to be dimmed.
+ * every 5ms increment dimCounter
+ * if dimCounter < dim_setting turn pin ON else turn pin OFF
+ * if (dimCount >= 20) dimCount = 0
+ * 
 /**
  * Initialise the IO digital outputs.
  * Set up the pulse data structures.
  */
-void initOutputs() {
+void initOutputs(void) {
     // probably initialised to 0 by the compiler but make sure here
-    for (unsigned char io=0; io<NUM_IO; io++) {
+    unsigned char io;
+    for (io=0; io<NUM_IO; io++) {
        pulseDelays[io] = 0;
+       flashDelays[io] = 0;
+    }
+}
+/**
+ * Start a digital output. Handles inverted outputs and pulsed outputs. Sends the
+ * produced events.
+ * Handles:
+ * * Onput event invert
+ * * Output OFF event disable
+ * * Output event invert
+ * * Flash
+ * * Pulse
+ * 
+ * @param io
+ * @param action
+ */
+void startDigitalOutput(unsigned char io, unsigned char state) {
+    BOOL pinState;
+    // State ACTION_IO_CONSUMER_2 is ON
+    // State ACTION_IO_CONSUMER_3 is OFF
+    // State ACTION_IO_CONSUMER_4 is Flash
+    if (state == ACTION_IO_CONSUMER_4) {
+        flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+        pulseDelays[io] = 0;
+        setOutputPin(io, TRUE);
+        ee_write(EE_OP_STATE+io, state);	// save the current state of output
+        return;
+    }
+    // Check if the input event is inverted
+    pinState = (state == ACTION_IO_CONSUMER_2);
+    if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+        pinState = pinState?0:1;
+    }
+    flashDelays[io] = 0;	// turn flash off
+    // Was this a ON and we have a pulse duration defined?
+    if ((pinState) && NV->io[io].nv_io.nv_output.output_pulse_duration) {
+        if (pulseDelays[io] == 0) {
+            pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
+            ee_write(EE_OP_STATE+io, ACTION_IO_CONSUMER_3);	// save the current state of output as OFF so 
+                                                            // we don't power up with ON outputs
+        }
+    } else {
+        ee_write(EE_OP_STATE+io, state);	// save the current state of output
+    }    
+    if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+        setOutputPin(io, ! pinState);
+    } else {
+        setOutputPin(io, pinState);
+    }
+    // check if OFF events are enabled
+    if (NV->io[io].flags & FLAG_DISABLE_OFF) {
+        if (pinState) {
+            // only ON
+            // check if produced event is inverted
+            sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+        }
+    } else {
+        // check if produced event is inverted
+        sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+    }
+}
+
+/**
+ * Called regularly to handle pulse and flash.
+ */
+void processOutputs(void) {
+    BOOL state;
+    unsigned char io;
+    for (io=0; io<NUM_IO; io++) {
+        if (NV->io[io].type == TYPE_OUTPUT) {
+            // Handle the FLASH toggle
+            if (flashDelays[io] == 1) {
+                setOutputPin(io, FALSE);
+                flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+                flashDelays[io] = - flashDelays[io];
+            }
+            if (flashDelays[io] == -1) {
+                setOutputPin(io, TRUE);
+                flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+            }
+            if (flashDelays[io] > 1) {
+                flashDelays[io]--;
+            } else if (flashDelays[io] < -1) {
+                flashDelays[io]++;
+            }
+            // Handle PULSEd outputs
+            if (pulseDelays[io] == 1) {
+                // time to go off
+                if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+                    setOutputPin(io, TRUE);
+                } else {
+                    setOutputPin(io, FALSE);
+                }
+                // check if OFF events are enabled
+                if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
+                    // check if produced event is inverted
+                    sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), !NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                }
+                doneAction();
+            }
+            if (pulseDelays[io] != 0) {
+                pulseDelays[io]--;
+            }
+        }
     }
 }
 
@@ -71,36 +188,30 @@ void initOutputs() {
  * @param io
  * @param action
  */
-void setDigitalOutput(unsigned char io, BOOL state) {
-    if (NV->io[io].flags & FLAG_INVERTED) {
-        state = state ? 0:1;
-    }
-    setOutputPin(io, state);
-    ee_write(EE_OP_STATE-io, state);
-    sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
-    // Was this a ON and we have a pulse duration defined?
-    if (state && NV->io[io].nv_io.nv_output.output_pulse_duration) {
-        pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
-    }
-}
-
-void processOutputs() {
-    unsigned char state;
-    for (unsigned char io=0; io<NUM_IO; io++) {
-        if (pulseDelays[io] == 1) {
-            // time to go off
-            state = ee_read(EE_OP_STATE-io);
-            state = state?0:1;
-            setOutputPin(io, state);
-            ee_write(EE_OP_STATE-io, state);
-            sendProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state);
-        }
-        if (pulseDelays[io] != 0) {
-            pulseDelays[io]--;
-        }
+void setDigitalOutput(unsigned char io, unsigned char state) {
+    BOOL pinState;
+    switch (state) {
+        default: // After TYPE change could be invalid
+            state = ACTION_IO_CONSUMER_3;   // default OFF
+            // fall through
+        case ACTION_IO_CONSUMER_2:
+        case ACTION_IO_CONSUMER_3:
+            pinState = (state == ACTION_IO_CONSUMER_2);
+            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+                pinState = pinState?0:1;
+            }
+            if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+                setOutputPin(io, ! pinState);
+            } else {
+                setOutputPin(io, pinState);
+            }
+            break;
+        case ACTION_IO_CONSUMER_4:
+            flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
+            setOutputPin(io, TRUE);
+            break;
     }
 }
-
 
 /**
  * Set a particular output pin to the given state.

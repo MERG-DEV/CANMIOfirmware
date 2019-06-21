@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#include <xc.h> // include processor files - each processor file is guarded.  
+#include "devincs.h" // include processor files - each processor file is guarded.  
 
 #ifdef __XC8__
 #define AT_NAME_ADDRESS @0x810
@@ -62,17 +62,17 @@ extern "C" {
 /*******************************************************************
  * Module parameters
  */ 
-#define MAJOR_VER 	1
-#define MINOR_VER 	'a'        // Minor version character
-#define BETA        1
+#define MAJOR_VER 	2
+#define MINOR_VER 	'b'        // Minor version character
+#define BETA        3
 
 #include "GenericTypeDefs.h"
-#include "cbusdefs8n.h"
+#include "cbusdefs8q.h"
 
 #define MANU_ID         MANU_MERG
 #define MODULE_ID       MTYP_CANMIO
-#define MODULE_TYPE     "MIO"
-#define MODULE_FLAGS    PF_COMBI+PF_BOOT  // Producer, consumer, boot
+#define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.
+#define MODULE_FLAGS    PF_COMBI+PF_BOOT+PF_COE  // Producer, consumer, boot
 #define BUS_TYPE        PB_CAN
 #define LOAD_ADDRESS    0x0800      // Need to put in parameter block at compile time, only known to linker so hard code here
 #define MNAME_ADDRESS   LOAD_ADDRESS + 0x20 + sizeof(ParamBlock)   // Put module type string above params so checksum can be calculated at compile time

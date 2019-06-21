@@ -51,34 +51,79 @@ extern "C" {
 // BOOTLOADER
 #define BOOTLOADER_PRESENT
 
-    // We'll be using event hash tables for fast access - at the expense of some RAM
+// We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
 
-    // enable servos
-//#define SERVO
+// Whether to enable servos
+#define SERVO
 
-    // Don't enable MULTI for now
-//#define MULTI
+// Whether to enabe MULTI
+#define MULTI
 
-    // Don't enable BOUNCE for now
-//#define BOUNCE
+// Whether to enable BOUNCE
+#define BOUNCE
 
-    // Whether NVs are cached in RAM
-#define NV_CACHE
-/************************* END OF OPTIONS ************************/
+#ifdef __18F26K80
+//Whether to support ANALOGUE INPUTS
+#define ANALOGUE
+#endif
     
+// enable this for additional validation checks
+//#define SAFETY
+
+// Whether NVs are cached in RAM
+#define NV_CACHE
+    
+#define ACTION_NORMAL_QUEUE_SIZE 	64	// The size needs to be big enough to store all the pending actions 
+                                // Need to allow +1 to separate the ends of the cyclic buffer so need to 
+                                // move the next power of two since cyclic wrapping is done with a bitmask.
+                                // 64 is safer as we have wait actions
+#define ACTION_EXPEDITED_QUEUE_SIZE 8
+    
+// Whether we have default settings useful for testing
+#define TEST_DEFAULT_EVENTS
+//#define TEST_DEFAULT_NVS
+    
+    
+/************************* END OF OPTIONS ************************/
+
+    // Whether the module uses high or low priority for CAN interrupts
+    // set to 0 for LP. Set to 0xFF for HP
+#define CAN_INTERRUPT_PRIORITY 0    // all low priority
  /*
  * NVs
  */
 #include "mioNv.h"
 #include "mioEEPROM.h"
-    
+   
+/*
+ * Actions
+ */
+
+#define CONSUMER_ACTION_T	unsigned char
+#define PRODUCER_ACTION_T	unsigned char
+#define NO_ACTION   0
+
+
 /*
  * EVENTS
  */
 #include "mioEvents.h"
+    
 
+/*
+ * FLASH bounds
+ */
+#define MIN_WRITEABLE_FLASH     (AT_EVENTS&0xFFC0)
+#ifdef __18F25K80
+#define MAX_WRITEABLE_FLASH     0x7FFF
+#endif
+ #ifdef __18F26K80
+#define MAX_WRITEABLE_FLASH     0xFFFF
+#endif 
+    
 #include "canmio.h"
+    
 
 #ifdef	__cplusplus
 }

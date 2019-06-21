@@ -32,38 +32,41 @@
  * Created on 1 June 2017, 13:14
  *
  * A queue of actions waiting to be processed by the main loop.
- * This is actually implemented as a cyclic buffer and a current action.
- * Items in the buffer can be replaced by other actions on the same IO
- * but the current action will be finished in its entirity.
+ * Implemented as two separated queues - a normal and an expedited priority queue.
  */
 
 #include "GenericTypeDefs.h"
 #include "mioEvents.h"
 #include "actionQueue.h"
+#include "queue.h"
 
-// Forward declarations
-ACTION_T pullAction();
+BYTE normalReadIdx;                   // index of the next to read
+BYTE normalWriteIdx;                  // index of the next to write
+CONSUMER_ACTION_T normalQueueBuf[ACTION_NORMAL_QUEUE_SIZE];   // the actual cyclic buffer space
+Queue normalQueue;
 
-#define BUFFER_SIZE 	32		// The size needs to be big enough to store all the pending actions 
-					// for CANMIO 16 should be enough but need +1 to separate the ends
-					// of the cyclic buffer so need to move the next power of two since
-					// cyclic wrapping is done with a bitmask.
-#define POINTER_MASK 	(BUFFER_SIZE-1)
+BYTE expeditedReadIdx;                   // index of the next to read
+BYTE expeditedWriteIdx;                  // index of the next to write
+CONSUMER_ACTION_T expeditedQueueBuf[ACTION_EXPEDITED_QUEUE_SIZE];   // the actual cyclic buffer space
+Queue expeditedQueue;
 
-
-ACTION_T buffer[BUFFER_SIZE];
-
-BYTE readIdx;			// index of the next to read
-BYTE writeIdx;			// index of the next to write
-ACTION_T currentAction;
+static BOOL expedited;
 
 /**
  * Initialise the action queue.
  */
-void actionQueueInit() {
-	readIdx = 0;
-	writeIdx = 0;
-	currentAction = NO_ACTION;
+void actionQueueInit(void) {
+    normalQueue.size = ACTION_NORMAL_QUEUE_SIZE;
+	normalQueue.readIdx = 0;
+	normalQueue.writeIdx = 0;
+    normalQueue.queue = normalQueueBuf;
+    
+    expeditedQueue.size = ACTION_EXPEDITED_QUEUE_SIZE;
+    expeditedQueue.readIdx = 0;
+	expeditedQueue.writeIdx = 0;
+    expeditedQueue.queue = expeditedQueueBuf;
+    
+    expedited = FALSE;
 }
 
 /**
@@ -71,48 +74,22 @@ void actionQueueInit() {
  *
  * @param a the action to be processed
  */
-BOOL pushAction(ACTION_T a) {
-	// do we already have an instruction for the IO ?
-	BYTE io = CONSUMER_IO(a);
-	// check it this IO was already in the buffer
-	for (BYTE i=readIdx; i != writeIdx; i=(i+1)&POINTER_MASK) {
-		BYTE thisIo = CONSUMER_IO(buffer[i]);
-		if (thisIo == io) {
-			// delete this entry
-			for (BYTE j=i; j != writeIdx; j=(j+1)&POINTER_MASK) {
-				buffer[j] = buffer[(j+1)&POINTER_MASK];
-			}
-			if (writeIdx == 0) {
-				writeIdx = BUFFER_SIZE-1;
-			} else {
-				writeIdx--;
-			}
-			i--;
-		}
-	}
-	if (((writeIdx+1)&POINTER_MASK) == readIdx) return FALSE;	// buffer full
-	buffer[writeIdx++] = a;
-	writeIdx &= POINTER_MASK;
-	return TRUE;
+BOOL pushAction(CONSUMER_ACTION_T a) {
+    if (expedited) {
+        return push(&expeditedQueue, a);
+    }
+    return push(&normalQueue, a);
 }
+
+
 
 /**
  * Get the action we need to be progressing.
  *
  * @return the action
  */
-ACTION_T getAction() {
-	if (currentAction == NO_ACTION) {
-		currentAction = pullAction();
-	}
-	return currentAction;
-}
-
-/**
- * Mark as having completed the current action.
- */
-void doneAction() {
-	currentAction = NO_ACTION;
+CONSUMER_ACTION_T getAction(void) {
+	return peekActionQueue(0);
 }
 
 /**
@@ -120,10 +97,64 @@ void doneAction() {
  *
  * @return the next action
  */
-ACTION_T pullAction() {
-	if (writeIdx == readIdx) return NO_ACTION;	// buffer empty
-	ACTION_T ret = buffer[readIdx++];
-	readIdx &= POINTER_MASK;
-	return ret;
+CONSUMER_ACTION_T popAction(void) {
+    CONSUMER_ACTION_T ret;
+    ret = pop(&expeditedQueue);
+    if (ret != NO_ACTION) return ret;
+    ret = pop(&normalQueue);
+    return ret;
 }
 
+
+
+/**
+ * Mark as having completed the current action.
+ */
+void doneAction(void) {
+	popAction();
+}
+
+
+/**
+ * Peek an item in the queue. Does not remove the item from the queue.
+ * @param index the item index within the queue
+ * @return the Action or NO_ACTION 
+ */
+CONSUMER_ACTION_T peekActionQueue(unsigned char index) {
+    if (index < quantity(&expeditedQueue)) {
+        return peek(&expeditedQueue, index);
+    }
+    index -= quantity(&expeditedQueue);
+    if (index < quantity(&normalQueue)) {
+        return peek(&normalQueue, index);
+    }
+    return NO_ACTION;
+}
+
+
+/**
+ * Delete an item in the queue. Replace the item with NO_ACTION.
+ * @param index the item index within the queue
+ */
+void deleteActionQueue(unsigned char index) {
+    if (index <= quantity(&expeditedQueue)) {
+        delete(&expeditedQueue, index);
+    } else {
+        index -= quantity(&expeditedQueue);
+        delete(&normalQueue, index);
+    }
+}
+
+/**
+ * Set the expedited flag so that subsequent pushes are added to the front of the queue.
+ */
+void setExpeditedActions(void) {
+    expedited = TRUE;
+}
+
+/**
+ * Clear the expedited flag so that subsequent pushes are added to the end of the queue.
+ */
+void setNormalActions(void) {
+    expedited = FALSE;
+}

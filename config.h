@@ -48,7 +48,10 @@ typedef struct {
     unsigned char pin;
     char port;
     unsigned char no;
+    unsigned char an;
 } Config;
+
+extern const rom Config configs[NUM_IO];
 
 #ifdef	__cplusplus
 }

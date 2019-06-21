@@ -50,56 +50,96 @@ extern "C" {
     
 #include "GenericTypeDefs.h"
 #include "canmio.h"
+
+#define FLASH_VERSION   0x01
     
 // Global NVs
-#define NV_SOD_DELAY                    0
-#define NV_HB_DELAY                     1  
-#define NV_SERVO_SPEED                  2   // Used for Multi and Bounce types where there isn't an NV to define speed.
-#define NV_SPARE1                       3
-#define NV_SPARE2                       4
-#define NV_SPARE3                       5
-#define NV_SPARE4                       6
-#define NV_SPARE5                       7
-#define NV_SPARE6                       8
-#define NV_SPARE7                       9
-#define NV_SPARE8                       10
-#define NV_SPARE9                       11
-#define NV_SPARE10                      12
-#define NV_SPARE11                      13
-#define NV_SPARE12                      14
-#define NV_SPARE13                      15
+#define NV_VERSION                      0
+#define NV_SOD_DELAY                    1
+#define NV_HB_DELAY                     2  
+#define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
+#define NV_PULLUPS                      4
+#define NV_BOUNCE_RANDOM                5
+#define NV_SPARE3                       6
+#define NV_SPARE4                       7
+#define NV_SPARE5                       8
+#define NV_SPARE6                       9
+#define NV_SPARE7                       10
+#define NV_SPARE8                       11
+#define NV_SPARE9                       12
+#define NV_SPARE10                      13
+#define NV_SPARE11                      14
+#define NV_SPARE12                      15
 #define NV_IO_START                     16
 #define NVS_PER_IO                      7
     
 // NVs per IO
-#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i))		// TYPE and FLAGS always at the start
-#define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + 1)
+#define NV_IO_TYPE_OFFSET               0
+#define NV_IO_FLAGS_OFFSET              1
+#define NV_IO_TYPE(i)                   (NV_IO_START + NVS_PER_IO*(i) + NV_IO_TYPE_OFFSET)		// TYPE and FLAGS always at the start
+#define NV_IO_FLAGS(i)                  (NV_IO_START + NVS_PER_IO*(i) + NV_IO_FLAGS_OFFSET)
 
-#define NV_IO_INPUT_ENABLE_OFF(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)	// Other NVs depend upon type
-#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// units of 5ms
-#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// units of 5ms
+// Other NVs depend upon type
+#define NV_IO_INPUT_ON_DELAY_OFFSET     2
+#define NV_IO_INPUT_OFF_DELAY_OFFSET    3
+#define NV_IO_INPUT_ON_DELAY(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_INPUT_ON_DELAY_OFFSET)	// units of 5ms
+#define NV_IO_INPUT_OFF_DELAY(i)        (NV_IO_START + NVS_PER_IO*(i) + NV_IO_INPUT_OFF_DELAY_OFFSET)	// units of 5ms
 
-#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + 2)	// units of 0.1 seconds
+#define NV_IO_OUTPUT_PULSE_DURATION_OFFSET 2
+#define NV_IO_OUTPUT_FLASH_PERIOD_OFFSET 3
+#define NV_IO_OUTPUT_PULSE_DURATION(i)  (NV_IO_START + NVS_PER_IO*(i) + NV_IO_OUTPUT_PULSE_DURATION_OFFSET)	// units of 0.1 seconds
+#define NV_IO_OUTPUT_FLASH_PERIOD(i)    (NV_IO_START + NVS_PER_IO*(i) + NV_IO_OUTPUT_FLASH_PERIOD_OFFSET)	// units of 0.1 seconds
 
-#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 4)	// position moved every 100ms
-#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + 5)	// position moved every 100ms
+#define NV_IO_SERVO_START_POS_OFFSET    2
+#define NV_IO_SERVO_END_POS_OFFSET      3
+#define NV_IO_SERVO_SE_SPEED_OFFSET     4
+#define NV_IO_SERVO_ES_SPEED_OFFSET     5
+#define NV_IO_SERVO_START_POS(i)        (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_START_POS_OFFSET)
+#define NV_IO_SERVO_END_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_END_POS_OFFSET)
+#define NV_IO_SERVO_SE_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_SE_SPEED_OFFSET)	// position moved every 100ms
+#define NV_IO_SERVO_ES_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_SERVO_ES_SPEED_OFFSET)	// position moved every 100ms
 
-#define NV_IO_BOUNCE_START_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_BOUNCE_END_POS(i)         (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_BOUNCE_SE_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 4)	// Starting speed in one direction
-#define NV_IO_BOUNCE_ES_SPEED(i)        (NV_IO_START + NVS_PER_IO*(i) + 5)	// Starting speed in other direction
-#define NV_IO_BOUNCE_PROFILE(i)         (NV_IO_START + NVS_PER_IO*(i) + 6)
+#define NV_IO_BOUNCE_UPPER_POS_OFFSET   2
+#define NV_IO_BOUNCE_LOWER_POS_OFFSET   3
+#define NV_IO_BOUNCE_COEFF_OFFSET       4
+#define NV_IO_BOUNCE_PULL_SPEED_OFFSET  5
+#define NV_IO_BOUNCE_PULL_PAUSE_OFFSET  6
+#define NV_IO_BOUNCE_UPPER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_UPPER_POS_OFFSET)
+#define NV_IO_BOUNCE_LOWER_POS(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_LOWER_POS_OFFSET)
+#define NV_IO_BOUNCE_COEFF(i)           (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_COEFF_OFFSET)	// Starting speed in other direction
+#define NV_IO_BOUNCE_PULL_SPEED(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PULL_SPEED_OFFSET)
+#define NV_IO_BOUNCE_PULL_PAUSE(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_BOUNCE_PULL_PAUSE_OFFSET)
 
-#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + 2)
-#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + 3)
-#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + 4)
-#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + 5)
-#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + 6)
-
+#define NV_IO_MULTI_NUM_POS_OFFSET      2
+#define NV_IO_MULTI_POS1_OFFSET         3
+#define NV_IO_MULTI_POS2_OFFSET         4
+#define NV_IO_MULTI_POS3_OFFSET         5
+#define NV_IO_MULTI_POS4_OFFSET         6
+#define NV_IO_MULTI_NUM_POS(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_NUM_POS_OFFSET)
+#define NV_IO_MULTI_POS1(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS1_OFFSET)
+#define NV_IO_MULTI_POS2(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS2_OFFSET)
+#define NV_IO_MULTI_POS3(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS3_OFFSET)
+#define NV_IO_MULTI_POS4(i)             (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MULTI_POS4_OFFSET)
+ 
+#define NV_IO_ANALOGUE_THRESHOLD        3
+#define NV_IO_ANALOGUE_HYSTERESIS       4
+#define NV_IO_ANALOGUE_THRES(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_THRESHOLD)
+#define NV_IO_ANALOGUE_HYST(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_ANALOGUE_HYSTERESIS)
+ 
+#define NV_IO_MAGNET_DOSETUP          2
+#define NV_IO_MAGNET_THRESHOLD        3
+#define NV_IO_MAGNET_HYSTERESIS       4
+#define NV_IO_MAGNET_OFFSET_H         5
+#define NV_IO_MAGNET_OFFSET_L         6
+#define NV_IO_MAGNET_SETUP(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_DOSETUP)
+#define NV_IO_MAGNET_THRES(i)         (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_THRESHOLD)
+#define NV_IO_MAGNET_HYST(i)          (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_HYSTERESIS)
+#define NV_IO_MAGNET_OFFSETH(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_OFFSET_H)
+#define NV_IO_MAGNET_OFFSETL(i)       (NV_IO_START + NVS_PER_IO*(i) + NV_IO_MAGNET_OFFSET_L)
+    
 #define IS_NV_TYPE(i)                   (((i-NV_IO_START) % NVS_PER_IO) == 0)
-#define IO_NV(i)                        ((i-NV_IO_START)/NVS_PER_IO)
+#define IO_NV(i)                        ((unsigned char)((i-NV_IO_START)/NVS_PER_IO))
+#define NV_NV(i)                        ((unsigned char)((i-NV_IO_START) % NVS_PER_IO))
   
 // the types
 #define TYPE_INPUT                  0
@@ -107,26 +147,30 @@ extern "C" {
 #define TYPE_SERVO                  2
 #define TYPE_BOUNCE                 3
 #define TYPE_MULTI                  4
+#define TYPE_ANALOGUE_IN            5
+#define TYPE_MAGNET                 6
 
 // the flags
-#define	FLAG_SEQUENTIAL             1	// Whether this action is processed in sequence with other actions
-#define	FLAG_CUTOFF                 2	// Whether the servo cut off after 1 second once it has reached its target position
-#define	FLAG_STARTUP                4	// Whether this output be changed on module start to match values in EE_OP_STATE
-#define	FLAG_INVERTED               8	// Whether the sense of this input or output inverted
+#define	FLAG_TRIGGER_INVERTED               0x01	// Whether the sense of this input or output inverted
+#define	FLAG_CUTOFF                 0x02	// Whether the servo cut off after 1 second once it has reached its target position
+#define	FLAG_STARTUP                0x04	// Whether this output be changed on module start to match values in EE_OP_STATE
+#define FLAG_DISABLE_OFF            0x08    // Whether off events are generated
+#define FLAGS_TOGGLE                0x10    // whether an INPUT operates as a pushbutton toggle
+#define FLAG_RESULT_ACTION_INVERTED 0x20    // whether the resulting action is inverted
+#define FLAG_RESULT_EVENT_INVERTED  0x40    // whether the generated event is inverted
+#define FLAG_EXPEDITED_ACTIONS      0x80    // whether consumed actions are expedited
 
 typedef struct {
     unsigned char type;
     unsigned char flags;
     union {
         struct {
-            unsigned char input_enable_off;
-            unsigned char input_inverted;
             unsigned char input_on_delay;
             unsigned char input_off_delay;
         } nv_input;
         struct {
             unsigned char output_pulse_duration;
-            unsigned char outout_inverted;
+            unsigned char output_flash_period;
         } nv_output;
         struct {
             unsigned char servo_start_pos;
@@ -135,11 +179,11 @@ typedef struct {
             unsigned char servo_es_speed;
         } nv_servo;
         struct {
-            unsigned char bounce_start_pos;
-            unsigned char bounce_end_pos;
-            unsigned char bounce_se_speed;
-            unsigned char bounce_es_speed;
-            unsigned char bounce_profile;
+            unsigned char bounce_upper_pos;
+            unsigned char bounce_lower_pos;
+            unsigned char bounce_coeff;
+            unsigned char bounce_pull_speed;
+            unsigned char bounce_pull_pause;
         } nv_bounce;
         struct {
             unsigned char multi_num_pos;
@@ -148,6 +192,18 @@ typedef struct {
             unsigned char multi_pos3;
             unsigned char multi_pos4;
         } nv_multi;
+        struct {
+            unsigned char analogue_unused;
+            unsigned char analogue_threshold;
+            unsigned char analogue_hysteresis;
+        } nv_analogue_in;
+        struct {
+            unsigned char magnet_setup;
+            unsigned char magnet_threshold;
+            unsigned char magnet_hysteresis;
+            unsigned char magnet_offset_h;
+            unsigned char magnet_offset_l;
+        } nv_magnet;
     } nv_io;
 } NvIo;
 
@@ -155,21 +211,28 @@ typedef struct {
  * This structure is required by FLiM.h
  */
 typedef struct {
+        BYTE nv_version;                // version of NV structure
         BYTE sendSodDelay;               // Time after start in 100mS (plus 2 seconds) to send an automatic SoD. Set to zero for no auto SoD
         BYTE hbDelay;                    // Interval in 100mS for automatic heartbeat. Set to zero for no heartbeat.
         BYTE servo_speed;               // default servo speed
-        BYTE spare[13];
+        BYTE pullups;                   // weak pullup resistors
+        BYTE spare[11];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 
 #define NV_NUM  sizeof(ModuleNvDefs)     // Number of node variables
+#ifdef __18F25K80
 #define AT_NV   0x7F80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+#endif
+#ifdef __18F26K80
+#define AT_NV   0xFF80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+#endif
 
-extern void mioNvInit();
+extern void mioNvInit(void);
 extern unsigned int getNodeVar(unsigned int index);
 extern void setNodeVar(unsigned int index, unsigned int value);
 extern BOOL validateNV(BYTE nvIndex, BYTE oldValue, BYTE value);
-void actUponNVchange(unsigned char index, unsigned char value);
+void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char value);
 extern void defaultNVs(unsigned char i, unsigned char type);        
 
 

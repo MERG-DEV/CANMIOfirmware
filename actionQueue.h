@@ -32,10 +32,18 @@
  * Created on 1 June 2017, 13:14
  *
  */
+#ifndef __ACTIONQUEUE_H_
+#define __ACTIONQUEUE_H_
 
-#define ACTION_T	BYTE
 
-extern BOOL pushAction(ACTION_T a);
-extern ACTION_T getAction();
-extern void doneAction();
-extern ACTION_T pullAction();
+
+extern void actionQueueInit(void);
+extern BOOL pushAction(CONSUMER_ACTION_T a);
+extern CONSUMER_ACTION_T getAction(void);
+extern void doneAction(void);
+extern CONSUMER_ACTION_T pullAction(void);
+extern CONSUMER_ACTION_T peekActionQueue(unsigned char index);
+extern void deleteActionQueue(unsigned char index);
+extern void setExpeditedActions(void);
+extern void setNormalActions(void);
+#endif

@@ -91,7 +91,10 @@ extern BYTE clkMHz;
 #define GetSystemMHz()                 clkMHz
 #define GetInstructionMHz()            clkMHz
 
-
+#ifdef __18CXX
+#define ei()    INTCONbits.GIEH = 1;INTCONbits.GIEL = 1
+#define di()    INTCONbits.GIEH = 0;INTCONbits.GIEL = 0
+#endif
 
 // Global routine definitions
 

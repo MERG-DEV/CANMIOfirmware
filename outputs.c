@@ -47,17 +47,16 @@
 #include "romops.h"
 #include "mioEEPROM.h"
 #include "servo.h"
+#include "actionQueue.h"
+#include "digitalOut.h"
 
 // Forward declarations
-void setDigitalOutput(unsigned char io, BOOL state);
+
 
 // Externs
-extern Config configs[NUM_IO];
-extern void sendProducedEvent(unsigned char action, BOOL on);
-extern void setServoOutput(unsigned char io, unsigned char state);
-extern void setBounceOutput(unsigned char io, unsigned char state);
-extern void setMultiOutput(unsigned char io, unsigned char state);
 extern void setOuputPin(unsigned char io, BOOL state);
+
+extern unsigned char pulseDelays[NUM_IO];
 
 
 /**
@@ -67,27 +66,97 @@ extern void setOuputPin(unsigned char io, BOOL state);
  * @param state on/off or position
  * @param type type of output
  */
-void setOutput(unsigned char io, unsigned char action, unsigned char type) {
+void startOutput(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen
             return;
         case TYPE_OUTPUT:
-            setDigitalOutput(io, action);
+            startDigitalOutput(io, action);
             return;
 #ifdef BOUNCE
         case TYPE_BOUNCE:
+            startBounceOutput(io, action);
+            return;
 #endif
 #ifdef SERVO
         case TYPE_SERVO:
-            setServoOutput(io, action);
+            startServoOutput(io, action);
             return;
 #endif
 #ifdef MULTI
         case TYPE_MULTI:
-            setMultiOutput(io, action);
+            startMultiOutput(io, action);
             return;
 #endif
+    }
+}
+
+/**
+ * Set an output to the requested state.
+ *  
+ * @param i the IO
+ * @param state on/off or position
+ * @param type type of output
+ */
+void setOutputState(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
+    switch(type) {
+        case TYPE_INPUT:
+        case TYPE_ANALOGUE_IN:
+        case TYPE_MAGNET:
+            // this should never happen
+            return;
+        case TYPE_OUTPUT:
+//            setDigitalOutput(io, action);
+            return;
+#ifdef BOUNCE
+        case TYPE_BOUNCE:
+            setBounceState(io, action);
+            return;
+#endif
+#ifdef SERVO
+        case TYPE_SERVO:
+            setServoState(io, action);
+            return;
+#endif
+#ifdef MULTI
+        case TYPE_MULTI:
+            setMultiState(io, action);
+            return;
+#endif
+    }
+}
+
+/**
+ * Set an output to the requested position Called during initialisation
+ *  
+ * @param i the IO
+ * @param state on/off or position
+ * @param type type of output
+ */
+void setOutputPosition(unsigned char io, unsigned char pos, unsigned char type) {
+    switch(type) {
+        case TYPE_INPUT:
+        case TYPE_ANALOGUE_IN:
+        case TYPE_MAGNET:
+            // this should never happen
+            return;
+        case TYPE_OUTPUT:
+            setDigitalOutput(io, pos);
+            return;
+#ifdef BOUNCE
+        case TYPE_BOUNCE:
+#endif
+#ifdef MULTI
+        case TYPE_MULTI:
+#endif
+#ifdef SERVO
+        case TYPE_SERVO:
+            setServoPosition(io, pos);
+            setOutputPin(io, (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+            return;
+#endif
+
     }
 }
 
@@ -95,22 +164,30 @@ void setOutput(unsigned char io, unsigned char action, unsigned char type) {
  * Indicates if the action needs to be started.
  * @ return true if needs starting
  */
-BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type) {
+BOOL needsStarting(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen
             return FALSE;
         case TYPE_OUTPUT:
-            // TODO needs fixing as if doing a pulse we don't need a restart
-            return TRUE;
+            // Normal outputs will complete immediately.
+            // Flashing outputs will complete immediately
+            // pulsed output will complete after pulse has finished
+            // but we need to start them all
+            return (pulseDelays[io] == 0);
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE
+            
         case TYPE_BOUNCE:
 #endif
 #ifdef MULTI
         case TYPE_MULTI:
 #endif
+            if (targetPos[io] == currentPos[io]) {
+                //servoState[io] = OFF;
+                return FALSE;
+            }
             return (servoState[io] != MOVING);
 #endif
     }
@@ -121,15 +198,14 @@ BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type) {
  * Indicates if the action has been completed.
  * @return true if completed
  */
-BOOL completed(unsigned char io, unsigned char action, unsigned char type) {
+BOOL completed(unsigned char io, CONSUMER_ACTION_T action, unsigned char type) {
     switch(type) {
         case TYPE_INPUT:
             // this should never happen
             return TRUE;
         case TYPE_OUTPUT:
-            // when asked on the MERG forum nobody was bothered whether sequential actions 
-            // wait for a pulse to complete. Therefore to make it easy we don't wait.
-            return TRUE;
+            // wait for a pulse to complete. 
+            return pulseDelays[io] == 0;
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE
@@ -138,7 +214,7 @@ BOOL completed(unsigned char io, unsigned char action, unsigned char type) {
 #ifdef MULTI
         case TYPE_MULTI:
 #endif
-            return (servoState[io] != MOVING);
+            return (targetPos[io] == currentPos[io]) && ((servoState[io] == STOPPED) || (servoState[io] == OFF));
 #endif
     }
     return TRUE;

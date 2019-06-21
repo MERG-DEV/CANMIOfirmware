@@ -15,7 +15,7 @@ extern "C" {
 #include "module.h"
 #include "mioNv.h"
 
-extern ModuleNvDefs * loadNvCache();
+extern ModuleNvDefs * loadNvCache(void);
 
 #ifdef	__cplusplus
 }

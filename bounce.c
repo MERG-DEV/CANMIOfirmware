@@ -52,7 +52,7 @@
  *
  * Created on 1 June 2017, 13:14
  */
-#include <xc.h>
+#include "devincs.h"
 #include "module.h"
 #ifdef BOUNCE
 #include "GenericTypeDefs.h"
@@ -61,35 +61,36 @@
 extern ServoState  servoState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
 extern unsigned char targetPos[NUM_IO];
-extern char speed[NUM_IO];
+extern int speed[NUM_IO];
 
-typedef enum {
-    FIRST_PULL,
-    BOUNCE
-} BounceState;
-BounceState bounceState[NUM_IO];
-
-
-/**
- * A constant force pulling the signal down.
- */
-#define G	3	
-/**
- * The amount of velocity preserved after a bounce. Units are percent.
- */
-#define BOUNCE_COEFF 50
+#define SPEED_FACTOR    30
+#define BOUNCE_G        3   // The effect of Gravity
 /**
  * Used to determine when the signal position is 'good enough' to stop. If this is too small 
  * the due to integer arithmetic rounding errors this can cause the bouncing to repeat for ever.
  */
 #define BOUNDS 3
+
+typedef enum {
+    STATE_FIRST_PULL,
+    STATE_PAUSE,
+    STATE_SECOND_PULL,
+    STATE_DONE
+} BounceState;
+BounceState bounceState[NUM_IO];
+
+
 /**
- * Indicates how fast the virtual signal operator pulls the signal on.
+ * G is a constant force pulling the signal down.
+ * BOUNCE_COEFF is the amount of velocity preserved after a bounce. Units are percent.
  */
-#define PULL_SPEED 12
+
+
+
 
 void initBounce(unsigned char io) {
-    bounceState[io] = FIRST_PULL;
+    bounceState[io] = STATE_FIRST_PULL;
+    speed[io] = 0;
 }
 
 /**
@@ -104,16 +105,47 @@ void initBounce(unsigned char io) {
 BOOL bounceDown(unsigned char io) {
     // check if we still need to move the signal
     if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
-        // acceleration due to gravity
-        speed[io] += G;
+        BOOL reversed = (NV->io[io].nv_io.nv_bounce.bounce_lower_pos > NV->io[io].nv_io.nv_bounce.bounce_upper_pos);
+        int tmp;
         // move position
-        currentPos[io] -= speed[io];
-        // check for bounce at bottom of signal movement
-        if (currentPos[io] < targetPos[io]) {
-            currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
-            speed[io] = -speed[io];
-            speed[io] = ((int)speed[io] * BOUNCE_COEFF)/100;	// be careful that this doesn't overflow - use int internally
+        if (! reversed) {
+            
+            // check for bounce at bottom
+            if (currentPos[io] < NV->io[io].nv_io.nv_bounce.bounce_lower_pos + speed[io]/SPEED_FACTOR) {
+                // bounce
+                // calculate new speed
+                speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;
+                // calculate new position
+                tmp = NV->io[io].nv_io.nv_bounce.bounce_lower_pos -
+                    (currentPos[io] - NV->io[io].nv_io.nv_bounce.bounce_lower_pos) -
+                    (speed[io]/SPEED_FACTOR);
+                currentPos[io] = tmp;
+            } else {
+                // no bounce
+                // calculate new speed
+                speed[io] += BOUNCE_G;
+                currentPos[io] -= ((speed[io]/SPEED_FACTOR)+1);
+            }
+        } else {
+            // Reversed i.e. upper is less than lower
+            // check for bounce at bottom
+            if (currentPos[io] > NV->io[io].nv_io.nv_bounce.bounce_lower_pos - speed[io]/SPEED_FACTOR) {
+                // bounce
+                // calculate new speed
+                speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;
+                // calculate new position
+                tmp = NV->io[io].nv_io.nv_bounce.bounce_lower_pos +
+                    (NV->io[io].nv_io.nv_bounce.bounce_lower_pos - currentPos[io]) +
+                    (speed[io]/SPEED_FACTOR);
+                currentPos[io] = tmp;
+            } else {
+                // no bounce
+                // calculate new speed
+                speed[io] += BOUNCE_G;
+                currentPos[io] += ((speed[io]/SPEED_FACTOR)+1);
+            }
         }
+        
         return FALSE;    // still moving
     }         
     return TRUE;    // finished moving
@@ -130,29 +162,48 @@ BOOL bounceDown(unsigned char io) {
  */
 
 BOOL bounceUp(unsigned char io) {
+    BOOL reversed = (NV->io[io].nv_io.nv_bounce.bounce_lower_pos > NV->io[io].nv_io.nv_bounce.bounce_upper_pos);
+    BYTE midway;
     switch(bounceState[io]) {
-    case FIRST_PULL:
+    case STATE_FIRST_PULL:
         // first just move to the targetPos[io]
-        currentPos[io] -= speed[io];
-        if (currentPos[io]>=targetPos[io]-BOUNDS) {
-            bounceState[io] = BOUNCE;
+        midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                    (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
+        if (reversed) {
+            currentPos[io] -= NV->io[io].nv_io.nv_bounce.bounce_pull_speed;
+            if (currentPos[io] <= midway) {
+                bounceState[io] = STATE_PAUSE;
+                speed[io] = NV->io[io].nv_io.nv_bounce.bounce_pull_pause;
+            }
+        } else {
+            currentPos[io] += NV->io[io].nv_io.nv_bounce.bounce_pull_speed;
+            if (currentPos[io] >= midway) {
+                bounceState[io] = STATE_PAUSE;
+                speed[io] = NV->io[io].nv_io.nv_bounce.bounce_pull_pause;
+            }
         }
         break;
-    case BOUNCE:
-        if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
-            // acceleration due to pull using G but really this is wrong maybe a function of PULL_SPEED would be better
-            speed[io] -= G;
-            // move position
-            currentPos[io] -= speed[io];
-            // check for bounce
-            if (currentPos[io] > targetPos[io]) {
-                currentPos[io] = targetPos[io]-(currentPos[io]-targetPos[io]);
-                speed[io] = -speed[io];
-                speed[io] = ((int)speed[io] * BOUNCE_COEFF)/100;	// be careful that this doesn't overflow - use int internally
+    case STATE_PAUSE:
+        // reuse speed[] as a pause counter
+        speed[io] --;
+        if (speed[io] == 0) bounceState[io] = STATE_SECOND_PULL;
+        break;
+    case STATE_SECOND_PULL:
+        // first just move to the targetPos[io]
+        if (reversed) {
+            currentPos[io] -= NV->io[io].nv_io.nv_bounce.bounce_pull_speed;
+            if (currentPos[io]<=targetPos[io]-BOUNDS) {
+                bounceState[io] = STATE_DONE;
+                return TRUE;
             }
-            return FALSE;
+        } else {
+            currentPos[io] += NV->io[io].nv_io.nv_bounce.bounce_pull_speed;
+            if (currentPos[io]>=targetPos[io]-BOUNDS) {
+                bounceState[io] = STATE_DONE;
+                return TRUE;
+            }
         }
-        return TRUE;
+        break;
     }
     return FALSE;
 }

@@ -36,8 +36,8 @@
  * Created on 17 April 2017, 13:14
  */
 
-#include <xc.h>
-
+#include <stddef.h>
+#include "devincs.h"
 #include "mioNv.h"
 #include "FliM.h"
 #include "canmio.h"
@@ -45,12 +45,15 @@
 #include "mioEvents.h"
 #include "cbus.h"
 
-extern Config configs[NUM_IO];
 /**
- * The current state of the inputs. This may not be the actual read state uas we
+ * The current state of the input pins. This may not be the actual read state uas we
  * could still be doing the debounce. Instead this is the currently reported input state.
  */
 static BYTE inputState[NUM_IO];
+/**
+ * The effective state of the inputs after handling toggle. 
+ */
+BYTE outputState[NUM_IO];
 /*
  * Counts the number of cycles since the input changed state.
  */
@@ -58,6 +61,7 @@ static BYTE delayCount[NUM_IO];
 
 // forward declarations
 BOOL readInput(unsigned char io);
+// externs
 
 static unsigned char io;
 
@@ -68,23 +72,33 @@ static unsigned char io;
  */
 void initInputScan(void) {
     for (io=0; io<NUM_IO; io++) {
-        inputState[io] = readInput(io);
+        BYTE input = readInput(io);
+        inputState[io] = input;
+        if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
+            input = !input;
+        }
+        outputState[io] = input;
+        delayCount[io] = 0;
     }
 }
 
 /**
  * Called regularly to check for changes on the inputs.
  * Generate Produced events upon input change.
- * 
- * @param report always send current status if report is TRUE otherwise send only on change
+ * Handles:
+ * * Input pin invert
+ * * Toggle
+ * * Output OFF event disable
+ * * Output event invert
  *   
  */
-void inputScan(BOOL report) {
+void inputScan(void) {
+    volatile rom near Event * ev;
     for (io=0; io< NUM_IO; io++) {
         if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);
             if (input != inputState[io]) {
-                BOOL change = report;
+                BOOL change = FALSE;
                 // check if we have reached the debounce count
                 if (inputState[io] && (delayCount[io] == NV->io[io].nv_io.nv_input.input_on_delay)) {
                     change = TRUE;
@@ -93,23 +107,52 @@ void inputScan(BOOL report) {
                     change = TRUE;
                 }
                 if (change) {
+                    // input been steady long enough to be treated as a real change
                     delayCount[io] = 0;
                     inputState[io] = input;
-                    // check if input is inverted
-                    if (NV->io[io].flags & FLAG_INVERTED) {
+                    // check if input pin is inverted
+                    if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
                         input = !input;
                     }
-                    // send the changed Produced event
-                    if (input) {
-                        cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+                    // Check if toggle
+                    if (NV->io[io].flags & FLAGS_TOGGLE) {
+                        if (input) {
+                            outputState[io] = ! outputState[io];
+                        } else {
+                            continue;
+                        }
+                     } else {
+                        outputState[io] = input;
+                    }
+                    
+                    // check if OFF events are enabled
+                    if (NV->io[io].flags & FLAG_DISABLE_OFF) {
+                        if (outputState[io]) {
+                            // only ON
+                            // check if produced event is inverted
+                            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                            } else {
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE);
+                            }
+                        } else {
+                            if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT_TWO_ON(io), FALSE);
+                            } else {
+                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT_TWO_ON(io), TRUE);
+                            }
+                        }
                     } else {
-                        // check if OFF events are enabled
-                        if (NV->io[io].nv_io.nv_input.input_enable_off) {
-                            cbusSendEvent( 0, -1, ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                        // check if produced event is inverted
+                        if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), !outputState[io]);
+                        } else {
+                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), outputState[io]);
                         }
                     }
+                } else {
+                    delayCount[io]++;
                 }
-                delayCount[io]++;
             } else {
                 delayCount[io] = 0;
             }
@@ -125,12 +168,12 @@ void inputScan(BOOL report) {
 BOOL readInput(unsigned char io) {
     if (NV->io[io].type == TYPE_INPUT) {
             switch(configs[io].port) {
-            case 'a':
-                return TRISA & (1<<configs[io].no);
-            case 'b':
-                return TRISB & (1<<configs[io].no);
-            case 'c':
-                return TRISA & (1<<configs[io].no);
+            case 'A':
+                return PORTA & (1<<configs[io].no);
+            case 'B':
+                return PORTB & (1<<configs[io].no);
+            case 'C':
+                return PORTC & (1<<configs[io].no);
             }
         }
     return FALSE;

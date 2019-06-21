@@ -44,6 +44,7 @@ extern "C" {
      * Scans the input IO.
      */
     extern void initInputScan(void);
+    extern void inputScan(void);
 
 
 #ifdef	__cplusplus

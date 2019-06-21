@@ -37,98 +37,43 @@
  * Node variables contain global parameters that need to be persisted to Flash.
  */
 
-#include <xc.h>
+#include "devincs.h"
 #include "module.h"
 #include "mioNv.h"
 #include "mioEEPROM.h"
 #include "events.h"
 #include "romops.h"
 #include "FliM.h"
+#ifdef NV_CACHE
 #include "nvCache.h"
+#endif
+#include "servo.h"
+#include "config.h"
+#include "cbus.h"
+#include "analogue.h"
 
 extern void setType(unsigned char i, unsigned char type);
-
-const ModuleNvDefs moduleNvDefs @AT_NV = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
-    0,  // sod delay    - delay in sending SOD or zero = no sod
-    0,  // hb delay     - heartbeat delay
-    5,  // servo speed  - default servo speed
-    {0,0,0,0,0,0,0,0,0,0,0,0,0},  // spare
-    {
-        {
-            0,  // io[0].type
-            0,  // io[0].flags
-            1,1,1  // io[0]
-        },{
-            0,  // io[1].type
-            0,  // io[1].flags
-            1,1,1  // io[1]
-        },{
-            0,  // io[2].type
-            0,  // io[2].flags
-            1,1,1  // io[2]
-        },{
-            0,  // io[3].type
-            0,  // io[3].flags
-            1,1,1  // io[3]
-        },{
-            0,  // io[4].type
-            0,  // io[4].flags
-            1,1,1  // io[4]
-        },{
-            0,  // io[5].type
-            0,  // io[5].flags
-            1,1,1  // io[5]
-        },{
-            0,  // io[6].type
-            0,  // io[6].flags
-            1,1,1  // io[6]
-        },{
-            0,  // io[7].type
-            0,  // io[7].flags
-            1,1,1  // io[7]
-        },{
-            0,  // io[8].type
-            0,  // io[8].flags
-            1,1,1  // io[8]
-        },{
-            0,  // io[9].type
-            0,  // io[9].flags
-            1,1,1  // io[9]
-        },{
-            0,  // io[10].type
-            0,  // io[10].flags
-            1,1,1  // io[10]
-        },{
-            0,  // io[11].type
-            0,  // io[11].flags
-            1,1,1  // io[11]
-        },{
-            0,  // io[12].type
-            0,  // io[12].flags
-            1,1,1  // io[12]
-        },{
-            0,  // io[13].type
-            0,  // io[13].flags
-            1,1,1  // io[13]
-        },{
-            0,  // io[14].type
-            0,  // io[14].flags
-            1,1,1  // io[14]
-        },{
-            0,  // io[15].type
-            0,  // io[15].flags
-            1,1,1  // io[15]
-        }
-    }
-};
+#ifdef __XC8
+const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
+#else
+//#pragma romdata myNV=AT_NV
+#endif
 /*
  Module specific NV routines
  */
+#ifdef __XC8
+const NodeVarTable nodeVarTable @AT_NV;
 ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
-void mioNvInit() {
+#else
 #ifdef NV_CACHE
-    NV = loadNvCache(); // replace pointer with the cache
+ModuleNvDefs * NV; // = &(nodeVarTable.moduleNVs);
+#else
+volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
 #endif
+#endif
+
+void mioNvInit(void) {
+
 }
 
 /**
@@ -137,26 +82,120 @@ void mioNvInit() {
  */
 BOOL validateNV(unsigned char index, unsigned char oldValue, unsigned char value) {
     // TODO more validations
-    if (IS_NV_TYPE(index)) {
-        if (value > TYPE_MULTI) return FALSE;
+    unsigned char io;
+    if ((index >= NV_IO_START) && IS_NV_TYPE(index)) {
+        switch (value) {
+#ifdef ANALOGUE
+            case TYPE_ANALOGUE_IN:
+            case TYPE_MAGNET:
+                io = IO_NV(index);
+                if (configs[io].an == 0xFF) return FALSE;
+                break;
+#endif
+#ifdef MULTI
+            case TYPE_MULTI:
+                break;
+#endif
+#ifdef BOUNCE
+            case TYPE_BOUNCE:
+                break;
+#endif
+#ifdef SERVO
+            case TYPE_SERVO:
+                break;
+#endif
+            case TYPE_OUTPUT:
+            case TYPE_INPUT:
+                break;
+            default:
+                return FALSE;
+        }
     }
     return TRUE;
 } 
 
-void actUponNVchange(unsigned char index, unsigned char value) {
+void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char value) {
+    // If the IO type is changed then we need to do a bit or work
+    unsigned char io;
+    unsigned char nv;
     if (IS_NV_TYPE(index)) {
-        // TODO more settings to be done
-        setType(IO_NV(index), value);
+        io = index-NV_IO_START;
+        io /= NVS_PER_IO;
+        if (oldValue != value) {
+            setType(io, value);
+        }
+    }
+    
+    if (index >= NV_IO_START) {
+        io = IO_NV(index);
+        nv = NV_NV(index);
+        switch(NV->io[io].type) {
+#ifdef ANALOGUE
+            case TYPE_MAGNET:
+                // if MAGNET setup is written then do the adc and save the result as the offset
+                if (index == NV_IO_MAGNET_SETUP(io)) {
+                    //setup variables so that the analogue poll will do the correct thing
+                    setupIo = io;
+                    setupState = (value & 0x80)?SETUP_REPORT_AND_SAVE:SETUP_REPORT;
+                }
+                break;
+#endif
+#ifdef SERVO
+            case TYPE_SERVO:
+                // if a servo position is changed then move servo to that position
+                if (index == NV_IO_SERVO_START_POS(io)) {
+                    setServoState(io, ACTION_IO_CONSUMER_3);
+                    startServoOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_SERVO_END_POS(io)) {
+                    setServoState(io, ACTION_IO_CONSUMER_2);
+                    startServoOutput(io, ACTION_IO_CONSUMER_2);
+                }
+                break;
+#endif
+#ifdef BOUNCE
+            case TYPE_BOUNCE:
+                if (index == NV_IO_BOUNCE_LOWER_POS(io)) {
+                    setBounceState(io, ACTION_IO_CONSUMER_3);
+                    startBounceOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_BOUNCE_UPPER_POS(io)) {
+                    setBounceState(io, ACTION_IO_CONSUMER_2);
+                    startBounceOutput(io, ACTION_IO_CONSUMER_2);
+                }
+                break;
+#endif
+#ifdef MULTI
+            case TYPE_MULTI:
+                if (index == NV_IO_MULTI_POS1(io)) {
+                    setMultiState(io, ACTION_IO_CONSUMER_1);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_1);
+                } else if (index == NV_IO_MULTI_POS2(io)) {
+                    setMultiState(io, ACTION_IO_CONSUMER_2);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_2);
+                } else if (index == NV_IO_MULTI_POS3(io)) {
+                    setMultiState(io, ACTION_IO_CONSUMER_3);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_3);
+                } else if (index == NV_IO_MULTI_POS4(io)) {
+                    setMultiState(io, ACTION_IO_CONSUMER_4);
+                    startMultiOutput(io, ACTION_IO_CONSUMER_4);
+                }
+                break;
+#endif
+        }
     }
 }
+
 
 /**
  * Set NVs back to factory defaults.
  */
-void factoryResetGlobalNv() {
+void factoryResetGlobalNv(void) {
     writeFlashByte((BYTE*)(AT_NV + NV_SOD_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
-    writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)5);
+    writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)PIVOT);
+    writeFlashByte((BYTE*)(AT_NV + NV_PULLUPS), (BYTE)0x33);
+#ifdef NV_CACHE
+    loadNvCache();
+#endif
 }
 
 /**
@@ -165,38 +204,72 @@ void factoryResetGlobalNv() {
  */
 void defaultNVs(unsigned char i, unsigned char type) {
     // add the module's default nv for this io
+    writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF | FLAG_STARTUP));
     switch(type) {
         case TYPE_INPUT:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ENABLE_OFF(i)), (BYTE)1);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)1);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)1);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)4);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_OFF_DELAY(i)), (BYTE)4);
             break;
         case TYPE_OUTPUT:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)0);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_PULSE_DURATION(i)), (BYTE)0);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_OUTPUT_FLASH_PERIOD(i)), (BYTE)0);
             break;
+#ifdef SERVO
         case TYPE_SERVO:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
+#ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)200);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)5);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)5);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_START_POS(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_END_POS(i)), (BYTE)128);
+#endif
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_SE_SPEED(i)), (BYTE)PIVOT+1);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_SERVO_ES_SPEED(i)), (BYTE)PIVOT+1);
             break;
+#endif
+#ifdef BOUNCE
         case TYPE_BOUNCE:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_START_POS(i)), (BYTE)0);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_END_POS(i)), (BYTE)90);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_SE_SPEED(i)), (BYTE)5);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_ES_SPEED(i)), (BYTE)5);
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_PROFILE(i)), (BYTE)1);
+#ifdef TEST_DEFAULT_NVS
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)200);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)30);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_UPPER_POS(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_LOWER_POS(i)), (BYTE)127);
+#endif
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_BOUNCE_COEFF(i)), (BYTE)64);
+            writeFlashByte((BYTE*)(AT_NV + NV_IO_BOUNCE_PULL_SPEED(i)), (BYTE)3);
+            writeFlashByte((BYTE*)(AT_NV + NV_IO_BOUNCE_PULL_PAUSE(i)), (BYTE)60);
             break;
+#endif
+#ifdef MULTI      
         case TYPE_MULTI:
-            writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SEQUENTIAL | FLAG_CUTOFF));
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_NUM_POS(i)), (BYTE)3);
+#ifdef TEST_DEFAULT_NVS
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)25);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)110);
             writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)200);
+#else
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS1(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS2(i)), (BYTE)128);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MULTI_POS3(i)), (BYTE)128);
+#endif
             break;
+#endif
+#ifdef ANALOGUE
+        case TYPE_ANALOGUE_IN:  // use 8 bit ADC
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_THRES(i)), (BYTE)0x80);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_ANALOGUE_HYST(i)), (BYTE)0x10);
+            break;
+        case TYPE_MAGNET:   // use 12 bit ADC
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_SETUP(i)), (BYTE)0);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_THRES(i)), (BYTE)123);    // 150mV
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_HYST(i)), (BYTE)32);      // 39mV
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETH(i)), (BYTE)0x07);
+            writeFlashByte((BYTE*)(AT_NV+NV_IO_MAGNET_OFFSETL(i)), (BYTE)0xFF);
+            break;
+#endif
     }
+#ifdef NV_CACHE
+    loadNvCache();
+#endif
 }

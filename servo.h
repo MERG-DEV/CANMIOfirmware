@@ -34,18 +34,41 @@
  * 
  * Created on 1 June 2017, 13:14
  */
-#include <xc.h>
+#include "devincs.h"
 #include "canmio.h"
+#include "actionQueue.h"
 
 typedef enum {
     OFF,            // not generating any pulses
     STOPPED,        // pulse width fixed, reached desired destination
-    MOVING          // pulse width changing
+    MOVING,         // pulse width changing
+    STARTING
 } ServoState;
 
 extern ServoState servoState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
-unsigned char targetPos[NUM_IO];
-char speed[NUM_IO];
+extern unsigned char targetPos[NUM_IO];
+extern unsigned char stepsPerPollSpeed[NUM_IO];
+extern int speed[NUM_IO];
+
+extern void startServos(void);
+extern void initServos(void);
+extern void pollServos(void);
+extern void timer1DoneInterruptHandler(void);
+extern void timer2DoneInterruptHandler(void);
+extern void timer3DoneInterruptHandler(void);
+extern void timer4DoneInterruptHandler(void);
+
+extern void setServoState(unsigned char io, CONSUMER_ACTION_T action);
+extern void setBounceState(unsigned char io, CONSUMER_ACTION_T action);
+extern void setMultiState(unsigned char io, CONSUMER_ACTION_T action);
+
+extern void setServoPosition(unsigned char io, unsigned char pos);
+
+extern void startServoOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
+
+#define PIVOT                   234     // the value at which we switch from steps per poll to polls per step
 
 #endif  //__SERVO_H__
