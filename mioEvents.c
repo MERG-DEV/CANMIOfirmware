@@ -286,16 +286,22 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         int nextAction = getEv(tableIndex, EVperEVT-1);
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
+            unsigned char firstAction = NO_ACTION;  // used to determine simultaneous flag for the end of actions
             action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
             
 
             // get the Simultaneous flag from the next action
-            nextSimultaneous = ACTION_SIMULTANEOUS;
             if (e > 1) {
                 nextAction = evs[e-1];
-                    nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+            } else {
+                nextSimultaneous = firstAction & ACTION_SIMULTANEOUS;
             }
             if (action != NO_ACTION) {
+                // record the first action we come to - which is actually the last action when doing an ON event
+                if (firstAction == NO_ACTION) {
+                    firstAction = action;
+                }
                 action &= ACTION_MASK;
                 if (action <= NUM_CONSUMER_ACTIONS) {
                     // check global consumed actions
