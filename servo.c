@@ -37,8 +37,8 @@
  * Pulses are output approximately every 20ms. Therefore we need more than 1 timer for all 16 possible 
  * servo outputs (16 * 2ms = 32ms which is greater than the 20ms available). A minimum of 2 timers 
  * (each handling 8 servos) is required but if we allow overdrive beyond 2ms then 3 (6 servos) or 
- * 4 (4 servos) timers is better.
- * Here we use 4 timers. Timer1..Timer4.
+ * 4 (4 servos) timers would be better.
+ * Here we use 2 timers. Timer1 and Timer3.
  * 
  * The timers are driven from Fosc/4 and use a 1:4 prescalar. With a 16MHz resonator and 4x PLL this 
  * equates to a timer increment every 0.25us. We require counts from 1ms to 2ms or 4000 - 8000 timer ticks.
