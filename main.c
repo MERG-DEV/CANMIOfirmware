@@ -438,6 +438,18 @@ void factoryResetFlash(void) {
 }
 
 /**
+ * Check to see if now is a good time to start a flash write.
+ * @return 
+ */
+unsigned char isSuitableTimeToWriteFlash() {
+#ifdef SERVO
+    return isNoServoPulses();
+#else
+    return TRUS;
+#endif
+}
+
+/**
  * Set the Type of the IO.
  * @param i the IO
  * @param type the new Type

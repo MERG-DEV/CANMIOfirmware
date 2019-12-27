@@ -157,7 +157,7 @@ void initServos(void) {
      */
 }
 /**
- * This gets called ever approx 2.5ms so start the next set of servo pulses.
+ * This gets called ever approx 2.5ms to start the next set of servo pulses.
  * Checks that the servo isn't OFF
  * @param io
  */
@@ -606,9 +606,27 @@ void setMultiState(unsigned char io, CONSUMER_ACTION_T action) {
     }
 }
 
+/**
+ * explicitly set the recorded position of a servo.
+ * @param io
+ * @param pos
+ */
 void setServoPosition(unsigned char io, unsigned char pos) {
     targetPos[io] = pos;
     currentPos[io] = pos;
+}
+
+/**
+ * Check if now is a good time to write to flash. This must not happen whilst
+ * a servo pulse is being produced.
+ * 
+ * @return 
+ */
+unsigned char isNoServoPulses(void){
+    // check if either of the timers is running
+    if (T1CONbits.TMR1ON) return FALSE;
+    if (T3CONbits.TMR3ON) return FALSE;
+    return TRUE;
 }
 
 #endif
