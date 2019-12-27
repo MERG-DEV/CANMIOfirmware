@@ -89,10 +89,11 @@ void factoryResetGlobalEvents(void) {
 void defaultEvents(unsigned char io, unsigned char type) {
     WORD en = io+1;
     clearEvents(io); 
-#ifdef TEST_DEFAULT_EVENTS
+
     // add the module's default events for this io
     switch(type) {
         case TYPE_OUTPUT:
+#ifdef BOUNCE
         case TYPE_BOUNCE:
             /*
              * We create both a Produced and a Consumed event here.
@@ -100,100 +101,50 @@ void defaultEvents(unsigned char io, unsigned char type) {
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
             addEvent(nodeID, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
+#endif BOUNCE
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
             break;
+#ifdef SERVO
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
-//            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
-//            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
+            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
+            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
+#endif SERVO
+#ifdef MULTI
         case TYPE_MULTI:
             // no defaults for multi
             break;
+#endif MULTI
+#ifdef ANALOGUE
         case TYPE_ANALOGUE_IN:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
             break;
         case TYPE_MAGNET:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
- //           addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+            addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
+            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
             break;
+#endif ANALOGUE
     }
-#endif
 }
 
 /**
- * If we don't define default produced actions in the eventTable above then
- * we can generate the event using code. This was requested by PeteB so that
- * eventTable space isn't used unnecessarily. The downside is that NERD won't
- * list these events.
- * If a default event is defined here then it should be written to the global
- * producedEvent variable.
+ * This is called by the CBUS library to see if any software generated events are to be sent.
+ * Just return false as we no longer want to support this.
  * 
- * @param action
- * @return true if there is an event
+ * @param paction
+ * @return false
  */
 BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
-    if (paction >= ACTION_PRODUCER_IO_BASE) {
-        unsigned char io = PRODUCER_IO(paction);
-        producedEvent.NN = nodeID;
-        
-        switch (NV->io[io].type) {
-            case TYPE_INPUT:
-                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
-                    producedEvent.EN = io + 1;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_INPUT_TWO_ON(io)) {
-                    // this will not send an event by default
-                    producedEvent.EN = 0;
-                    return TRUE;
-                }
-                break;
-            case TYPE_MAGNET:
-                if (paction == ACTION_IO_PRODUCER_MAGNETH(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                // fall through
-            case TYPE_ANALOGUE_IN:
-                // Also ACTION_IO_PRODUCER_MAGNETL(io) and ACTION_IO_PRODUCER_ANALOGUE(io))
-                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
-                    producedEvent.EN = io + 1;
-                    return TRUE;
-                }
-                break;
-            case TYPE_BOUNCE:
-            case TYPE_OUTPUT:
-                if (paction == ACTION_IO_PRODUCER_OUTPUT(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                break;
-            case TYPE_SERVO:
-                if (paction == ACTION_IO_PRODUCER_SERVO_START(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_SERVO_MID(io)) {
-                    producedEvent.EN = io + 301;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_SERVO_END(io)) {
-                    producedEvent.EN = io + 201;
-                    return TRUE;
-                }
-                break;
-        }
-    } 
     return FALSE;
 }
 
@@ -267,6 +218,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                     // action 1 (EV) must be converted to 2(ON)
                                     action++;
                                 }
+                                if (ca == ACTION_IO_CONSUMER_5) {
+                                    // action 5 (EV) must be converted to 3(OFF)
+                                    action-=2;
+                                }
                                 pushAction((CONSUMER_ACTION_T)action);
                                 setNormalActions();
                                 break;
@@ -326,6 +281,10 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                 if (ca == ACTION_IO_CONSUMER_1) {
                                     // action 1 (EV) must be converted to 3(OFF)
                                     action += 2;
+                                }
+                                if (ca == ACTION_IO_CONSUMER_5) {
+                                    // action 5 (EV) must be converted to 3(ON)
+                                    action -= 3;
                                 }
                                 pushAction(action|nextSimultaneous);
                                 setNormalActions();

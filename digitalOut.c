@@ -92,9 +92,11 @@ void initOutputs(void) {
  */
 void startDigitalOutput(unsigned char io, unsigned char state) {
     BOOL pinState;
+    // State ACTION_IO_CONSUMER_1 is Change
     // State ACTION_IO_CONSUMER_2 is ON
     // State ACTION_IO_CONSUMER_3 is OFF
     // State ACTION_IO_CONSUMER_4 is Flash
+    // State ACTION_IO_CONSUMER_5 is Change inverted
     if (state == ACTION_IO_CONSUMER_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         pulseDelays[io] = 0;

@@ -336,11 +336,32 @@ void initialise(void) {
 #endif
     }
     // check if FLASH is valid
-   if (NV->nv_version != FLASH_VERSION) {
-        // may need to upgrade of data in the future
-        // set Flash to default values
-        factoryResetFlash();
-        // set the version number to indicate it has been initialised
+    if (NV->nv_version != FLASH_VERSION) {
+         // may need to upgrade of data
+        if (NV->nv_version == 1) {
+            // Convert from version 1 to version 2
+            unsigned char i, evIndex;
+            
+            /* The change from v1 to v2 involved increasing the number of actions per channel
+             from 4 to 5 so that OUTPUT not_event action.
+             * We need to go through all the EVs of all the events and upgrade the actions */
+            for (i=0; i<NUM_EVENTS; i++) {
+                for (evIndex=1; evIndex<EVperEVT; evIndex++) {
+                    int ev = getEv(i, evIndex);
+                    unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
+                    if ((ev & ACTION_MASK) >= ACTION_CONSUMER_IO_BASE) {
+                        unsigned char io = V1_CONSUMER_IO(ev);
+                        unsigned char action = V1_CONSUMER_ACTION(ev);
+                        ev = simultaneous | (ACTION_IO_CONSUMER_BASE(io) + action);
+                        writeEv(i, evIndex, ev);    // ignore any return error
+                    }
+                }
+            }
+        } else {
+            // set Flash to default values
+            factoryResetFlash();
+        }
+         // set the version number to indicate it has been initialised
         writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
 #ifdef NV_CACHE
         loadNvCache();                

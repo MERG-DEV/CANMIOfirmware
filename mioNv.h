@@ -51,7 +51,7 @@ extern "C" {
 #include "GenericTypeDefs.h"
 #include "canmio.h"
 
-#define FLASH_VERSION   0x01
+#define FLASH_VERSION   0x02        // Version 2 introduced when Actions were changed to have 5 per channel
     
 // Global NVs
 #define NV_VERSION                      0
