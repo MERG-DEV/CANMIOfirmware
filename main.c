@@ -337,24 +337,94 @@ void initialise(void) {
     }
     // check if FLASH is valid
     if (NV->nv_version != FLASH_VERSION) {
-         // may need to upgrade of data
+         // may need to upgrade flash data
         if (NV->nv_version == 1) {
-            // Convert from version 1 to version 2
+            // Convert from data version 1 to data version 2
             unsigned char i, evIndex;
             
-            /* The change from v1 to v2 involved increasing the number of actions per channel
-             from 4 to 5 so that OUTPUT not_event action.
-             * We need to go through all the EVs of all the events and upgrade the actions */
+            /* The change from flash data version 1 to v2 involved increasing the 
+             * number of actions per channel from 4 to 5 for the OUTPUT !Change action.
+             * We need to go through all the EVs of all the events and upgrade 
+             * the action numbers by recalculating them. */
             for (i=0; i<NUM_EVENTS; i++) {
-                for (evIndex=1; evIndex<EVperEVT; evIndex++) {
+                // the evIndex starts at 0 for the Happening and 1 for the Actions
+                for (evIndex=1; evIndex<EVperEVT; evIndex++) {  
                     int ev = getEv(i, evIndex);
-                    unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
-                    if ((ev & ACTION_MASK) >= ACTION_CONSUMER_IO_BASE) {
-                        unsigned char io = V1_CONSUMER_IO(ev);
-                        unsigned char action = V1_CONSUMER_ACTION(ev);
-                        ev = simultaneous | (ACTION_IO_CONSUMER_BASE(io) + action);
-                        writeEv(i, evIndex, ev);    // ignore any return error
+                    if (ev > 0) {
+                        if ((ev & ACTION_MASK) >= ACTION_CONSUMER_IO_BASE) {
+                            unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
+                            unsigned char io = V1_CONSUMER_IO(ev);
+                            unsigned char action = V1_CONSUMER_ACTION(ev);
+                            ev = simultaneous | (ACTION_IO_CONSUMER_BASE(io) + action);
+                            writeEv(i, evIndex, ev);    // ignore any return error
+                        }
+                    } 
+                    if (ev == -CMDERR_NO_EV) {   // no more EVs for this event
+                        break;
                     }
+                }
+            }
+            /* The change also involved removing software generated events so that
+             * all produced events are now stored in the event table. We need to
+             * create any default produced events which are missing.
+             */
+            for (io=0; io<NUM_IO; io++) {
+                PRODUCER_ACTION_T paction;
+                WORD en = io+1;
+                switch (NV->io[io].type) {
+                    case TYPE_INPUT:
+                        paction = ACTION_IO_PRODUCER_INPUT(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+                        break;
+#ifdef SERVO
+                    case TYPE_SERVO:
+                        paction = ACTION_IO_PRODUCER_SERVO_START(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        paction = ACTION_IO_PRODUCER_SERVO_MID(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 300+en, 0, paction, TRUE);
+                        }
+                        paction = ACTION_IO_PRODUCER_SERVO_END(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 200+en, 0, paction, TRUE);
+                        }
+                        break;
+#endif         
+                    case TYPE_OUTPUT:
+#ifdef BOUNCE
+                    case TYPE_BOUNCE:
+#endif
+                        paction = ACTION_IO_PRODUCER_OUTPUT(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        break;
+#ifdef MULTI
+                    case TYPE_MULTI:
+                        break;
+#endif
+#ifdef ANALOGUE
+                    case TYPE_ANALOGUE_IN:
+                        paction = ACTION_IO_PRODUCER_ANALOGUE(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+
+                    case TYPE_MAGNET:
+                        paction = ACTION_IO_PRODUCER_MAGNETH(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+                        paction = ACTION_IO_PRODUCER_MAGNETL(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        break;
+#endif
                 }
             }
         } else {
@@ -428,8 +498,8 @@ void factoryReset(void) {
 void factoryResetFlash(void) {
     unsigned char io;
     factoryResetGlobalNv();
-    factoryResetGlobalEvents();
     clearAllEvents();
+    factoryResetGlobalEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
         setType(io, TYPE_DEFAULT);
