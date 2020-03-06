@@ -451,6 +451,7 @@ void pollServos(void) {
             break;
         case OFF:
             // output off
+            //setOutputPin(io, 1);
             // no need to do anything since if output is OFF we don't start the timer in startServos
             break;
         }

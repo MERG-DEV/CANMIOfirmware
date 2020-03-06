@@ -92,18 +92,20 @@ void initOutputs(void) {
  */
 void startDigitalOutput(unsigned char io, unsigned char state) {
     BOOL pinState;
-    // State ACTION_IO_CONSUMER_1 is Change
+    // State ACTION_IO_CONSUMER_1 is Change. This is not used here and state will have been changed to on or off
     // State ACTION_IO_CONSUMER_2 is ON
     // State ACTION_IO_CONSUMER_3 is OFF
     // State ACTION_IO_CONSUMER_4 is Flash
-    // State ACTION_IO_CONSUMER_5 is Change inverted
+    // State ACTION_IO_CONSUMER_5 is Change inverted. This is not used here and state will have been changed to on or off
     if (state == ACTION_IO_CONSUMER_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         pulseDelays[io] = 0;
         setOutputPin(io, TRUE);
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
+        sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
         return;
     }
+    // state is either ACTION_IO_CONSUMER_2(on) or )ACTION_IO_CONSUMER_3(off))
     // Check if the input event is inverted
     pinState = (state == ACTION_IO_CONSUMER_2);
     if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {

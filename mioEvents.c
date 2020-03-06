@@ -103,7 +103,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
             addEvent(nodeID, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
             addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
             break;
-#endif BOUNCE
+#endif 
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
@@ -117,12 +117,12 @@ void defaultEvents(unsigned char io, unsigned char type) {
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
             break;
-#endif SERVO
+#endif 
 #ifdef MULTI
         case TYPE_MULTI:
             // no defaults for multi
             break;
-#endif MULTI
+#endif 
 #ifdef ANALOGUE
         case TYPE_ANALOGUE_IN:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
@@ -133,7 +133,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
             addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
             addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
             break;
-#endif ANALOGUE
+#endif 
     }
 }
 
