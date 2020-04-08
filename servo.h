@@ -59,15 +59,15 @@ extern void timer2DoneInterruptHandler(void);
 extern void timer3DoneInterruptHandler(void);
 extern void timer4DoneInterruptHandler(void);
 
-extern void setServoState(unsigned char io, CONSUMER_ACTION_T action);
-extern void setBounceState(unsigned char io, CONSUMER_ACTION_T action);
-extern void setMultiState(unsigned char io, CONSUMER_ACTION_T action);
+extern void setServoState(unsigned char io, ACTION_T action);
+extern void setBounceState(unsigned char io, ACTION_T action);
+extern void setMultiState(unsigned char io, ACTION_T action);
 
 extern void setServoPosition(unsigned char io, unsigned char pos);
 
-extern void startServoOutput(unsigned char io, CONSUMER_ACTION_T action);
-extern void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action);
-extern void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action);
+extern void startServoOutput(unsigned char io, ACTION_T action);
+extern void startBounceOutput(unsigned char io, ACTION_T action);
+extern void startMultiOutput(unsigned char io, ACTION_T action);
 
 extern unsigned char isNoServoPulses(void);
 

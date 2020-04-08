@@ -131,23 +131,23 @@ void inputScan(void) {
                             // only ON
                             // check if produced event is inverted
                             if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), FALSE);
+                                sendProducedEvent(HAPPENING_IO_INPUT(io), FALSE);
                             } else {
-                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), TRUE);
+                                sendProducedEvent(HAPPENING_IO_INPUT(io), TRUE);
                             }
                         } else {
                             if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT_TWO_ON(io), FALSE);
+                                sendProducedEvent(HAPPENING_IO_INPUT_TWO_ON(io), FALSE);
                             } else {
-                                sendProducedEvent(ACTION_IO_PRODUCER_INPUT_TWO_ON(io), TRUE);
+                                sendProducedEvent(HAPPENING_IO_INPUT_TWO_ON(io), TRUE);
                             }
                         }
                     } else {
                         // check if produced event is inverted
                         if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), !outputState[io]);
+                            sendProducedEvent(HAPPENING_IO_INPUT(io), !outputState[io]);
                         } else {
-                            sendProducedEvent(ACTION_IO_PRODUCER_INPUT(io), outputState[io]);
+                            sendProducedEvent(HAPPENING_IO_INPUT(io), outputState[io]);
                         }
                     }
                 } else {

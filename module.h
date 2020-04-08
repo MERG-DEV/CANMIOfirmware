@@ -100,8 +100,8 @@ extern "C" {
  * Actions
  */
 
-#define CONSUMER_ACTION_T	unsigned char
-#define PRODUCER_ACTION_T	unsigned char
+#define ACTION_T	unsigned char
+#define HAPPENING_T	unsigned char
 #define NO_ACTION   0
 
 

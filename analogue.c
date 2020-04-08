@@ -112,14 +112,14 @@ void pollAnalogue(void) {
                     if ((lastReading[portInProgress] < hthreshold) && (adc >= hthreshold)) {
                         if (eventState[portInProgress] != ANALOGUE_EVENT_UPPER) {
                             //High on
-                            sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
+                            sendProducedEvent(HAPPENING_IO_MAGNETH(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
                             eventState[portInProgress] = ANALOGUE_EVENT_UPPER;
                         }
                     } else if (( lastReading[portInProgress] > hhysteresis) && (adc <= hhysteresis)) {
                         if (eventState[portInProgress] == ANALOGUE_EVENT_UPPER) {
                             //High Off
                             if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MAGNETH(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
+                                sendProducedEvent(HAPPENING_IO_MAGNETH(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
                             }
                             eventState[portInProgress] = ANALOGUE_EVENT_OFF;
                         }
@@ -134,14 +134,14 @@ void pollAnalogue(void) {
                 if (( lastReading[portInProgress] > lhysteresis) && (adc <= lhysteresis)) {
                     if (eventState[portInProgress] != ANALOGUE_EVENT_LOWER) {
                         // Low on 
-                        sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
+                        sendProducedEvent(HAPPENING_IO_MAGNETL(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
                         eventState[portInProgress] = ANALOGUE_EVENT_LOWER;
                     }
                 } else if ((lastReading[portInProgress] < lthreshold) && (adc >= lthreshold)) {
                     if (eventState[portInProgress] == ANALOGUE_EVENT_LOWER) {
                         //Low Off
                         if ( ! (NV->io[portInProgress].flags & FLAG_DISABLE_OFF)) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MAGNETL(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_MAGNETL(portInProgress), NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         eventState[portInProgress] = ANALOGUE_EVENT_OFF;
                     }

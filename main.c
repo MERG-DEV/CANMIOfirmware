@@ -128,6 +128,7 @@
 #include "can18.h"
 #include "cbus.h"
 #include "actionQueue.h"
+#include "mioEvents.h"
 #ifdef SERVO
 #include "servo.h"
 #endif
@@ -282,7 +283,7 @@ int main(void) @0x800 {
         if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
             started = TRUE;
             if (NV->sendSodDelay > 0) {
-                sendProducedEvent(ACTION_PRODUCER_SOD, TRUE);
+                sendProducedEvent(HAPPENING_SOD, TRUE);
             }
         }
         checkCBUS();    // Consume any CBUS message and act upon it
@@ -351,11 +352,11 @@ void initialise(void) {
                 for (evIndex=1; evIndex<EVperEVT; evIndex++) {  
                     int ev = getEv(i, evIndex);
                     if (ev > 0) {
-                        if ((ev & ACTION_MASK) >= ACTION_CONSUMER_IO_BASE) {
+                        if ((ev & ACTION_MASK) >= BASE_ACTION_IO) {
                             unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
-                            unsigned char io = V1_CONSUMER_IO(ev);
-                            unsigned char action = V1_CONSUMER_ACTION(ev);
-                            ev = simultaneous | (ACTION_IO_CONSUMER_BASE(io) + action);
+                            unsigned char io = V1_ACTION_IO(ev);
+                            unsigned char action = V1_ACTION(ev);
+                            ev = simultaneous | (ACTION_IO_BASE(io) + action);
                             writeEv(i, evIndex, ev);    // ignore any return error
                         }
                     } 
@@ -369,26 +370,26 @@ void initialise(void) {
              * create any default produced events which are missing.
              */
             for (io=0; io<NUM_IO; io++) {
-                PRODUCER_ACTION_T paction;
+                HAPPENING_T paction;
                 WORD en = io+1;
                 switch (NV->io[io].type) {
                     case TYPE_INPUT:
-                        paction = ACTION_IO_PRODUCER_INPUT(io);
+                        paction = HAPPENING_IO_INPUT(io);
                         if ( ! getProducedEvent(paction)) {
                              addEvent(nodeID, en, 0, paction, TRUE);
                         }
                         break;
 #ifdef SERVO
                     case TYPE_SERVO:
-                        paction = ACTION_IO_PRODUCER_SERVO_START(io);
+                        paction = HAPPENING_IO_SERVO_START(io);
                         if ( ! getProducedEvent(paction)) {
                             addEvent(nodeID, 100+en, 0, paction, TRUE);
                         }
-                        paction = ACTION_IO_PRODUCER_SERVO_MID(io);
+                        paction = HAPPENING_IO_SERVO_MID(io);
                         if ( ! getProducedEvent(paction)) {
                             addEvent(nodeID, 300+en, 0, paction, TRUE);
                         }
-                        paction = ACTION_IO_PRODUCER_SERVO_END(io);
+                        paction = HAPPENING_IO_SERVO_END(io);
                         if ( ! getProducedEvent(paction)) {
                             addEvent(nodeID, 200+en, 0, paction, TRUE);
                         }
@@ -398,7 +399,7 @@ void initialise(void) {
 #ifdef BOUNCE
                     case TYPE_BOUNCE:
 #endif
-                        paction = ACTION_IO_PRODUCER_OUTPUT(io);
+                        paction = HAPPENING_IO_OUTPUT(io);
                         if ( ! getProducedEvent(paction)) {
                              addEvent(nodeID, 100+en, 0, paction, TRUE);
                         }
@@ -409,17 +410,17 @@ void initialise(void) {
 #endif
 #ifdef ANALOGUE
                     case TYPE_ANALOGUE_IN:
-                        paction = ACTION_IO_PRODUCER_ANALOGUE(io);
+                        paction = HAPPENING_IO_ANALOGUE(io);
                         if ( ! getProducedEvent(paction)) {
                              addEvent(nodeID, en, 0, paction, TRUE);
                         }
 
                     case TYPE_MAGNET:
-                        paction = ACTION_IO_PRODUCER_MAGNETH(io);
+                        paction = HAPPENING_IO_MAGNETH(io);
                         if ( ! getProducedEvent(paction)) {
                              addEvent(nodeID, en, 0, paction, TRUE);
                         }
-                        paction = ACTION_IO_PRODUCER_MAGNETL(io);
+                        paction = HAPPENING_IO_MAGNETL(io);
                         if ( ! getProducedEvent(paction)) {
                             addEvent(nodeID, 100+en, 0, paction, TRUE);
                         }
