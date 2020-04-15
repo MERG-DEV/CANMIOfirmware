@@ -155,7 +155,7 @@ void processOutputs(void) {
                 flashDelays[io] = - flashDelays[io];
             }
             if (flashDelays[io] == -1) {
-                setOutputPin(io, ! NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED);
+                setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
             }
             if (flashDelays[io] > 1) {

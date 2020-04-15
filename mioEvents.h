@@ -96,7 +96,7 @@ extern "C" {
 #define NUM_ACTIONS                (BASE_ACTION_IO + NUM_IO * ACTIONS_PER_IO)   
     
 /* PRODUCED actions */    
-#define HAPPENING_BASE                0
+#define HAPPENING_BASE                1
     // Global produced actions next
 #define HAPPENING_SOD                 1
     // produced actions per io
