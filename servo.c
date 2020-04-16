@@ -37,8 +37,8 @@
  * Pulses are output approximately every 20ms. Therefore we need more than 1 timer for all 16 possible 
  * servo outputs (16 * 2ms = 32ms which is greater than the 20ms available). A minimum of 2 timers 
  * (each handling 8 servos) is required but if we allow overdrive beyond 2ms then 3 (6 servos) or 
- * 4 (4 servos) timers is better.
- * Here we use 4 timers. Timer1..Timer4.
+ * 4 (4 servos) timers would be better.
+ * Here we use 2 timers. Timer1 and Timer3.
  * 
  * The timers are driven from Fosc/4 and use a 1:4 prescalar. With a 16MHz resonator and 4x PLL this 
  * equates to a timer increment every 0.25us. We require counts from 1ms to 2ms or 4000 - 8000 timer ticks.
@@ -157,7 +157,7 @@ void initServos(void) {
      */
 }
 /**
- * This gets called ever approx 2.5ms so start the next set of servo pulses.
+ * This gets called ever approx 2.5ms to start the next set of servo pulses.
  * Checks that the servo isn't OFF
  * @param io
  */
@@ -250,9 +250,9 @@ void pollServos(void) {
                 switch (servoState[io]) {
                     case STARTING:
                         if (currentPos[io]==NV->io[io].nv_io.nv_servo.servo_start_pos) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_SERVO_START(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         } else {
-                            sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_SERVO_END(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
                         // fall through
@@ -263,7 +263,12 @@ void pollServos(void) {
                             }
                             
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] += stepsPerPollSpeed[io];
+                                if (currentPos[io] + stepsPerPollSpeed[io] < currentPos[io]) {
+                                    // will wrap
+                                    currentPos[io] =255;
+                                } else {
+                                    currentPos[io] += stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {
@@ -279,7 +284,7 @@ void pollServos(void) {
                                 // passed through midway point
                                 // we send an ACON/ACOF depending upon direction servo was moving
                                 // This can then be used to drive frog switching relays
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_SERVO_MID(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                         } else if (targetPos[io] < currentPos[io]) {
                             if (currentPos[io] > midway) {
@@ -287,7 +292,12 @@ void pollServos(void) {
                             }
                             
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] -= stepsPerPollSpeed[io];
+                                if (currentPos[io] - stepsPerPollSpeed[io] > currentPos[io]) {
+                                    // would under wrap
+                                    currentPos[io] = 0;
+                                } else {
+                                    currentPos[io] -= stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {
@@ -301,7 +311,7 @@ void pollServos(void) {
                             }
                             if ((currentPos[io] <= midway) && beforeMidway) {
                                 // passed through midway point
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                                sendProducedEvent(HAPPENING_IO_SERVO_MID(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                             }
                         }
                         if (targetPos[io] == currentPos[io]) {
@@ -309,9 +319,9 @@ void pollServos(void) {
                             ticksWhenStopped[io].Val = tickGet();
                             // send ON event or OFF
                             if (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos) { //ON means move to End
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_SERVO_START(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             } else {
-                                sendProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_SERVO_END(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
@@ -332,7 +342,7 @@ void pollServos(void) {
                             servoState[io] = STOPPED;
                             ticksWhenStopped[io].Val = tickGet();
                             currentPos[io] = targetPos[io];
-                            sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                            sendProducedEvent(HAPPENING_IO_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                             break;
                         }
@@ -346,7 +356,7 @@ void pollServos(void) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
-                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_BOUNCE(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                                 ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         } else {
@@ -354,7 +364,7 @@ void pollServos(void) {
                                 servoState[io] = STOPPED;
                                 ticksWhenStopped[io].Val = tickGet();
                                 currentPos[io] = targetPos[io];
-                                sendProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                                sendProducedEvent(HAPPENING_IO_BOUNCE(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                                 ee_write(EE_OP_STATE+io, currentPos[io]);
                             }
                         }
@@ -365,16 +375,16 @@ void pollServos(void) {
                 switch (servoState[io]) {
                     case STARTING:
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_MULTI_AT1(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_MULTI_AT2(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_MULTI_AT3(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
-                            sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                            sendProducedEvent(HAPPENING_IO_MULTI_AT4(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
                         }
                         servoState[io] = MOVING;
                         // fall through
@@ -412,16 +422,16 @@ void pollServos(void) {
                             ticksWhenStopped[io].Val = tickGet();
                             // MULTI only sends ON events. Work out which event
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_MULTI_AT1(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_MULTI_AT2(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_MULTI_AT3(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             if (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4) {
-                                sendProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                                sendProducedEvent(HAPPENING_IO_MULTI_AT4(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                             }
                             ee_write(EE_OP_STATE+io, currentPos[io]);
                         }
@@ -441,6 +451,7 @@ void pollServos(void) {
             break;
         case OFF:
             // output off
+            //setOutputPin(io, 1);
             // no need to do anything since if output is OFF we don't start the timer in startServos
             break;
         }
@@ -456,12 +467,12 @@ void pollServos(void) {
  * @param io
  * @param action
  */
-void startServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void startServoOutput(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+        case ACTION_IO_3:  // SERVO OFF
             stepsPerPollSpeed[io] = NV->io[io].nv_io.nv_servo.servo_es_speed;
             break;
-        case ACTION_IO_CONSUMER_2:  // SERVO ON
+        case ACTION_IO_2:  // SERVO ON
             stepsPerPollSpeed[io] = NV->io[io].nv_io.nv_servo.servo_se_speed;
             break;
     }
@@ -484,12 +495,12 @@ void startServoOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void startBounceOutput(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+        case ACTION_IO_3:  // SERVO OFF
             speed[io] = 0;
             break;
-        case ACTION_IO_CONSUMER_2:  // SERVO ON
+        case ACTION_IO_2:  // SERVO ON
             speed[io] = PULL_SPEED;
             break;
     }
@@ -502,7 +513,7 @@ void startBounceOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
+void startMultiOutput(unsigned char io, ACTION_T action) {
 
     stepsPerPollSpeed[io] = NV->servo_speed;
     if (stepsPerPollSpeed[io] > PIVOT) {
@@ -524,16 +535,16 @@ void startMultiOutput(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setServoState(unsigned char io, CONSUMER_ACTION_T action) {
+void setServoState(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+        case ACTION_IO_3:  // SERVO OFF
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                 targetPos[io] = NV->io[io].nv_io.nv_servo.servo_end_pos;
             } else {
                 targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
             }
             break;
-        case ACTION_IO_CONSUMER_2:  // SERVO ON
+        case ACTION_IO_2:  // SERVO ON
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                 targetPos[io] = NV->io[io].nv_io.nv_servo.servo_start_pos;
             } else {
@@ -551,16 +562,16 @@ void setServoState(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setBounceState(unsigned char io, CONSUMER_ACTION_T action) {
+void setBounceState(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_3:  // SERVO OFF
+        case ACTION_IO_3:  // SERVO OFF
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                 targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_upper_pos;
             } else {
                 targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
             }
             break;
-        case ACTION_IO_CONSUMER_2:  // SERVO ON
+        case ACTION_IO_2:  // SERVO ON
             if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
                 targetPos[io] = NV->io[io].nv_io.nv_bounce.bounce_lower_pos;
             } else {
@@ -575,20 +586,20 @@ void setBounceState(unsigned char io, CONSUMER_ACTION_T action) {
  * @param io
  * @param action
  */
-void setMultiState(unsigned char io, CONSUMER_ACTION_T action) {
+void setMultiState(unsigned char io, ACTION_T action) {
     switch (action) {
-        case ACTION_IO_CONSUMER_1:  // SERVO Position 1
+        case ACTION_IO_1:  // SERVO Position 1
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos1;
             break;
-        case ACTION_IO_CONSUMER_2:  // SERVO Position 2
+        case ACTION_IO_2:  // SERVO Position 2
             targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos2;
             break;
-        case ACTION_IO_CONSUMER_3:  // SERVO Position 3
+        case ACTION_IO_3:  // SERVO Position 3
             if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 3) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos3;
             }
             break;
-        case ACTION_IO_CONSUMER_4:  // SERVO Position 4
+        case ACTION_IO_4:  // SERVO Position 4
             if (NV->io[io].nv_io.nv_multi.multi_num_pos >= 4) {
                 targetPos[io] = NV->io[io].nv_io.nv_multi.multi_pos4;
             }
@@ -596,9 +607,27 @@ void setMultiState(unsigned char io, CONSUMER_ACTION_T action) {
     }
 }
 
+/**
+ * explicitly set the recorded position of a servo.
+ * @param io
+ * @param pos
+ */
 void setServoPosition(unsigned char io, unsigned char pos) {
     targetPos[io] = pos;
     currentPos[io] = pos;
+}
+
+/**
+ * Check if now is a good time to write to flash. This must not happen whilst
+ * a servo pulse is being produced.
+ * 
+ * @return 
+ */
+unsigned char isNoServoPulses(void){
+    // check if either of the timers is running
+    if (T1CONbits.TMR1ON) return FALSE;
+    if (T3CONbits.TMR3ON) return FALSE;
+    return TRUE;
 }
 
 #endif

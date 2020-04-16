@@ -128,6 +128,7 @@
 #include "can18.h"
 #include "cbus.h"
 #include "actionQueue.h"
+#include "mioEvents.h"
 #ifdef SERVO
 #include "servo.h"
 #endif
@@ -289,7 +290,7 @@ int main(void) @0x800 {
         if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
             started = TRUE;
             if (NV->sendSodDelay > 0) {
-                sendProducedEvent(ACTION_PRODUCER_SOD, TRUE);
+                sendProducedEvent(HAPPENING_SOD, TRUE);
             }
         }
         checkCBUS();    // Consume any CBUS message and act upon it
@@ -343,11 +344,102 @@ void initialise(void) {
 #endif
     }
     // check if FLASH is valid
-   if (NV->nv_version != FLASH_VERSION) {
-        // may need to upgrade of data in the future
-        // set Flash to default values
-        factoryResetFlash();
-        // set the version number to indicate it has been initialised
+    if (NV->nv_version != FLASH_VERSION) {
+         // may need to upgrade flash data
+        if (NV->nv_version == 1) {
+            // Convert from data version 1 to data version 2
+            unsigned char i, evIndex;
+            
+            /* The change from flash data version 1 to v2 involved increasing the 
+             * number of actions per channel from 4 to 5 for the OUTPUT !Change action.
+             * We need to go through all the EVs of all the events and upgrade 
+             * the action numbers by recalculating them. */
+            for (i=0; i<NUM_EVENTS; i++) {
+                // the evIndex starts at 0 for the Happening and 1 for the Actions
+                for (evIndex=1; evIndex<EVperEVT; evIndex++) {  
+                    int ev = getEv(i, evIndex);
+                    if (ev > 0) {
+                        if ((ev & ACTION_MASK) >= BASE_ACTION_IO) {
+                            unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
+                            unsigned char io = V1_ACTION_IO(ev);
+                            unsigned char action = V1_ACTION(ev);
+                            ev = simultaneous | (ACTION_IO_BASE(io) + action);
+                            writeEv(i, evIndex, ev);    // ignore any return error
+                        }
+                    } 
+                    if (ev == -CMDERR_NO_EV) {   // no more EVs for this event
+                        break;
+                    }
+                }
+            }
+            /* The change also involved removing software generated events so that
+             * all produced events are now stored in the event table. We need to
+             * create any default produced events which are missing.
+             */
+            for (io=0; io<NUM_IO; io++) {
+                HAPPENING_T paction;
+                WORD en = io+1;
+                switch (NV->io[io].type) {
+                    case TYPE_INPUT:
+                        paction = HAPPENING_IO_INPUT(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+                        break;
+#ifdef SERVO
+                    case TYPE_SERVO:
+                        paction = HAPPENING_IO_SERVO_START(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        paction = HAPPENING_IO_SERVO_MID(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 300+en, 0, paction, TRUE);
+                        }
+                        paction = HAPPENING_IO_SERVO_END(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 200+en, 0, paction, TRUE);
+                        }
+                        break;
+#endif         
+                    case TYPE_OUTPUT:
+#ifdef BOUNCE
+                    case TYPE_BOUNCE:
+#endif
+                        paction = HAPPENING_IO_OUTPUT(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        break;
+#ifdef MULTI
+                    case TYPE_MULTI:
+                        break;
+#endif
+#ifdef ANALOGUE
+                    case TYPE_ANALOGUE_IN:
+                        paction = HAPPENING_IO_ANALOGUE(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+
+                    case TYPE_MAGNET:
+                        paction = HAPPENING_IO_MAGNETH(io);
+                        if ( ! getProducedEvent(paction)) {
+                             addEvent(nodeID, en, 0, paction, TRUE);
+                        }
+                        paction = HAPPENING_IO_MAGNETL(io);
+                        if ( ! getProducedEvent(paction)) {
+                            addEvent(nodeID, 100+en, 0, paction, TRUE);
+                        }
+                        break;
+#endif
+                }
+            }
+        } else {
+            // set Flash to default values
+            factoryResetFlash();
+        }
+         // set the version number to indicate it has been initialised
         writeFlashByte((BYTE*)(AT_NV + NV_VERSION), (BYTE)FLASH_VERSION);
 #ifdef NV_CACHE
         loadNvCache();                
@@ -414,13 +506,25 @@ void factoryReset(void) {
 void factoryResetFlash(void) {
     unsigned char io;
     factoryResetGlobalNv();
-    factoryResetGlobalEvents();
     clearAllEvents();
+    factoryResetGlobalEvents();
     // perform other actions based upon type
     for (io=0; io<NUM_IO; io++) {
         setType(io, (io < NUM_IO_MAIN) ? TYPE_DEFAULT_MAIN : TYPE_DEFAULT_EXP);
     } 
     flushFlashImage();
+}
+
+/**
+ * Check to see if now is a good time to start a flash write.
+ * @return 
+ */
+unsigned char isSuitableTimeToWriteFlash() {
+#ifdef SERVO
+    return isNoServoPulses();
+#else
+    return TRUS;
+#endif
 }
 
 /**
@@ -471,7 +575,14 @@ BOOL checkCBUS( void ) {
             // handle the CANMIO specifics
             switch (msg[d0]) {
             case OPC_NNRSM: // reset to manufacturer defaults
-                factoryReset();
+                if (flimState == fsFLiMLearn) {
+                    factoryReset();
+                }
+                else 
+                {
+                    cbusMsg[d3] = CMDERR_NOT_LRN;
+                    cbusSendOpcMyNN( 0, OPC_CMDERR, cbusMsg);
+                }
                 return TRUE;
             case OPC_NNRST: // restart
                 // if we just call main then the stack won't be reset and we'd also want variables to be nullified

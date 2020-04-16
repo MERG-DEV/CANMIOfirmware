@@ -42,7 +42,7 @@ extern "C" {
     /*
      * This is where all the module specific actions are defined.
      * The following definitions are required by the FLiM code:
-     * NUM_PRODUCER_ACTIONS, NUM_CONSUMER_ACTIONS, HASH_LENGTH, EVT_NUM, 
+     * NUM_HAPPENINGS, NUM_ACTIONS, HASH_LENGTH, EVT_NUM, 
      * EVperEVT, NUM_CONSUMED_EVENTS
      * 
      * For MIO an action is a BYTE (unsigned char). The upperupper bit is used
@@ -69,86 +69,101 @@ extern "C" {
 #define ACTION_MASK                         0x7F
     
     // Global consumed actions first
-#define ACTION_CONSUMER_SOD                 1
-#define ACTION_CONSUMER_WAIT05              2
-#define ACTION_CONSUMER_WAIT1               3
-#define ACTION_CONSUMER_WAIT2               4
-#define ACTION_CONSUMER_WAIT5               5
+#define ACTION_SOD                 1
+#define ACTION_WAIT05              2
+#define ACTION_WAIT1               3
+#define ACTION_WAIT2               4
+#define ACTION_WAIT5               5
 
         // Now Consumed actions per io
-#define ACTION_CONSUMER_IO_BASE             8
-#define ACTION_IO_CONSUMER_1                0
-#define ACTION_IO_CONSUMER_2                1
-#define ACTION_IO_CONSUMER_3                2
-#define ACTION_IO_CONSUMER_4                3
-#define CONSUMER_ACTIONS_PER_IO             4   
-#define NUM_CONSUMER_ACTIONS                (ACTION_CONSUMER_IO_BASE + NUM_IO * CONSUMER_ACTIONS_PER_IO)      
+/* VERSION 1*/
+#define V1_BASE_ACTION_IO             8
+#define V1_ACTION_IO_1                0
+#define V1_ACTION_IO_2                1
+#define V1_ACTION_IO_3                2
+#define V1_ACTION_IO_4                3
+#define V1_ACTIONS_PER_IO             4   
+#define V1_NUM_ACTIONS                (V1_BASE_ACTION_IO + NUM_IO * V1_ACTIONS_PER_IO)
+    
+/* Version 2*/
+#define BASE_ACTION_IO             8
+#define ACTION_IO_1                0
+#define ACTION_IO_2                1
+#define ACTION_IO_3                2
+#define ACTION_IO_4                3
+#define ACTION_IO_5                4
+#define ACTIONS_PER_IO             5   
+#define NUM_ACTIONS                (BASE_ACTION_IO + NUM_IO * ACTIONS_PER_IO)   
     
 /* PRODUCED actions */    
-#define ACTION_PRODUCER_BASE                0
+#define HAPPENING_BASE                1
     // Global produced actions next
-#define ACTION_PRODUCER_SOD                 1
+#define HAPPENING_SOD                 1
     // produced actions per io
-#define ACTION_PRODUCER_IO_BASE             8
-#define ACTION_IO_PRODUCER_1                0
-#define ACTION_IO_PRODUCER_2                1
-#define ACTION_IO_PRODUCER_3                2
-#define ACTION_IO_PRODUCER_4                3
-#define PRODUCER_ACTIONS_PER_IO             4
-#define NUM_PRODUCER_ACTIONS                (ACTION_PRODUCER_IO_BASE + NUM_IO * PRODUCER_ACTIONS_PER_IO)
+#define BASE_HAPPENING_IO             8
+#define HAPPENING_IO_1                0
+#define HAPPENING_IO_2                1
+#define HAPPENING_IO_3                2
+#define HAPPENING_IO_4                3
+#define HAPPENINGS_PER_IO             4
+#define NUM_HAPPENINGS                (BASE_HAPPENING_IO + NUM_IO * HAPPENINGS_PER_IO)
     
 
-#define ACTION_IO_PRODUCER_BASE(i)          (ACTION_PRODUCER_IO_BASE + PRODUCER_ACTIONS_PER_IO*(i))
-#define ACTION_IO_CONSUMER_BASE(i)          (ACTION_CONSUMER_IO_BASE + CONSUMER_ACTIONS_PER_IO*(i))
-
+#define HAPPENING_IO_BASE(i)          (BASE_HAPPENING_IO + HAPPENINGS_PER_IO*(i))
+#define V1_ACTION_IO_BASE(i)       (V1_BASE_ACTION_IO + V1_ACTIONS_PER_IO*(i))
+#define ACTION_IO_BASE(i)          (BASE_ACTION_IO + ACTIONS_PER_IO*(i))
+    
 /* PRODUCED actions*/
-#define ACTION_IO_PRODUCER_INPUT(i)         (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
-#define ACTION_IO_PRODUCER_INPUT_TWO_ON(i)  (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_2)
+#define HAPPENING_IO_INPUT(i)         (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
+#define HAPPENING_IO_INPUT_TWO_ON(i)  (HAPPENING_IO_BASE(i)+HAPPENING_IO_2)
     
-#define ACTION_IO_PRODUCER_OUTPUT(i)        (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
+#define HAPPENING_IO_OUTPUT(i)        (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
 
-#define ACTION_IO_PRODUCER_SERVO_START(i)   (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
-#define ACTION_IO_PRODUCER_SERVO_MID(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_2)
-#define ACTION_IO_PRODUCER_SERVO_END(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_3)
+#define HAPPENING_IO_SERVO_START(i)   (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
+#define HAPPENING_IO_SERVO_MID(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_2)
+#define HAPPENING_IO_SERVO_END(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_3)
 
-#define ACTION_IO_PRODUCER_BOUNCE(i)        (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
+#define HAPPENING_IO_BOUNCE(i)        (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
     
-#define ACTION_IO_PRODUCER_MULTI_AT1(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
-#define ACTION_IO_PRODUCER_MULTI_AT2(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_2)
-#define ACTION_IO_PRODUCER_MULTI_AT3(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_3)
-#define ACTION_IO_PRODUCER_MULTI_AT4(i)     (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_4)
+#define HAPPENING_IO_MULTI_AT1(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
+#define HAPPENING_IO_MULTI_AT2(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_2)
+#define HAPPENING_IO_MULTI_AT3(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_3)
+#define HAPPENING_IO_MULTI_AT4(i)     (HAPPENING_IO_BASE(i)+HAPPENING_IO_4)
     
-#define ACTION_IO_PRODUCER_ANALOGUE(i)      (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
+#define HAPPENING_IO_ANALOGUE(i)      (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
 
-#define ACTION_IO_PRODUCER_MAGNETL(i)       (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_1)
-#define ACTION_IO_PRODUCER_MAGNETH(i)       (ACTION_IO_PRODUCER_BASE(i)+ACTION_IO_PRODUCER_2)
+#define HAPPENING_IO_MAGNETL(i)       (HAPPENING_IO_BASE(i)+HAPPENING_IO_1)
+#define HAPPENING_IO_MAGNETH(i)       (HAPPENING_IO_BASE(i)+HAPPENING_IO_2)
  
-#define PRODUCER_ACTION(a)                  (((a)-ACTION_PRODUCER_IO_BASE)%PRODUCER_ACTIONS_PER_IO)
-#define PRODUCER_IO(a)                      (((a)-ACTION_PRODUCER_IO_BASE)/PRODUCER_ACTIONS_PER_IO)
+#define HAPPENING(a)                  (((a)-HAPPENING_IO_BASE)%HAPPENINGS_PER_IO)
+#define HAPPENING_IO(a)               (((a)-HAPPENING_IO_BASE)/HAPPENINGS_PER_IO)
     
 /* CONSUMED actions*/
-#define ACTION_IO_CONSUMER_OUTPUT_EV(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_1)
-#define ACTION_IO_CONSUMER_OUTPUT_ON(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_2)
-#define ACTION_IO_CONSUMER_OUTPUT_OFF(i)    (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_3)
-#define ACTION_IO_CONSUMER_OUTPUT_FLASH(i)  (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_4)
+#define ACTION_IO_OUTPUT_EV(i)     (ACTION_IO_BASE(i)+ACTION_IO_1)
+#define ACTION_IO_OUTPUT_ON(i)     (ACTION_IO_BASE(i)+ACTION_IO_2)
+#define ACTION_IO_OUTPUT_OFF(i)    (ACTION_IO_BASE(i)+ACTION_IO_3)
+#define ACTION_IO_OUTPUT_FLASH(i)  (ACTION_IO_BASE(i)+ACTION_IO_4)
+#define ACTION_IO_OUTPUT_NOT_EV(i) (ACTION_IO_BASE(i)+ACTION_IO_5)
 
-#define ACTION_IO_CONSUMER_SERVO_EV(i)      (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_1)
-#define ACTION_IO_CONSUMER_SERVO_ON(i)      (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_2)
-#define ACTION_IO_CONSUMER_SERVO_OFF(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_3)
-
-
-#define ACTION_IO_CONSUMER_BOUNCE_EV(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_PRODUCER_1)
-#define ACTION_IO_CONSUMER_BOUNCE_ON(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_2)
-#define ACTION_IO_CONSUMER_BOUNCE_OFF(i)    (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_3)
+#define ACTION_IO_SERVO_EV(i)      (ACTION_IO_BASE(i)+ACTION_IO_1)
+#define ACTION_IO_SERVO_ON(i)      (ACTION_IO_BASE(i)+ACTION_IO_2)
+#define ACTION_IO_SERVO_OFF(i)     (ACTION_IO_BASE(i)+ACTION_IO_3)
 
 
-#define ACTION_IO_CONSUMER_MULTI_TO1(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_1)
-#define ACTION_IO_CONSUMER_MULTI_TO2(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_2)
-#define ACTION_IO_CONSUMER_MULTI_TO3(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_3)
-#define ACTION_IO_CONSUMER_MULTI_TO4(i)     (ACTION_IO_CONSUMER_BASE(i)+ACTION_IO_CONSUMER_4)
+#define ACTION_IO_BOUNCE_EV(i)     (ACTION_IO_BASE(i)+ACTION_IO_1)
+#define ACTION_IO_BOUNCE_ON(i)     (ACTION_IO_BASE(i)+ACTION_IO_2)
+#define ACTION_IO_BOUNCE_OFF(i)    (ACTION_IO_BASE(i)+ACTION_IO_3)
+
+
+#define ACTION_IO_MULTI_TO1(i)     (ACTION_IO_BASE(i)+ACTION_IO_1)
+#define ACTION_IO_MULTI_TO2(i)     (ACTION_IO_BASE(i)+ACTION_IO_2)
+#define ACTION_IO_MULTI_TO3(i)     (ACTION_IO_BASE(i)+ACTION_IO_3)
+#define ACTION_IO_MULTI_TO4(i)     (ACTION_IO_BASE(i)+ACTION_IO_4)
     
-#define CONSUMER_ACTION(a)                  (((a)-ACTION_CONSUMER_IO_BASE)%CONSUMER_ACTIONS_PER_IO)
-#define CONSUMER_IO(a)                      (((a)-ACTION_CONSUMER_IO_BASE)/CONSUMER_ACTIONS_PER_IO)
+#define V1_ACTION(a)               (((a)-V1_BASE_ACTION_IO)%V1_ACTIONS_PER_IO)
+#define V1_ACTION_IO(a)            (((a)-V1_BASE_ACTION_IO)/V1_ACTIONS_PER_IO)
+#define ACTION(a)                  (((a)-BASE_ACTION_IO)%ACTIONS_PER_IO)
+#define ACTION_IO(a)               (((a)-BASE_ACTION_IO)/ACTIONS_PER_IO)
 
 extern void mioEventsInit(void);
 extern void factoryResetGlobalEvents(void);
@@ -179,7 +194,7 @@ extern void processActions(void);
 
 #include "events.h"
 
-extern BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert);
+extern BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert);
 
 #ifdef	__cplusplus
 }
