@@ -77,9 +77,10 @@ extern "C" {
 #define MODULE_TYPE     "BIP    "       // MUST be at least 7 character long. First 7 are used    
 #else
 #define MODULE_ID       MTYP_CANMIO
+#define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.    
 #endif
     
-#define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.
+
 #define MODULE_FLAGS    PF_COMBI+PF_BOOT+PF_COE  // Producer, consumer, boot
 #define BUS_TYPE        PB_CAN
 #define LOAD_ADDRESS    0x0800      // Need to put in parameter block at compile time, only known to linker so hard code here
