@@ -16,13 +16,6 @@ The Universal firmware allows the 16 I/O channels of the CANMIO to be individual
 
 Documentation on MERG wiki https://www.merg.org.uk/merg_wiki/doku.php?id=cbus:canmio_fw
 
-
-# TODOs
-  * Work out what to do if all CANIDs are taken can18.c
-  * Heartbeat message
-  * Randomise bounce
-  * RFID input - PNB now taken on this task - branch PNB
-
 # To compile this code:
 This code is written for the Microchip C18 toolchain.
 
@@ -67,3 +60,9 @@ You will also need to ensure you are using the correct linker script from this r
 
 I found I had a bit of difficulty with uppercase/lowercase of filenames. In particular the Flim.[ch] were troublesome.
 Also if building on linux the C18 compiler needs the 18F26K80_e.lib copied to 18f26K80_e.lib for the library to be found correctly.
+
+# TODOs
+  * Work out what to do if all CANIDs are taken can18.c
+  * Heartbeat message
+  * Randomise bounce
+  * RFID input - PNB now taken on this task - branch PNB
