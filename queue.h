@@ -48,12 +48,12 @@ extern "C" {
         unsigned char size;
         unsigned char readIdx;
         unsigned char writeIdx;
-        CONSUMER_ACTION_T * queue;
+        ACTION_T * queue;
     } Queue;
     
-extern BOOL push(Queue * q, CONSUMER_ACTION_T a);
-extern CONSUMER_ACTION_T pop(Queue * q);
-extern CONSUMER_ACTION_T peek(Queue * q, unsigned char index);
+extern BOOL push(Queue * q, ACTION_T a);
+extern ACTION_T pop(Queue * q);
+extern ACTION_T peek(Queue * q, unsigned char index);
 extern unsigned char quantity(Queue * q);
 extern void delete(Queue * q, unsigned char index);
 

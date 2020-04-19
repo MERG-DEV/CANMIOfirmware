@@ -57,21 +57,30 @@ extern "C" {
  */
 // Number of IO pins
 #define NUM_IO 16
+#define NUM_IO_MAIN 8  // pins on the main board
 // look in mioNv as the IO pin config is stored in NVs
     
 /*******************************************************************
  * Module parameters
  */ 
-#define MAJOR_VER 	2
-#define MINOR_VER 	'b'        // Minor version character
-#define BETA        3
+#define MAJOR_VER 	3
+#define MINOR_VER 	'a'        // Minor version character
+#define BETA        0           // Version 3a is same as version 3aBETA3
 
 #include "GenericTypeDefs.h"
-#include "cbusdefs8q.h"
+#include "cbusdefs8r.h"
 
 #define MANU_ID         MANU_MERG
+    
+#ifdef CANBIP
+#define MODULE_ID       MTYP_CANBIP
+#define MODULE_TYPE     "BIP    "       // MUST be at least 7 character long. First 7 are used    
+#else
 #define MODULE_ID       MTYP_CANMIO
-#define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.
+#define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.    
+#endif
+    
+
 #define MODULE_FLAGS    PF_COMBI+PF_BOOT+PF_COE  // Producer, consumer, boot
 #define BUS_TYPE        PB_CAN
 #define LOAD_ADDRESS    0x0800      // Need to put in parameter block at compile time, only known to linker so hard code here

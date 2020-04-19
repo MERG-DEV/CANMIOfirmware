@@ -144,39 +144,39 @@ void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char 
             case TYPE_SERVO:
                 // if a servo position is changed then move servo to that position
                 if (index == NV_IO_SERVO_START_POS(io)) {
-                    setServoState(io, ACTION_IO_CONSUMER_3);
-                    startServoOutput(io, ACTION_IO_CONSUMER_3);
+                    setServoState(io, ACTION_IO_3);
+                    startServoOutput(io, ACTION_IO_3);
                 } else if (index == NV_IO_SERVO_END_POS(io)) {
-                    setServoState(io, ACTION_IO_CONSUMER_2);
-                    startServoOutput(io, ACTION_IO_CONSUMER_2);
+                    setServoState(io, ACTION_IO_2);
+                    startServoOutput(io, ACTION_IO_2);
                 }
                 break;
 #endif
 #ifdef BOUNCE
             case TYPE_BOUNCE:
                 if (index == NV_IO_BOUNCE_LOWER_POS(io)) {
-                    setBounceState(io, ACTION_IO_CONSUMER_3);
-                    startBounceOutput(io, ACTION_IO_CONSUMER_3);
+                    setBounceState(io, ACTION_IO_3);
+                    startBounceOutput(io, ACTION_IO_3);
                 } else if (index == NV_IO_BOUNCE_UPPER_POS(io)) {
-                    setBounceState(io, ACTION_IO_CONSUMER_2);
-                    startBounceOutput(io, ACTION_IO_CONSUMER_2);
+                    setBounceState(io, ACTION_IO_2);
+                    startBounceOutput(io, ACTION_IO_2);
                 }
                 break;
 #endif
 #ifdef MULTI
             case TYPE_MULTI:
                 if (index == NV_IO_MULTI_POS1(io)) {
-                    setMultiState(io, ACTION_IO_CONSUMER_1);
-                    startMultiOutput(io, ACTION_IO_CONSUMER_1);
+                    setMultiState(io, ACTION_IO_1);
+                    startMultiOutput(io, ACTION_IO_1);
                 } else if (index == NV_IO_MULTI_POS2(io)) {
-                    setMultiState(io, ACTION_IO_CONSUMER_2);
-                    startMultiOutput(io, ACTION_IO_CONSUMER_2);
+                    setMultiState(io, ACTION_IO_2);
+                    startMultiOutput(io, ACTION_IO_2);
                 } else if (index == NV_IO_MULTI_POS3(io)) {
-                    setMultiState(io, ACTION_IO_CONSUMER_3);
-                    startMultiOutput(io, ACTION_IO_CONSUMER_3);
+                    setMultiState(io, ACTION_IO_3);
+                    startMultiOutput(io, ACTION_IO_3);
                 } else if (index == NV_IO_MULTI_POS4(io)) {
-                    setMultiState(io, ACTION_IO_CONSUMER_4);
-                    startMultiOutput(io, ACTION_IO_CONSUMER_4);
+                    setMultiState(io, ACTION_IO_4);
+                    startMultiOutput(io, ACTION_IO_4);
                 }
                 break;
 #endif

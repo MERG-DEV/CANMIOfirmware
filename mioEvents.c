@@ -61,7 +61,7 @@ extern void setOutputState(unsigned char io, unsigned char action, unsigned char
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
 extern BOOL sendProducedEvent(unsigned char action, BOOL on);
-BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert);
+BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
@@ -89,111 +89,62 @@ void factoryResetGlobalEvents(void) {
 void defaultEvents(unsigned char io, unsigned char type) {
     WORD en = io+1;
     clearEvents(io); 
-#ifdef TEST_DEFAULT_EVENTS
+
     // add the module's default events for this io
     switch(type) {
         case TYPE_OUTPUT:
+#ifdef BOUNCE
         case TYPE_BOUNCE:
             /*
              * We create both a Produced and a Consumed event here.
              */
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_OUTPUT_EV(io), TRUE);
-            addEvent(nodeID, 200+en, 1, ACTION_IO_CONSUMER_OUTPUT_FLASH(io), TRUE);
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_OUTPUT(io), TRUE);
+            addEvent(nodeID, en, 1, ACTION_IO_OUTPUT_EV(io), TRUE);
+            addEvent(nodeID, 200+en, 1, ACTION_IO_OUTPUT_FLASH(io), TRUE);
+            addEvent(nodeID, 100+en, 0, HAPPENING_IO_OUTPUT(io), TRUE);
             break;
+#endif 
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_INPUT(io), TRUE);
+            addEvent(nodeID, en, 0, HAPPENING_IO_INPUT(io), TRUE);
             break;
+#ifdef SERVO
         case TYPE_SERVO:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
-//            addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_SERVO_START(io), TRUE);
-//            addEvent(nodeID, 300+en, 0, ACTION_IO_PRODUCER_SERVO_MID(io), TRUE);
-//            addEvent(nodeID, 200+en, 0, ACTION_IO_PRODUCER_SERVO_END(io), TRUE);
+            addEvent(nodeID, 100+en, 0, HAPPENING_IO_SERVO_START(io), TRUE);
+            addEvent(nodeID, 300+en, 0, HAPPENING_IO_SERVO_MID(io), TRUE);
+            addEvent(nodeID, 200+en, 0, HAPPENING_IO_SERVO_END(io), TRUE);
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
-            addEvent(nodeID, en, 1, ACTION_IO_CONSUMER_SERVO_EV(io), TRUE);
+            addEvent(nodeID, en, 1, ACTION_IO_SERVO_EV(io), TRUE);
             break;
+#endif 
+#ifdef MULTI
         case TYPE_MULTI:
             // no defaults for multi
             break;
+#endif 
+#ifdef ANALOGUE
         case TYPE_ANALOGUE_IN:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_ANALOGUE(io), TRUE);
+            addEvent(nodeID, en, 0, HAPPENING_IO_ANALOGUE(io), TRUE);
             break;
         case TYPE_MAGNET:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
- //           addEvent(nodeID, en, 0, ACTION_IO_PRODUCER_MAGNETH(io), TRUE);
- //           addEvent(nodeID, 100+en, 0, ACTION_IO_PRODUCER_MAGNETL(io), TRUE);
+            addEvent(nodeID, en, 0, HAPPENING_IO_MAGNETH(io), TRUE);
+            addEvent(nodeID, 100+en, 0, HAPPENING_IO_MAGNETL(io), TRUE);
             break;
+#endif 
     }
-#endif
 }
 
 /**
- * If we don't define default produced actions in the eventTable above then
- * we can generate the event using code. This was requested by PeteB so that
- * eventTable space isn't used unnecessarily. The downside is that NERD won't
- * list these events.
- * If a default event is defined here then it should be written to the global
- * producedEvent variable.
+ * This is called by the CBUS library to see if any software generated events are to be sent.
+ * Just return false as we no longer want to support this.
  * 
- * @param action
- * @return true if there is an event
+ * @param paction
+ * @return false
  */
-BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
-    if (paction >= ACTION_PRODUCER_IO_BASE) {
-        unsigned char io = PRODUCER_IO(paction);
-        producedEvent.NN = nodeID;
-        
-        switch (NV->io[io].type) {
-            case TYPE_INPUT:
-                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
-                    producedEvent.EN = io + 1;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_INPUT_TWO_ON(io)) {
-                    // this will not send an event by default
-                    producedEvent.EN = 0;
-                    return TRUE;
-                }
-                break;
-            case TYPE_MAGNET:
-                if (paction == ACTION_IO_PRODUCER_MAGNETH(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                // fall through
-            case TYPE_ANALOGUE_IN:
-                // Also ACTION_IO_PRODUCER_MAGNETL(io) and ACTION_IO_PRODUCER_ANALOGUE(io))
-                if (paction == ACTION_IO_PRODUCER_INPUT(io)) {
-                    producedEvent.EN = io + 1;
-                    return TRUE;
-                }
-                break;
-            case TYPE_BOUNCE:
-            case TYPE_OUTPUT:
-                if (paction == ACTION_IO_PRODUCER_OUTPUT(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                break;
-            case TYPE_SERVO:
-                if (paction == ACTION_IO_PRODUCER_SERVO_START(io)) {
-                    producedEvent.EN = io + 101;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_SERVO_MID(io)) {
-                    producedEvent.EN = io + 301;
-                    return TRUE;
-                }
-                if (paction == ACTION_IO_PRODUCER_SERVO_END(io)) {
-                    producedEvent.EN = io + 201;
-                    return TRUE;
-                }
-                break;
-        }
-    } 
+BOOL getDefaultProducedEvent(HAPPENING_T paction) {
     return FALSE;
 }
 
@@ -202,9 +153,9 @@ BOOL getDefaultProducedEvent(PRODUCER_ACTION_T paction) {
  * @param i the IO number
  */
 void clearEvents(unsigned char io) {
-    deleteConsumerActionRange(ACTION_IO_CONSUMER_BASE(io),                       CONSUMER_ACTIONS_PER_IO);
-    deleteConsumerActionRange(ACTION_IO_CONSUMER_BASE(io) | ACTION_SIMULTANEOUS, CONSUMER_ACTIONS_PER_IO);
-    deleteProducerActionRange(ACTION_IO_PRODUCER_BASE(io),                       PRODUCER_ACTIONS_PER_IO);
+    deleteActionRange(ACTION_IO_BASE(io),                       ACTIONS_PER_IO);
+    deleteActionRange(ACTION_IO_BASE(io) | ACTION_SIMULTANEOUS, ACTIONS_PER_IO);
+    deleteHappeningRange(HAPPENING_IO_BASE(io),                       HAPPENINGS_PER_IO);
 }
 
 /**
@@ -248,13 +199,13 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             action = evs[e];  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             if (action != NO_ACTION) {
                 // check this is a consumed action
-                if ((action&ACTION_MASK) <= NUM_CONSUMER_ACTIONS) {
+                if ((action&ACTION_MASK) <= NUM_ACTIONS) {
                     // check global consumed actions
-                    if ((action&ACTION_MASK) < ACTION_CONSUMER_IO_BASE) {
-                        pushAction((CONSUMER_ACTION_T)action);
+                    if ((action&ACTION_MASK) < BASE_ACTION_IO) {
+                        pushAction((ACTION_T)action);
                     } else {
-                        io = CONSUMER_IO(action&ACTION_MASK);
-                        ca = CONSUMER_ACTION(action&ACTION_MASK);
+                        io = ACTION_IO(action&ACTION_MASK);
+                        ca = ACTION(action&ACTION_MASK);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
                                 if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
@@ -263,15 +214,19 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                 // fall through
                             case TYPE_SERVO:
                             case TYPE_BOUNCE:
-                                if (ca == ACTION_IO_CONSUMER_1) {
+                                if (ca == ACTION_IO_1) {
                                     // action 1 (EV) must be converted to 2(ON)
                                     action++;
                                 }
-                                pushAction((CONSUMER_ACTION_T)action);
+                                if (ca == ACTION_IO_5) {
+                                    // action 5 (EV) must be converted to 3(OFF)
+                                    action-=2;
+                                }
+                                pushAction((ACTION_T)action);
                                 setNormalActions();
                                 break;
                             case TYPE_MULTI:
-                                pushAction((CONSUMER_ACTION_T)action);
+                                pushAction((ACTION_T)action);
                                 break;
                             default:
                                 // shouldn't happen - just ignore
@@ -283,42 +238,53 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
         } 
     } else {
         // OFF events work down through the EVs
-        int nextAction = getEv(tableIndex, EVperEVT-1);
+        //int nextAction = getEv(tableIndex, EVperEVT-1);
+        int nextAction = evs[EVperEVT-1];
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
+            unsigned char firstAction = NO_ACTION;  // used to determine simultaneous flag for the end of actions
             action = nextAction;  // we don't mask out the SIMULTANEOUS flag so it could be specified in EVs
             
 
             // get the Simultaneous flag from the next action
-            nextSimultaneous = ACTION_SIMULTANEOUS;
             if (e > 1) {
                 nextAction = evs[e-1];
-                    nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+            } else {
+                nextSimultaneous = firstAction & ACTION_SIMULTANEOUS;
             }
             if (action != NO_ACTION) {
+                // record the first action we come to - which is actually the last action when doing an ON event
+                if (firstAction == NO_ACTION) {
+                    firstAction = action;
+                }
                 action &= ACTION_MASK;
-                if (action <= NUM_CONSUMER_ACTIONS) {
+                if (action <= NUM_ACTIONS) {
                     // check global consumed actions
-                    if (action < ACTION_CONSUMER_IO_BASE) {
+                    if (action < BASE_ACTION_IO) {
                         pushAction(action|nextSimultaneous);
                     } else {
-                        io = CONSUMER_IO(action);
-                        ca = CONSUMER_ACTION(action);
+                        io = ACTION_IO(action);
+                        ca = ACTION(action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
                                 if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
                                     setExpeditedActions();
                                 }
-                                if (ca == ACTION_IO_CONSUMER_4) {
+                                if (ca == ACTION_IO_4) {
                                     // action 4 (Flash) must be converted to 3(OFF)
                                     action--;
                                 }
                                 // fall through
                             case TYPE_SERVO:
                             case TYPE_BOUNCE:
-                                if (ca == ACTION_IO_CONSUMER_1) {
+                                if (ca == ACTION_IO_1) {
                                     // action 1 (EV) must be converted to 3(OFF)
                                     action += 2;
+                                }
+                                if (ca == ACTION_IO_5) {
+                                    // action 5 (EV) must be converted to 3(ON)
+                                    action -= 3;
                                 }
                                 pushAction(action|nextSimultaneous);
                                 setNormalActions();
@@ -346,8 +312,8 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
 void processActions(void) {
     unsigned char io;
     unsigned char type;
-    CONSUMER_ACTION_T action = getAction();
-    CONSUMER_ACTION_T ioAction;
+    ACTION_T action = getAction();
+    ACTION_T ioAction;
     unsigned char simultaneous;
     unsigned char peekItem;
     
@@ -357,35 +323,35 @@ void processActions(void) {
         return;
     }
     // Check for SOD
-    if (action == ACTION_CONSUMER_SOD) {
+    if (action == ACTION_SOD) {
         // Do the SOD
         doSOD();
         doneAction();
         return;
     }
-    if (action == ACTION_CONSUMER_WAIT05) {
+    if (action == ACTION_WAIT05) {
         doWait(5);
         return;
     }
-    if (action == ACTION_CONSUMER_WAIT1) {
+    if (action == ACTION_WAIT1) {
         doWait(10);
         return;
     }
-    if (action == ACTION_CONSUMER_WAIT2) {
+    if (action == ACTION_WAIT2) {
         doWait(20);
         return;
     }
-    if (action == ACTION_CONSUMER_WAIT5) {
+    if (action == ACTION_WAIT5) {
         doWait(50);
         return;
     }
     simultaneous = action & ACTION_SIMULTANEOUS;
     ioAction = action&ACTION_MASK;
-    if ((ioAction >= ACTION_CONSUMER_IO_BASE) && (ioAction < NUM_CONSUMER_ACTIONS)) {
+    if ((ioAction >= BASE_ACTION_IO) && (ioAction < NUM_ACTIONS)) {
         // process IO based consumed actions
         
-        io = CONSUMER_IO(ioAction);
-        ioAction = CONSUMER_ACTION(ioAction);
+        io = ACTION_IO(ioAction);
+        ioAction = ACTION(ioAction);
         type = NV->io[io].type;
 
         // check if a simultaneous action needs to be started
@@ -399,7 +365,7 @@ void processActions(void) {
             // now check to see if any others need starting  
             peekItem = 1;
             while (simultaneous) {
-                CONSUMER_ACTION_T nextAction;
+                ACTION_T nextAction;
                 unsigned char nextIo;
                 unsigned char nextType;
             
@@ -407,12 +373,12 @@ void processActions(void) {
                 if (nextAction == NO_ACTION) break;
                 simultaneous = nextAction & ACTION_SIMULTANEOUS;
                 nextAction &= ACTION_MASK;
-                nextIo = CONSUMER_IO(nextAction);
+                nextIo = ACTION_IO(nextAction);
                 if (nextIo == io) {
                     // we shouldn't have 2 actions on the same IO at the same time
                     break;
                 }
-                nextAction = CONSUMER_ACTION(nextAction);
+                nextAction = ACTION(nextAction);
                 nextType = NV->io[nextIo].type;
                 setOutputState(nextIo, nextAction, nextType);
                 if (needsStarting(nextIo, nextAction, nextType)) {
@@ -469,34 +435,34 @@ void doSOD(void) {
         switch(NV->io[io].type) {
             case TYPE_INPUT:
                 /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_INPUT(io), outputState[io], event_inverted)) ;
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted)) ;
                 break;
             case TYPE_OUTPUT:
                 state = ee_read(EE_OP_STATE+io);
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_OUTPUT(io), state!=ACTION_IO_CONSUMER_3, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_OUTPUT(io), state!=ACTION_IO_3, event_inverted));
                 break;
 #ifdef SERVO
             case TYPE_SERVO:
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted));
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted));
                 // send the last mid
                 midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
                          (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_SERVO_MID(io), currentPos[io] >= midway, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_MID(io), currentPos[io] >= midway, event_inverted));
                 break;
 #ifdef BOUNCE
             case TYPE_BOUNCE:
                 state = ee_read(EE_OP_STATE+io);
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_BOUNCE(io), state, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_BOUNCE(io), state, event_inverted));
                 break;
 #endif
 #ifdef MULTI
             case TYPE_MULTI:
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted));
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted));
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted));
                 if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                    while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted));
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted));
                 }
                 break;
 #endif
@@ -504,14 +470,14 @@ void doSOD(void) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
             case TYPE_MAGNET:
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted));
-                while ( ! sendInvertedProducedEvent(ACTION_IO_PRODUCER_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted));
                 break;
 #endif
         }
     }
 }
 
-BOOL sendInvertedProducedEvent(PRODUCER_ACTION_T action, BOOL state, BOOL invert) {
+BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert) {
     return sendProducedEvent(action, invert?!state:state);
 }

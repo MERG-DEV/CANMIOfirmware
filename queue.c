@@ -43,7 +43,7 @@
  * @param a
  * @return 
  */
-BOOL push(Queue * q, CONSUMER_ACTION_T a) {
+BOOL push(Queue * q, ACTION_T a) {
     if (((q->writeIdx+1)&((q->size)-1)) == q->readIdx) return FALSE;	// buffer full
     q->queue[q->writeIdx++] = a;
     if (q->writeIdx >= q->size) q->writeIdx = 0;
@@ -56,8 +56,8 @@ BOOL push(Queue * q, CONSUMER_ACTION_T a) {
  *
  * @return the next action
  */
-CONSUMER_ACTION_T pop(Queue * q) {
-    CONSUMER_ACTION_T ret;
+ACTION_T pop(Queue * q) {
+    ACTION_T ret;
 	if (q->writeIdx == q->readIdx) {
         return NO_ACTION;	// buffer empty
     }
@@ -71,7 +71,7 @@ CONSUMER_ACTION_T pop(Queue * q) {
  *
  * @return the action
  */
-CONSUMER_ACTION_T peek(Queue * q, unsigned char index) {
+ACTION_T peek(Queue * q, unsigned char index) {
     if (q->readIdx == q->writeIdx) return NO_ACTION;    // empty
     index += q->readIdx;
 //    index -= 1;
