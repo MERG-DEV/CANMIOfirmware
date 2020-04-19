@@ -1,9 +1,23 @@
 # CANMIOfirmware
-PIC firmware for CANMIO with configurable IO. Uses the CBUSlib https://github.com/MERG-DEV/CBUSlib.
-Also Known as Universal firmware.
+
+The Universal firmware for CANMIO, CANBIP, CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
+
+# Description
+
+The Universal firmware allows the 16 I/O channels of the CANMIO to be individually configured for:
+
+  * INPUT digital input (default)
+  * OUTPUT including relays
+  * SERVO for turnouts
+  * BOUNCE servo for semaphore signals
+  * MULTI multiple position servo for US signals and other uses (as suggested by Keith Norgrove)
+  * ANALOGUE analogue input threshold. (Available on channels 9,10,11,13,14,15,16 supported on PIC18F26K80 only)
+  * MAGNET for magnet detectors. (Available on channels 9,10,11,13,14,15,16 supported on PIC18F26K80 only)
+
 Documentation on MERG wiki https://www.merg.org.uk/merg_wiki/doku.php?id=cbus:canmio_fw
 
-#TODOs
+
+# TODOs
   * Work out what to do if all CANIDs are taken can18.c
   * Heartbeat message
   * Randomise bounce
@@ -11,6 +25,8 @@ Documentation on MERG wiki https://www.merg.org.uk/merg_wiki/doku.php?id=cbus:ca
 
 # To compile this code:
 This code is written for the Microchip C18 toolchain.
+
+Uses the CBUSlib https://github.com/MERG-DEV/CBUSlib.
 
 The other important thing to know is the project setup in MPLAB. I create a separate MPLAB project within the usual MPLAB workspace and then import the files from the git directory. I create logical folders thus:
 CANMIOfirmware
