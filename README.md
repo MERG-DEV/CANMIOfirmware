@@ -2,12 +2,19 @@
 
 The Universal firmware for CANMIO, CANBIP, CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
 
+# Version 3a
+
+See CANMIO wiki page for full details of changes and bug fixes in this version
+Version 3a is the released version of version 3a BETA 3 - the only additional changes are the option to build for the CANBIP as well as CANMIO
+CANMIO version 3a uses CBUSLIB version 2j
+
+
 # Description
 
 The Universal firmware allows the 16 I/O channels of the CANMIO to be individually configured for:
 
-  * INPUT digital input (default)
-  * OUTPUT including relays
+  * INPUT digital input (default for all I/O channels on CANMIO and channels 9 to 16 on CANBIP)
+  * OUTPUT including relays (default for channels 1 to 8 on CANBIP)
   * SERVO for turnouts
   * BOUNCE servo for semaphore signals
   * MULTI multiple position servo for US signals and other uses (as suggested by Keith Norgrove)
