@@ -64,11 +64,13 @@ extern "C" {
  * Module parameters
  */ 
 #define MAJOR_VER 	3
+//#define MINOR_VER 	'b'        // Minor version character
+//#define BETA        1           // Version 3a is same as version 3aBETA3
 #define MINOR_VER 	'a'        // Minor version character
-#define BETA        0           // Version 3a is same as version 3aBETA3
+#define BETA        4           // Version 3a is same as version 3aBETA3
 
 #include "GenericTypeDefs.h"
-#include "cbusdefs8r.h"
+#include "cbusdefs.h"
 
 #define MANU_ID         MANU_MERG
     

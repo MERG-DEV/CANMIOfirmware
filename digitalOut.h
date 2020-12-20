@@ -12,6 +12,9 @@
 extern "C" {
 #endif
 
+    
+extern void initOutputs(void);
+extern void processOutputs(void);
 extern void startDigitalOutput(unsigned char io, BOOL state);
 extern void setDigitalOutput(unsigned char io, BOOL state);
 extern void setOutputPin(unsigned char io, BOOL state);

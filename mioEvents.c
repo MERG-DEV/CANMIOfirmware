@@ -201,6 +201,11 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 // check this is a consumed action
                 if ((action&ACTION_MASK) <= NUM_ACTIONS) {
                     // check global consumed actions
+#ifdef __18F26K80
+    //                if ((action&ACTION_MASK) == ACTION_STOP_PROCESSING) {
+    //                    break;
+    //                }
+#endif
                     if ((action&ACTION_MASK) < BASE_ACTION_IO) {
                         pushAction((ACTION_T)action);
                     } else {
@@ -261,6 +266,11 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 action &= ACTION_MASK;
                 if (action <= NUM_ACTIONS) {
                     // check global consumed actions
+#ifdef __18F26K80
+    //                if (action == ACTION_STOP_PROCESSING) {
+    //                    break;
+    //                }
+#endif
                     if (action < BASE_ACTION_IO) {
                         pushAction(action|nextSimultaneous);
                     } else {

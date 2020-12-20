@@ -66,6 +66,7 @@
 #include "servo.h"
 #include "actionQueue.h"
 #include "bounce.h"
+#include "outputs.h"
 
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
@@ -119,7 +120,11 @@ void initServos(void) {
             servoState[io] = OFF;
         }
         ticksWhenStopped[io].Val = tickGet();
-        currentPos[io] = targetPos[io] = ee_read(EE_OP_STATE+io);   // restore last known positions
+        if (NV->io[io].flags & FLAG_STARTUP) {
+            setOutputPosition(io, ee_read(EE_OP_STATE+io), NV->io[io].type);   // restore last known positions
+        } else {
+            setOutputPosition(io, NV->io[io].nv_io.nv_servo.servo_start_pos, NV->io[io].type);    // START pos
+        }
         stepsPerPollSpeed[io] = 0;
     }
     

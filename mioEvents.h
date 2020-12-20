@@ -74,7 +74,9 @@ extern "C" {
 #define ACTION_WAIT1               3
 #define ACTION_WAIT2               4
 #define ACTION_WAIT5               5
-
+#ifdef __18F26K80
+#define ACTION_STOP_PROCESSING     7
+#endif
         // Now Consumed actions per io
 /* VERSION 1*/
 #define V1_BASE_ACTION_IO             8

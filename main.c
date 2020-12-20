@@ -135,10 +135,9 @@
 #ifdef ANALOGUE
 #include "analogue.h"
 #endif
+#include "digitalOut.h"
+#include "outputs.h"
 
-
-extern void initOutputs(void);
-extern void processOutputs(void);
 
 #ifdef NV_CACHE
 #include "nvCache.h"
@@ -192,7 +191,6 @@ void configIO(unsigned char io);
 void factoryReset(void);
 void factoryResetGlobalNv(void);
 void setType(unsigned char i, unsigned char type);
-void setOutputPosition(unsigned char i, unsigned char state, unsigned char type);
 BOOL sendProducedEvent(unsigned char action, BOOL on);
 void factoryResetEE(void);
 void factoryResetFlash(void);
@@ -359,10 +357,13 @@ void initialise(void) {
                 for (evIndex=1; evIndex<EVperEVT; evIndex++) {  
                     int ev = getEv(i, evIndex);
                     if (ev > 0) {
-                        if ((ev & ACTION_MASK) >= BASE_ACTION_IO) {
+                        if ((ev & ACTION_MASK) >= V1_BASE_ACTION_IO) {
+                            unsigned char io;
+                            unsigned char action;
                             unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
-                            unsigned char io = V1_ACTION_IO(ev);
-                            unsigned char action = V1_ACTION(ev);
+                            ev &= ACTION_MASK;
+                            io = V1_ACTION_IO(ev);
+                            action = V1_ACTION(ev);
                             ev = simultaneous | (ACTION_IO_BASE(io) + action);
                             writeEv(i, evIndex, ev);    // ignore any return error
                         }
@@ -603,9 +604,13 @@ BOOL checkCBUS( void ) {
 void configIO(unsigned char i) {
     if (i >= NUM_IO) return;
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
-    // servos will also force this in servo.c without checking STARTUP
-    if (NV->io[i].flags & FLAG_STARTUP) {
-        setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type);
+    // servos will do this in servo.c
+    if (NV->io[i].type == TYPE_OUTPUT) {
+        if (NV->io[i].flags & FLAG_STARTUP) {
+            setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type); // saved state
+        } else {
+            setOutputPosition(i, ACTION_IO_3, NV->io[i].type);  // OFF
+        }
     }
     // Now actually set it
     switch (configs[i].port) {
