@@ -32,6 +32,13 @@
  * 
  * Handle simple digital outputs. Including pulsed outputs and
  * generate Produced events.
+ * 
+ * The current output Action is saved in EEPROM in EE_OP_STATE. This is one of:
+ * <ul>
+ * <li>ACTION_IO_2 for ON</li>
+ * <li>ACTION_IO_3 for OFF and pulse</li>
+ * <li>ACTION_IO_4 for flash</li>
+ * </ul>
  *
  * Created on 1 June 2017, 13:14
  */
@@ -97,6 +104,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     // State ACTION_IO_3 is OFF
     // State ACTION_IO_4 is Flash
     // State ACTION_IO_5 is Change inverted. This is not used here and state will have been changed to on or off
+
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         pulseDelays[io] = 0;
@@ -112,21 +120,22 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         pinState = pinState?0:1;
     }
     flashDelays[io] = 0;	// turn flash off
-    // Was this a ON and we have a pulse duration defined?
-    if ((pinState) && NV->io[io].nv_io.nv_output.output_pulse_duration) {
-        if (pulseDelays[io] == 0) {
-            pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
-            ee_write(EE_OP_STATE+io, ACTION_IO_3);	// save the current state of output as OFF so 
-                                                            // we don't power up with ON outputs
-        }
+    // Was this a ON and we have a pulse duration defined and this is the start of the pulse?
+    if ((pinState) && NV->io[io].nv_io.nv_output.output_pulse_duration && (pulseDelays[io] == 0)) {
+        pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
+        // save the current state of output as OFF so 
+        // we don't power up with ON outputs 
+        pinState = 0;              
+        ee_write(EE_OP_STATE+io, ACTION_IO_2);	// save the current state of output
     } else {
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
-    }    
-    if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
-        setOutputPin(io, ! pinState);
-    } else {
-        setOutputPin(io, pinState);
     }
+    if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+        pinState = !pinState;
+    }
+
+    setOutputPin(io, pinState);
+    
     // check if OFF events are enabled
     if (NV->io[io].flags & FLAG_DISABLE_OFF) {
         if (pinState) {

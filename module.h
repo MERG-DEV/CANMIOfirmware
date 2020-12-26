@@ -57,12 +57,14 @@ extern "C" {
 // Whether to enable servos
 #define SERVO
 
-// Whether to enabe MULTI
+// Whether to enable MULTI
+#ifdef __18F26K80
 #define MULTI
+#endif
 
 // Whether to enable BOUNCE
 #define BOUNCE
-
+   
 #ifdef __18F26K80
 //Whether to support ANALOGUE INPUTS
 #define ANALOGUE

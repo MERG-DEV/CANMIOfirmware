@@ -92,18 +92,18 @@ void defaultEvents(unsigned char io, unsigned char type) {
 
     // add the module's default events for this io
     switch(type) {
-        case TYPE_OUTPUT:
+        
 #ifdef BOUNCE
         case TYPE_BOUNCE:
-            /*
-             * We create both a Produced and a Consumed event here.
-             */
+             addEvent(nodeID, 100+en, 0, HAPPENING_IO_OUTPUT(io), TRUE);
+            // fall through
+#endif 
+        case TYPE_OUTPUT:    
             // Consume ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 1, ACTION_IO_OUTPUT_EV(io), TRUE);
-            addEvent(nodeID, 200+en, 1, ACTION_IO_OUTPUT_FLASH(io), TRUE);
-            addEvent(nodeID, 100+en, 0, HAPPENING_IO_OUTPUT(io), TRUE);
+            // don't produce the event by default any more
+            // addEvent(nodeID, 100+en, 0, HAPPENING_IO_OUTPUT(io), TRUE);
             break;
-#endif 
         case TYPE_INPUT:
             // Produce ACON/ASON and ACOF/ASOF events with en as port number
             addEvent(nodeID, en, 0, HAPPENING_IO_INPUT(io), TRUE);
@@ -271,7 +271,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     //                    break;
     //                }
 #endif
-                    if (action < BASE_ACTION_IO) {
+                    if ((action < BASE_ACTION_IO) && (action != ACTION_SOD)) {  // Only do SoD on ON events
                         pushAction(action|nextSimultaneous);
                     } else {
                         io = ACTION_IO(action);

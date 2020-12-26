@@ -44,6 +44,7 @@
 #include "config.h"
 #include "mioEvents.h"
 #include "cbus.h"
+#include "romops.h"
 
 /**
  * The current state of the input pins. This may not be the actual read state uas we
@@ -78,6 +79,9 @@ void initInputScan(void) {
             input = !input;
         }
         outputState[io] = input;
+        if (NV->io[io].flags & FLAGS_TOGGLE) {
+            outputState[io] = ee_read(EE_OP_STATE+io);
+        }
         delayCount[io] = 0;
     }
 }
@@ -121,6 +125,7 @@ void inputScan(void) {
                         } else {
                             continue;
                         }
+                        ee_write(EE_OP_STATE+io, outputState[io]);
                      } else {
                         outputState[io] = input;
                     }

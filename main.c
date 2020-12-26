@@ -602,14 +602,18 @@ BOOL checkCBUS( void ) {
  * @param i the IO
  */
 void configIO(unsigned char i) {
+    unsigned char action;
     if (i >= NUM_IO) return;
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
     // servos will do this in servo.c
     if (NV->io[i].type == TYPE_OUTPUT) {
         if (NV->io[i].flags & FLAG_STARTUP) {
-            setOutputPosition(i, ee_read((WORD)EE_OP_STATE+i), NV->io[i].type); // saved state
+            setDigitalOutput(i, ee_read((WORD)EE_OP_STATE+i)); // saved state
         } else {
-            setOutputPosition(i, ACTION_IO_3, NV->io[i].type);  // OFF
+            action = (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
+            setDigitalOutput(i, action);  // OFF
+            // save the current state of output as OFF so 
+            ee_write(EE_OP_STATE+i, action);	
         }
     }
     // Now actually set it

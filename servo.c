@@ -49,6 +49,8 @@
  *    Ticks = 3600 + 19 * position 
  * This is fine for the 16bit Timer1 and Timer3 but the 8 bit timers Timer2 and Timer4 need a bit more work.
  * 
+ * The current servo position is saved in EEPROM at EE_OP_STATE so it can be restored on power up
+ * and not cause a sudden jerk movement.
  *
  * Created on 17 April 2017, 13:14
  */
