@@ -287,9 +287,9 @@ int main(void) @0x800 {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
         if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
             started = TRUE;
-            if (NV->sendSodDelay > 0) {
+//            if (NV->sendSodDelay > 0) {
                 sendProducedEvent(HAPPENING_SOD, TRUE);
-            }
+//            }
         }
         checkCBUS();    // Consume any CBUS message and act upon it
         FLiMSWCheck();  // Check FLiM switch for any mode changes
