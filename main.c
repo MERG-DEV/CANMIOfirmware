@@ -245,7 +245,7 @@ void LOW_INT_VECT(void)
 #endif
 
 static TickValue   startTime;
-static BOOL        started = FALSE;
+static BOOL        started;
 TickValue   lastServoStartTime;
 static TickValue   lastInputScanTime;
 static TickValue   lastActionPollTime;
@@ -275,13 +275,13 @@ int main(void) @0x800 {
 #endif
     // Both LEDs off to start with during initialisation
     initStatusLeds();
-
+    initialise(); 
+    
     startTime.Val = tickGet();
     lastServoStartTime.Val = startTime.Val;
     lastInputScanTime.Val = startTime.Val;
     lastActionPollTime.Val = startTime.Val;
-    
-    initialise(); 
+    started = FALSE;
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
