@@ -53,6 +53,12 @@ extern "C" {
 
 // We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
+    
+// Whether to support AREQ and ASRQ commands
+// Whether to enable MULTI
+#ifdef __18F26K80
+#define AREQ_SUPPORT
+#endif
 
 // Whether to enable servos
 #define SERVO
