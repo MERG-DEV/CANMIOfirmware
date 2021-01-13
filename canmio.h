@@ -63,11 +63,15 @@ extern "C" {
 /*******************************************************************
  * Module parameters
  */ 
+#ifdef CANBIP
 #define MAJOR_VER 	3
-//#define MINOR_VER 	'b'        // Minor version character
-//#define BETA        1           // Version 3a is same as version 3aBETA3
+#define MINOR_VER 	'b'        // Minor version character
+#define BETA        1           // BETA version 0=non beta release
+#else
+#define MAJOR_VER 	3
 #define MINOR_VER 	'a'        // Minor version character
-#define BETA        4           // Version 3a is same as version 3aBETA3
+#define BETA        5           // BETA version 0=non beta release
+#endif
 
 #include "GenericTypeDefs.h"
 #include "cbusdefs.h"

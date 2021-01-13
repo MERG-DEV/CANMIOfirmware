@@ -99,6 +99,7 @@ void initOutputs(void) {
  */
 void startDigitalOutput(unsigned char io, unsigned char state) {
     BOOL pinState;
+    BOOL actionState;
     // State ACTION_IO_1 is Change. This is not used here and state will have been changed to on or off
     // State ACTION_IO_2 is ON
     // State ACTION_IO_3 is OFF
@@ -108,44 +109,54 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         pulseDelays[io] = 0;
-        setOutputPin(io, TRUE);
+        setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
         sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
         return;
     }
-    // state is either ACTION_IO_2(on) or )ACTION_IO_3(off))
-    // Check if the input event is inverted
-    pinState = (state == ACTION_IO_2);
-    if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
-        pinState = pinState?0:1;
-    }
     flashDelays[io] = 0;	// turn flash off
+    // state is either ACTION_IO_2(on) or )ACTION_IO_3(off))
+    actionState = (state == ACTION_IO_2);
+  
+    // Check if the input event is inverted
+    if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+        actionState = !actionState;
+    }
+    
+    // ignore OFF on pulse outputs
+    if (( ! actionState) && (NV->io[io].nv_io.nv_output.output_pulse_duration)) {
+        return;
+    }
+    
+    // Save state in EEPROM
     // Was this a ON and we have a pulse duration defined and this is the start of the pulse?
-    if ((pinState) && NV->io[io].nv_io.nv_output.output_pulse_duration && (pulseDelays[io] == 0)) {
+    if ((actionState) && NV->io[io].nv_io.nv_output.output_pulse_duration && (pulseDelays[io] == 0)) {
         pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
         // save the current state of output as OFF so 
-        // we don't power up with ON outputs 
-        pinState = 0;              
-        ee_write(EE_OP_STATE+io, ACTION_IO_2);	// save the current state of output
+        // we don't power up with pulse active 
+        ee_write(EE_OP_STATE+io, ACTION_IO_3);	// save the current state of output
     } else {
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
     }
+
+    pinState = actionState;
     if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
         pinState = !pinState;
     }
-
     setOutputPin(io, pinState);
     
+    
+    // Send events
     // check if OFF events are enabled
     if (NV->io[io].flags & FLAG_DISABLE_OFF) {
-        if (pinState) {
+        if (actionState) {
             // only ON
             // check if produced event is inverted
-            sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+            sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
         }
     } else {
         // check if produced event is inverted
-        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), pinState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
     }
 }
 
