@@ -41,7 +41,14 @@
  * </ul>
  *
  * Created on 1 June 2017, 13:14
- */
+ * 
+ * Revision by Greg Palmer
+ * 13 April 2021
+ *
+ *	Modified calls to sendInvertedProducedEvent to have additional arguments.
+ *	see mioEvents.c for a description of the change.
+ *
+*/
 
 #include "mioNv.h"
 #include "mioEvents.h"
@@ -111,7 +118,8 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         pulseDelays[io] = 0;
         setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
-        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, 
+                NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
         return;
     }
     flashDelays[io] = 0;	// turn flash off
@@ -152,11 +160,13 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         if (actionState) {
             // only ON
             // check if produced event is inverted
-            sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+            sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, 
+                    NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
         }
     } else {
         // check if produced event is inverted
-        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+        sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), actionState, 
+                NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
     }
 }
 

@@ -31,6 +31,13 @@
  * Author: Ian
  *
  * Created on 17 April 2017, 13:14
+ * Revision History 
+ * 
+ * ---
+ * Revised by Greg Palmer
+ * 13 April 2021
+ * Reflects change in the arguments of sendProducedEvent to include 2 additional arguments.
+ * See mioEvents.
  */
 
 #ifndef MIOEVENTS_H
@@ -74,9 +81,7 @@ extern "C" {
 #define ACTION_WAIT1               3
 #define ACTION_WAIT2               4
 #define ACTION_WAIT5               5
-#ifdef __18F26K80
-#define ACTION_STOP_PROCESSING     7
-#endif
+
         // Now Consumed actions per io
 /* VERSION 1*/
 #define V1_BASE_ACTION_IO             8
@@ -196,7 +201,8 @@ extern void processActions(void);
 
 #include "events.h"
 
-extern BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert);
+extern BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert,
+                                        BOOL can_send_on, BOOL can_send_off);
 
 #ifdef	__cplusplus
 }

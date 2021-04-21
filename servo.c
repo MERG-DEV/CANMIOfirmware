@@ -117,6 +117,7 @@ void initServos(void) {
     for (io=0; io<NUM_IO; io++) {
         // try STOPPED state to reduced or correct power on jump
         if (NV->io[io].flags & FLAG_STARTUP) {
+            /* This will send 1sec of pulses at power up */
             servoState[io] = STOPPED;
         } else {
             servoState[io] = OFF;
@@ -146,25 +147,9 @@ void initServos(void) {
     PIE2bits.TMR3IE = 1;        // enable interrupt
     
     servoInBlock = io -1;
-    /* 
-     * This will produce 1 pulse per servo (if its STARTUP flag is set).
-     * This should reduce the power-on jump with some servo types.
-     */
-    /* Actually doesn't seem to help
-    for (io=0; io<SERVOS_IN_BLOCK; io++) { 
-        if ((NV->io[io].flags & FLAG_STARTUP) || (NV->io[io+SERVOS_IN_BLOCK].flags & FLAG_STARTUP)) {// THIS IS WRONG
-            if (io != 0) {
-                while (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) { ; }  // 2.5ms delay
-            }
-            lastServoStartTime.Val = tickGet();
-            servoInBlock = io -1;
-            startServos();  // call every 2.5ms
-        }
-    }
-     */
 }
 /**
- * This gets called ever approx 2.5ms to start the next set of servo pulses.
+ * This gets called every approx 2.5ms to start the next set of servo pulses.
  * Checks that the servo isn't OFF
  * @param io
  */

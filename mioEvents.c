@@ -33,10 +33,21 @@
  * Here we deal with the module specific event handling. This covers:
  * <UL>
  * <LI>Setting of default events.</LI>
- * <li>Processing of inbound, consumed events</LI>
+ * <LI>Processing of inbound, consumed events</LI>
+ * <LI>Processing Start of Day (SOD) action</LI>
  *</UL>
  * 
  * Created on 10 April 2017, 10:26
+ *
+ * Modified by Greg Palmer 7 April 2021
+ *
+ * Corrected doSOD() to include handling of DISABLE_OFF.
+ * Added Processing Start of Day (SOD) to the list in the comment block above.
+ * Added new function BOOL produceStatusEvent(HAPPENING_T action, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off) to
+ * simplify handling treatment of channel flags in doSOD. 
+ * Note: (event_inverted & disable_off) causes suppression of ON events and sends OFF events only. 
+ * For inputs this also affects events for happening TWO_ON.
+ * Added FLAG_INPUT_DISABLE_SOD_RESPONSE support in doSOD to inhibit SOD response for input type channels (INPUT, ANALOGUE, MAGNET)   
  */
 
 #include <stddef.h>
@@ -61,7 +72,7 @@ extern void setOutputState(unsigned char io, unsigned char action, unsigned char
 extern void doAction(unsigned char io, unsigned char state);
 extern void inputScan(BOOL report);
 extern BOOL sendProducedEvent(unsigned char action, BOOL on);
-BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert);
+BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
 
@@ -266,11 +277,6 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 action &= ACTION_MASK;
                 if (action <= NUM_ACTIONS) {
                     // check global consumed actions
-#ifdef __18F26K80
-    //                if (action == ACTION_STOP_PROCESSING) {
-    //                    break;
-    //                }
-#endif
                     if ((action < BASE_ACTION_IO) && (action != ACTION_SOD)) {  // Only do SoD on ON events
                         pushAction(action|nextSimultaneous);
                     } else {
@@ -369,37 +375,33 @@ void processActions(void) {
         if (needsStarting(io, ioAction, type)) {
             startOutput(io, ioAction, type);
         }
-        // is this the start of a new action?
-//        if (lastAction != action) {
-//            lastAction = action;
-            // now check to see if any others need starting  
-            peekItem = 1;
-            while (simultaneous) {
-                ACTION_T nextAction;
-                unsigned char nextIo;
-                unsigned char nextType;
+        // now check to see if any others need starting  
+        peekItem = 1;
+        while (simultaneous) {
+            ACTION_T nextAction;
+            unsigned char nextIo;
+            unsigned char nextType;
             
-                nextAction = peekActionQueue(peekItem);
-                if (nextAction == NO_ACTION) break;
-                simultaneous = nextAction & ACTION_SIMULTANEOUS;
-                nextAction &= ACTION_MASK;
-                nextIo = ACTION_IO(nextAction);
-                if (nextIo == io) {
-                    // we shouldn't have 2 actions on the same IO at the same time
-                    break;
-                }
-                nextAction = ACTION(nextAction);
-                nextType = NV->io[nextIo].type;
-                setOutputState(nextIo, nextAction, nextType);
-                if (needsStarting(nextIo, nextAction, nextType)) {
-                    startOutput(nextIo, nextAction, nextType);
-                }
-                if (completed(nextIo, nextAction, nextType)) {
-                    deleteActionQueue(peekItem);
-                }
-                peekItem++;
+            nextAction = peekActionQueue(peekItem);
+            if (nextAction == NO_ACTION) break;
+            simultaneous = nextAction & ACTION_SIMULTANEOUS;
+            nextAction &= ACTION_MASK;
+            nextIo = ACTION_IO(nextAction);
+            if (nextIo == io) {
+                // we shouldn't have 2 actions on the same IO at the same time
+                break;
             }
-//        }
+            nextAction = ACTION(nextAction);
+            nextType = NV->io[nextIo].type;
+            setOutputState(nextIo, nextAction, nextType);
+            if (needsStarting(nextIo, nextAction, nextType)) {
+                startOutput(nextIo, nextAction, nextType);
+            }
+            if (completed(nextIo, nextAction, nextType)) {
+                deleteActionQueue(peekItem);
+            }
+            peekItem++;
+        }
         // check if this current action has been completed
         if (completed(io, ioAction, type)) {
             doneAction();
@@ -434,45 +436,59 @@ void doWait(unsigned int duration) {
  * Do the consumed SOD action. This sends events to indicate current state of the system.
  */
 void doSOD(void) {
-    unsigned char midway;
-    BOOL state;
+    BOOL disable_off;
+	BOOL send_on_ok;
+	BOOL send_off_ok;
+	BOOL event_inverted;
+	BOOL enable_SOD_response;
     unsigned char io;
+    unsigned char flags;
     
     // Although I agreed with Pete that SOD is only applicable to EV#2 I actually allow it at any EV#
 
     for (io=0; io < NUM_IO; io++) {
-        unsigned char event_inverted = NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED;
+        flags = NV->io[io].flags;
+        event_inverted = flags & FLAG_RESULT_EVENT_INVERTED;
+        disable_off = flags & FLAG_DISABLE_OFF;
+        send_on_ok  = !( disable_off & event_inverted );
+		send_off_ok = !( disable_off & !event_inverted);
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted)) ;
+                if (enable_SOD_response) {
+                    /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted, send_on_ok, send_off_ok));
+                    // TWO_ON is only sent if DISABLE_OFF is set GP//
+                    if (disable_off) {
+                        while (! sendInvertedProducedEvent(HAPPENING_IO_INPUT_TWO_ON(io), outputState[io]==0, event_inverted, send_on_ok, send_off_ok));
+                    }
+                }
                 break;
             case TYPE_OUTPUT:
-                state = ee_read(EE_OP_STATE+io);
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_OUTPUT(io), state!=ACTION_IO_3, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_OUTPUT(io), ee_read(EE_OP_STATE+io)!=ACTION_IO_3, event_inverted, send_on_ok, send_off_ok));
                 break;
 #ifdef SERVO
             case TYPE_SERVO:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted, TRUE, TRUE));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted, TRUE, TRUE));
                 // send the last mid
-                midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
-                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_MID(io), currentPos[io] >= midway, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_MID(io), currentPos[io] >= (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2, event_inverted, TRUE, TRUE));
                 break;
 #ifdef BOUNCE
             case TYPE_BOUNCE:
-                state = ee_read(EE_OP_STATE+io);
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_BOUNCE(io), state, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_BOUNCE(io), ee_read(EE_OP_STATE+io), event_inverted, TRUE, TRUE));
                 break;
 #endif
 #ifdef MULTI
             case TYPE_MULTI:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted));
-                if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted, TRUE, TRUE));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted, TRUE, TRUE));
+                // it is more logical to use servo rather than multi with <3 positions but check anyway GP//
+                if (NV->io[io].nv_io.nv_multi.multi_num_pos > 2) { 
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted, TRUE, TRUE));
+                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
+                        while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted, TRUE, TRUE));
+                    }
                 }
                 break;
 #endif
@@ -480,14 +496,30 @@ void doSOD(void) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
             case TYPE_MAGNET:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
                 break;
 #endif
         }
     }
 }
 
-BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert) {
-    return sendProducedEvent(action, invert?!state:state);
+/**
+ * Helper function used in doSod(). Inverts the polarity of event if required and also
+ * checks if we are allowed to send on or off events.
+ * @param happening the happening number to send
+ * @param state the event polarity
+ * @param invert whether the event should be inverted
+ * @param can_send_on if we are allowed to send ON events 
+ * @param can_send_off is we are allowed to send OFF events
+ * @return whether the event was able to be sent
+ */
+BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off) 
+{
+	BOOL state_to_send = invert?!state:state;
+	if ((state_to_send & can_send_on) | (!state_to_send & can_send_off)) {
+		return sendProducedEvent(happening, state_to_send);
+	} else {
+		return TRUE;
+	}
 }

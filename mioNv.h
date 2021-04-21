@@ -31,6 +31,19 @@
  * Author: 	Ian Hogg
  * Comments:	Definitions for NVs
  * Revision history: 
+ * 
+ * ---
+ *
+ * Revision by Greg Palmer
+ * 15 April 2021
+ *
+ *	Added flag FLAG_INPUT_DISABLE_SOD_RESPONSE value 0x20
+ *  This flag overlays FLAG_STARTUP which has no meaning for input types 
+ *  Enables a feature that exists in CANACE8C
+ *	Applicable to Input types - input, analogue, and magnet to allow users to supress SOD messages
+ *    for the channel.
+ *
+ * --
  */
 
 #ifndef XC_NODE_VARIABLES_H
@@ -156,7 +169,9 @@ extern "C" {
 #define	FLAG_STARTUP                0x04	// Whether this output be changed on module start to match values in EE_OP_STATE
 #define FLAG_DISABLE_OFF            0x08    // Whether off events are generated
 #define FLAGS_TOGGLE                0x10    // whether an INPUT operates as a pushbutton toggle
+#define FLAG_PULLUP                 0x10    // Start servos high or low. Reuse Toggle flag
 #define FLAG_RESULT_ACTION_INVERTED 0x20    // whether the resulting action is inverted
+#define	FLAG_INPUT_DISABLE_SOD_RESPONSE 0x20// Whether this input, magnet or analogue channel responds to SOD
 #define FLAG_RESULT_EVENT_INVERTED  0x40    // whether the generated event is inverted
 #define FLAG_EXPEDITED_ACTIONS      0x80    // whether consumed actions are expedited
 

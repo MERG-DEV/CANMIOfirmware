@@ -294,13 +294,14 @@ int main(void) @0x800 {
         checkCBUS();    // Consume any CBUS message and act upon it
         FLiMSWCheck();  // Check FLiM switch for any mode changes
         
-        if (started) {
+
 #ifdef SERVO
-            if (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) {
-                startServos();  // call every 2.5ms
-                lastServoStartTime.Val = tickGet();
-            }
+        if (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) {
+            startServos();  // call every 2.5ms
+            lastServoStartTime.Val = tickGet();
+        }
 #endif
+        if (started) {
             if (tickTimeSince(lastInputScanTime) > 5*ONE_MILI_SECOND) {
                 inputScan();    // Strobe inputs for changes
                 lastInputScanTime.Val = tickGet();
@@ -606,15 +607,25 @@ void configIO(unsigned char i) {
     if (i >= NUM_IO) return;
     // If this is an output (OUTPUT, SERVO, BOUNCE) set the value to valued saved in EE
     // servos will do this in servo.c
-    if (NV->io[i].type == TYPE_OUTPUT) {
+    switch (NV->io[i].type) {
+        case TYPE_OUTPUT:
         if (NV->io[i].flags & FLAG_STARTUP) {
             setDigitalOutput(i, ee_read((WORD)EE_OP_STATE+i)); // saved state
         } else {
-            action = (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
+            action = (NV->io[i].flags & FLAG_RESULT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
             setDigitalOutput(i, action);  // OFF
             // save the current state of output as OFF so 
             ee_write(EE_OP_STATE+i, action);	
         }
+        break;
+#ifdef SERVO
+    case TYPE_SERVO:
+#ifdef BOUNCE
+    case TYPE_BOUNCE:
+#endif
+        // start with the polarity defined in flag PULLUP
+        setDigitalOutput(i, NV->io[i].flags & FLAG_PULLUP);
+#endif
     }
     // Now actually set it
     switch (configs[i].port) {
