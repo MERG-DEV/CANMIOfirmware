@@ -440,7 +440,6 @@ void doSOD(void) {
 	BOOL send_on_ok;
 	BOOL send_off_ok;
 	BOOL event_inverted;
-	BOOL enable_SOD_response;
     unsigned char io;
     unsigned char flags;
     
@@ -454,7 +453,7 @@ void doSOD(void) {
 		send_off_ok = !( disable_off & !event_inverted);
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                if (enable_SOD_response) {
+                if (flags & FLAG_INPUT_DISABLE_SOD_RESPONSE) {
                     /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
                     while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted, send_on_ok, send_off_ok));
                     // TWO_ON is only sent if DISABLE_OFF is set GP//
@@ -517,7 +516,7 @@ void doSOD(void) {
 BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off) 
 {
 	BOOL state_to_send = invert?!state:state;
-	if ((state_to_send & can_send_on) | (!state_to_send & can_send_off)) {
+	if ((state_to_send && can_send_on) || (!state_to_send && can_send_off)) {
 		return sendProducedEvent(happening, state_to_send);
 	} else {
 		return TRUE;
