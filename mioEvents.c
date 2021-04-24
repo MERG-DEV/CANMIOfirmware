@@ -449,8 +449,8 @@ void doSOD(void) {
         flags = NV->io[io].flags;
         event_inverted = flags & FLAG_RESULT_EVENT_INVERTED;
         disable_off = flags & FLAG_DISABLE_OFF;
-        send_on_ok  = !( disable_off & event_inverted );
-		send_off_ok = !( disable_off & !event_inverted);
+        send_on_ok  = !( disable_off && event_inverted );
+		send_off_ok = !( disable_off && !event_inverted);
         switch(NV->io[io].type) {
             case TYPE_INPUT:
                 if (flags & FLAG_INPUT_DISABLE_SOD_RESPONSE) {
