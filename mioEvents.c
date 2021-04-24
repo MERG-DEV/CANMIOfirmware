@@ -453,7 +453,7 @@ void doSOD(void) {
 		send_off_ok = !( disable_off && !event_inverted);
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                if (flags & FLAG_INPUT_DISABLE_SOD_RESPONSE) {
+                if (!(flags & FLAG_INPUT_DISABLE_SOD_RESPONSE)) {
                     /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
                     while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted, send_on_ok, send_off_ok));
                     // TWO_ON is only sent if DISABLE_OFF is set GP//
