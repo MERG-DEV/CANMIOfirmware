@@ -440,6 +440,7 @@ void doSOD(void) {
 	BOOL send_on_ok;
 	BOOL send_off_ok;
 	BOOL event_inverted;
+    BOOL enable_SOD_response;
     unsigned char io;
     unsigned char flags;
     
@@ -451,9 +452,11 @@ void doSOD(void) {
         disable_off = flags & FLAG_DISABLE_OFF;
         send_on_ok  = !( disable_off && event_inverted );
 		send_off_ok = !( disable_off && !event_inverted);
+        enable_SOD_response = !(flags & FLAG_INPUT_DISABLE_SOD_RESPONSE);
+                
         switch(NV->io[io].type) {
             case TYPE_INPUT:
-                if (!(flags & FLAG_INPUT_DISABLE_SOD_RESPONSE)) {
+                if (enable_SOD_response) {
                     /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
                     while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted, send_on_ok, send_off_ok));
                     // TWO_ON is only sent if DISABLE_OFF is set GP//
@@ -495,8 +498,10 @@ void doSOD(void) {
 #ifdef ANALOGUE
             case TYPE_ANALOGUE_IN:
             case TYPE_MAGNET:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
+                if (enable_SOD_response) {
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
+                }
                 break;
 #endif
         }
