@@ -40,30 +40,30 @@ CANMIOfirmware
 In the project properties you need to put in the header file include paths under C18 Global Options -> mcc18 -> General -> Include directories = ../../githib/CANMIOfirmware; ../../github/CBUSlib
 
 The actual CBUSlib files needed by the project are:
-  * Bootloader.asm
-  * callbacks.h
-  * can18.h
-  * cbus.h
-  * cbusdefs8r.h
-  * cbuslib.h
-  * devincs.h
-  * EEPROM.h
-  * events.h
-  * FliM.h
-  * romops.h
-  * StatusLeds.h
-  * TickTime.h
-
-  * Bootloader.asm
-  * c018.c
-  * can18.c
-  * c018.c
-  * cbus.c
-  * events.c
-  * FliM.c
-  * romops.c
-  * StatusLeds.c
-  * ticktime.c
+  * CBUSlib header files
+    - callbacks.h
+    - can18.h
+    - cbus.h
+    - cbuslib.h
+    - devincs.h
+    - EEPROM.h
+    - events.h
+    - FliM.h
+    - romops.h
+    - StatusLeds.h
+    - TickTime.h
+  * CBUSlib source files
+    - Bootloader.asm
+    - c018.c
+    - can18.c
+    - cbus.c
+    - events.c
+    - FliM.c
+    - romops.c
+    - StatusLeds.c
+    - ticktime.c
+  * CBUSdefs header files
+    - cbusdefs.h
 
 You will also need to ensure you are using the correct linker script from this repo depending upon target processor type. 
 
