@@ -38,6 +38,8 @@
  * 13 April 2021
  * Reflects change in the arguments of sendProducedEvent to include 2 additional arguments.
  * See mioEvents.
+ * 11 May 2021
+ * Re-introduced ACTION_STOP_PROCESSING
  */
 
 #ifndef MIOEVENTS_H
@@ -81,6 +83,9 @@ extern "C" {
 #define ACTION_WAIT1               3
 #define ACTION_WAIT2               4
 #define ACTION_WAIT5               5
+#ifdef __18F26K80
+#define ACTION_STOP_PROCESSING     7
+#endif
 
         // Now Consumed actions per io
 /* VERSION 1*/

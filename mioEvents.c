@@ -47,7 +47,9 @@
  * simplify handling treatment of channel flags in doSOD. 
  * Note: (event_inverted & disable_off) causes suppression of ON events and sends OFF events only. 
  * For inputs this also affects events for happening TWO_ON.
- * Added FLAG_INPUT_DISABLE_SOD_RESPONSE support in doSOD to inhibit SOD response for input type channels (INPUT, ANALOGUE, MAGNET)   
+ * Added FLAG_INPUT_DISABLE_SOD_RESPONSE support in doSOD to inhibit SOD response for input type channels (INPUT, ANALOGUE, MAGNET)
+ * 11-May 2021
+ * Reintroduced ACTION_STOP_PROCESSING
  */
 
 #include <stddef.h>
@@ -193,6 +195,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char io;
     unsigned char ca;
     int action;
+    unsigned char masked_action;
 
     BYTE opc = getEVs(tableIndex);
 #ifdef SAFETY
@@ -210,18 +213,19 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             action = evs[e];  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             if (action != NO_ACTION) {
                 // check this is a consumed action
-                if ((action&ACTION_MASK) <= NUM_ACTIONS) {
+                masked_action = action&ACTION_MASK;
+                if ((masked_action) <= NUM_ACTIONS) {
                     // check global consumed actions
 #ifdef __18F26K80
-    //                if ((action&ACTION_MASK) == ACTION_STOP_PROCESSING) {
-    //                    break;
-    //                }
+                    if ((masked_action) == ACTION_STOP_PROCESSING) {
+                        break;
+                    }
 #endif
-                    if ((action&ACTION_MASK) < BASE_ACTION_IO) {
+                    if ((masked_action) < BASE_ACTION_IO) {
                         pushAction((ACTION_T)action);
                     } else {
-                        io = ACTION_IO(action&ACTION_MASK);
-                        ca = ACTION(action&ACTION_MASK);
+                        io = ACTION_IO(masked_action);
+                        ca = ACTION(masked_action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
                                 if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
@@ -277,6 +281,11 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 action &= ACTION_MASK;
                 if (action <= NUM_ACTIONS) {
                     // check global consumed actions
+#ifdef __18F26K80
+                    if ((action) == ACTION_STOP_PROCESSING) {
+                        break;
+                    }
+#endif                  
                     if ((action < BASE_ACTION_IO) && (action != ACTION_SOD)) {  // Only do SoD on ON events
                         pushAction(action|nextSimultaneous);
                     } else {
