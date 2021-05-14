@@ -216,11 +216,9 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 masked_action = action&ACTION_MASK;
                 if ((masked_action) <= NUM_ACTIONS) {
                     // check global consumed actions
-#ifdef __18F26K80
                     if ((masked_action) == ACTION_STOP_PROCESSING) {
                         break;
                     }
-#endif
                     if ((masked_action) < BASE_ACTION_IO) {
                         pushAction((ACTION_T)action);
                     } else {
@@ -281,11 +279,9 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                 action &= ACTION_MASK;
                 if (action <= NUM_ACTIONS) {
                     // check global consumed actions
-#ifdef __18F26K80
                     if ((action) == ACTION_STOP_PROCESSING) {
                         break;
-                    }
-#endif                  
+                    }            
                     if ((action < BASE_ACTION_IO) && (action != ACTION_SOD)) {  // Only do SoD on ON events
                         pushAction(action|nextSimultaneous);
                     } else {
