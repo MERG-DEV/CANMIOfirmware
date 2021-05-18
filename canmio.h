@@ -87,10 +87,10 @@ extern "C" {
 #endif
     
 
-#define MODULE_FLAGS    PF_COMBI+PF_BOOT+PF_COE  // Producer, consumer, boot
+#define MODULE_FLAGS    (PF_COMBI+PF_BOOT+PF_COE)  // Producer, consumer, boot
 #define BUS_TYPE        PB_CAN
 #define LOAD_ADDRESS    0x0800      // Need to put in parameter block at compile time, only known to linker so hard code here
-#define MNAME_ADDRESS   LOAD_ADDRESS + 0x20 + sizeof(ParamBlock)   // Put module type string above params so checksum can be calculated at compile time
+#define MNAME_ADDRESS   (LOAD_ADDRESS + 0x20 + sizeof(ParamBlock))   // Put module type string above params so checksum can be calculated at compile time
 #define START_SOD_EVENT      0x81
 
 // Time delays 

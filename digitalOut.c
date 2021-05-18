@@ -78,7 +78,7 @@ void setOutputPin(unsigned char io, BOOL state);
  * every 5ms increment dimCounter
  * if dimCounter < dim_setting turn pin ON else turn pin OFF
  * if (dimCount >= 20) dimCount = 0
- * 
+ */ 
 /**
  * Initialise the IO digital outputs.
  * Set up the pulse data structures.
@@ -204,7 +204,7 @@ void processOutputs(void) {
                 // check if OFF events are enabled
                 if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
                     // check if produced event is inverted
-                    sendProducedEvent(HAPPENING_IO_INPUT(io), !NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED);
+                    sendProducedEvent(HAPPENING_IO_INPUT(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
                 }
                 doneAction();
             }

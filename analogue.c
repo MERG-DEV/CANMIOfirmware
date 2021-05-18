@@ -73,8 +73,7 @@ void initAnaloguePort(unsigned char io) {
     while (ADCON0bits.GO)
            ;
     // get the reading
-    lastReading[io] = ADRESH;
-    lastReading[io] << 8;
+    lastReading[io] = ADRESH<<8;
     lastReading[io] |= ADRESL;
     eventState[io] = ANALOGUE_EVENT_OFF;
 }
@@ -94,8 +93,7 @@ void pollAnalogue(void) {
         // is conversion finished?
         if ( ! ADCON0bits.GO) {
             // get the 12 bit result
-            adc = ADRESH;
-            adc = adc << 8;
+            adc = ADRESH << 8;
             adc |= ADRESL;
             if ((setupState == SETUP_NONE) || (portInProgress != setupIo)) {
                 if (NV->io[portInProgress].type == TYPE_MAGNET) {
@@ -126,7 +124,7 @@ void pollAnalogue(void) {
                     }
                 } else {
                     // TYPE_ANALOGUE
-                    adc >> 4;   // convert to 8 bit
+                    adc = adc >> 4;   // convert to 8 bit
                     lthreshold = NV->io[portInProgress].nv_io.nv_analogue_in.analogue_threshold;
                     lhysteresis = lthreshold - NV->io[portInProgress].nv_io.nv_analogue_in.analogue_hysteresis; 
                 }
