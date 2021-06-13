@@ -63,6 +63,7 @@
 #include "actionQueue.h"
 #include "FliM.h"
 #include "analogue.h"
+#include "happeningsActions.h"
 
 // forward declarations
 void clearEvents(unsigned char i);
@@ -148,6 +149,32 @@ void defaultEvents(unsigned char io, unsigned char type) {
             break;
 #endif 
     }
+}
+
+/**
+ * CANMIO specific version of add an event/EV.
+ * This ensures that if a Happening is being written then this happening does not
+ * exist for any other event.
+ * @param nodeNumber
+ * @param eventNumber
+ * @param evNum the EV index (starts at 0 for the produced action)
+ * @param evVal the EV value
+ * @param forceOwnNN the value of the flag
+ * @return error number or 0 for success
+ */
+unsigned char APP_addEvent(WORD nodeNumber, WORD eventNumber, BYTE evNum, BYTE evVal, BOOL forceOwnNN) {
+    if ((evNum == 0) && (evVal != NO_ACTION)) {
+        // this is a Happening
+        unsigned char tableIndex = happening2Event[evVal-HAPPENING_BASE];
+        if (tableIndex != NO_INDEX) {
+            // Happening already exists
+            // remove it
+            writeEv(tableIndex, 0, NO_ACTION);
+            checkRemoveTableEntry(tableIndex);
+            rebuildHashtable();
+        }
+    }
+    return addEvent(nodeNumber, eventNumber, evNum, evVal, forceOwnNN);
 }
 
 /**

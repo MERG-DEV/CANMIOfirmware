@@ -60,6 +60,7 @@
 #include "mioEEPROM.h"
 #include "config.h"
 #include "actionQueue.h"
+#include "happeningsActions.h"
 
 // Forward declarations
 unsigned char pulseDelays[NUM_IO];

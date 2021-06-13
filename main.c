@@ -122,6 +122,7 @@
 #include "inputs.h"
 #include "mioEEPROM.h"
 #include "events.h"
+#include "happeningsActions.h"
 #include "mioNv.h"
 #include "FliM.h"
 #include "romops.h"

@@ -38,6 +38,7 @@
 #include "analogue.h"
 #include "cbus.h"
 #include "romops.h"
+#include "happeningsActions.h"
 
 #ifdef ANALOGUE
 static unsigned char portInProgress;

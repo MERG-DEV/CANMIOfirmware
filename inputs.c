@@ -45,6 +45,7 @@
 #include "mioEvents.h"
 #include "cbus.h"
 #include "romops.h"
+#include "happeningsActions.h"
 
 /**
  * The current state of the input pins. This may not be the actual read state uas we

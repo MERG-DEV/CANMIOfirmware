@@ -132,6 +132,8 @@ extern "C" {
     
 #include "canmio.h"
     
+extern unsigned char APP_addEvent(WORD nodeNumber, WORD eventNumber, BYTE evNum, BYTE evVal, BOOL forceOwnNN);
+    
 
 #ifdef	__cplusplus
 }
