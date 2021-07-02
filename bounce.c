@@ -185,8 +185,8 @@ BOOL bounceUp(unsigned char io) {
         break;
     case STATE_PAUSE:
         // reuse speed[] as a pause counter
-        speed[io] --;
         if (speed[io] == 0) bounceState[io] = STATE_SECOND_PULL;
+        speed[io]--;
         break;
     case STATE_SECOND_PULL:
         // first just move to the targetPos[io]
