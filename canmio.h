@@ -70,7 +70,7 @@ extern "C" {
 #else
 #define MAJOR_VER 	3
 #define MINOR_VER 	'b'        // Minor version character
-#define BETA        2           // BETA version 0=non beta release
+#define BETA        3           // BETA version 0=non beta release
 #endif
 
 #include "GenericTypeDefs.h"

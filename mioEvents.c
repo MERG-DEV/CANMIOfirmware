@@ -420,7 +420,9 @@ void processActions(void) {
             nextAction &= ACTION_MASK;
             nextIo = ACTION_IO(nextAction);
             if (nextIo == io) {
-                // we shouldn't have 2 actions on the same IO at the same time
+                // if we have 2 simultaneous actions on the same IO at the same 
+                // time then cancel the first and just do the second
+                // doneAction(); decided to not implement this change after all.
                 break;
             }
             nextAction = ACTION(nextAction);
