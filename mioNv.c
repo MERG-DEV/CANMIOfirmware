@@ -125,6 +125,9 @@ void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char 
             setType(io, value);
         }
     }
+    if (index == NV_PULLUPS) {
+        WPUB = value; 
+    }
     
     if (index >= NV_IO_START) {
         io = IO_NV(index);

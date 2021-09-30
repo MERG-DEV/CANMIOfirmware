@@ -124,7 +124,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         return;
     }
     flashDelays[io] = 0;	// turn flash off
-    // state is either ACTION_IO_2(on) or )ACTION_IO_3(off))
+    // state is either ACTION_IO_2(on) or ACTION_IO_3(off))
     actionState = (state == ACTION_IO_2);
   
     // Check if the input event is inverted

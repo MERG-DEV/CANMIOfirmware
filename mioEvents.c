@@ -533,8 +533,8 @@ void doSOD(void) {
             case TYPE_ANALOGUE_IN:
             case TYPE_MAGNET:
                 if (enable_SOD_response) {
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), analogueState[io].eventState == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), analogueState[io].eventState == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
                 }
                 break;
 #endif

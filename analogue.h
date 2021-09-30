@@ -24,11 +24,19 @@ extern unsigned char setupState;
 #define SETUP_REPORT            1
 #define SETUP_REPORT_AND_SAVE   2
 
-// Event states
-extern unsigned char eventState[NUM_IO];
+// Analogue states
+typedef struct {
+    unsigned char eventState:2;
+    unsigned char portState:1;
+} AnalogueStates;
+extern AnalogueStates analogueState[NUM_IO]; 
+// Event state
 #define ANALOGUE_EVENT_OFF      0
 #define ANALOGUE_EVENT_LOWER    1
 #define ANALOGUE_EVENT_UPPER    2
+// Port state
+#define ANALOGUE_PORT_INITIALISING      0   // Just after port is set to analogue so we don't report event due to analogue vaue changing
+#define ANALOGUE_PORT_READY             1   // report changes in analogue voltage 
 
 
 #ifdef	__cplusplus
