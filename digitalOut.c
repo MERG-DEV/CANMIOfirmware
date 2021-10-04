@@ -145,7 +145,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
         // we don't power up with pulse active 
         ee_write(EE_OP_STATE+io, ACTION_IO_3);	// save the current state of output
     } else {
-        ee_write(EE_OP_STATE+io, state);	// save the current state of output
+        ee_write(EE_OP_STATE+io, actionState?ACTION_IO_2:ACTION_IO_3);	// save the current state of output
     }
 
     pinState = actionState;
@@ -232,9 +232,9 @@ void setDigitalOutput(unsigned char io, unsigned char state) {
         case ACTION_IO_2:
         case ACTION_IO_3:
             pinState = (state == ACTION_IO_2);
-            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
-                pinState = pinState?0:1;
-            }
+//            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
+//                pinState = pinState?0:1;
+//            }
             if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
                 setOutputPin(io, ! pinState);
             } else {
