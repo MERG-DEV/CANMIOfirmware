@@ -294,7 +294,7 @@ int main(void) @0x800 {
         }
         checkCBUS();    // Consume any CBUS message and act upon it
         FLiMSWCheck();  // Check FLiM switch for any mode changes
-        
+
 
 #ifdef SERVO
         if (tickTimeSince(lastServoStartTime) > 5*HALF_MILLI_SECOND) {
@@ -328,6 +328,12 @@ int main(void) @0x800 {
 void initialise(void) {
     // enable the 4x PLL
     OSCTUNEbits.PLLEN = 1; 
+    /*
+     * Now configure the interrupts.
+     * Interrupt priority is enabled with the High priority interrupt used for
+     * the servo timers and Low priority interrupt used for CAN and tick timer.
+     */
+    RCONbits.IPEN = 1;
     
     // check if EEPROM is valid
    if (ee_read((WORD)EE_VERSION) != EEPROM_VERSION) {
@@ -448,6 +454,7 @@ void initialise(void) {
         loadNvCache();                
 #endif
     }
+    
     initTicker(0);  // set low priority
     // Enable PORT B weak pullups
     INTCON2bits.RBPU = 0;
@@ -474,14 +481,6 @@ void initialise(void) {
     }
     initInputScan();
 
-    /*
-     * Now configure the interrupts.
-     * Interrupt priority is enabled with the High priority interrupt used for
-     * the servo timers and Low priority interrupt used for CAN and tick timer.
-     */
-    
-    // Enable interrupt priority
-    RCONbits.IPEN = 1;
     // enable interrupts, all init now done
     ei(); 
 }
@@ -616,7 +615,7 @@ void configIO(unsigned char i) {
             action = (NV->io[i].flags & FLAG_RESULT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
             setDigitalOutput(i, action);  // OFF
             // save the current state of output as OFF so 
-            ee_write(EE_OP_STATE+i, action);	
+            ee_write(EE_OP_STATE+i, action);       // Unsure if this is required or if it should be deleted. Therefore leaving it for now.
         }
         break;
 #ifdef SERVO
