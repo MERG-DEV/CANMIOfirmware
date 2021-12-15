@@ -64,10 +64,10 @@
 #include "FliM.h"
 #include "analogue.h"
 #include "happeningsActions.h"
+#include "timedResponse.h"
 
 // forward declarations
 void clearEvents(unsigned char i);
-void doSOD(void);
 void doWait(unsigned int duration);
 
 extern void startOutput(unsigned char io, unsigned char action, unsigned char type);
@@ -78,6 +78,7 @@ extern BOOL sendProducedEvent(unsigned char action, BOOL on);
 BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off);
 extern BOOL needsStarting(unsigned char io, unsigned char action, unsigned char type);
 extern BOOL completed(unsigned char io, unsigned char action, unsigned char type);
+extern void doSOD(void);
 
 extern BYTE outputState[NUM_IO];
 extern unsigned char currentPos[NUM_IO];
@@ -155,6 +156,7 @@ void defaultEvents(unsigned char io, unsigned char type) {
  * CANMIO specific version of add an event/EV.
  * This ensures that if a Happening is being written then this happening does not
  * exist for any other event.
+ * 
  * @param nodeNumber
  * @param eventNumber
  * @param evNum the EV index (starts at 0 for the produced action)
@@ -190,6 +192,7 @@ BOOL getDefaultProducedEvent(HAPPENING_T paction) {
 
 /**
  * Clear the events for the IO. Called prior to setting the default events.
+ * 
  * @param i the IO number
  */
 void clearEvents(unsigned char io) {
@@ -351,8 +354,6 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     }
 }
 
-// record the last action started so we can tell if we are starting a new action 
-//static unsigned char lastAction = NO_ACTION;
 /**
  * This needs to be called on a regular basis to see if any
  * actions have finished and the next needs to be started.
@@ -466,91 +467,169 @@ void doWait(unsigned int duration) {
         } 
     }
 }
+
+#ifdef TIMED_RESPONSE
 /**
- * Do the consumed SOD action. This sends events to indicate current state of the system.
+ * Do the consumed SOD. 
+ * This sets things up so that timedResponse will call back into APP_doSOD() whenever another response is
+ * required.
  */
 void doSOD(void) {
+    timedResponse = TIMED_RESPONSE_SOD;
+    timedResponseStep = 0;
+}
+
+/**
+ * Send one response CBUS message and increment the step counter ready for the next call.
+ * Although I agreed with Pete that SOD is only applicable to EV#2 I actually allow it at any EV#
+ * 
+ * Here I use step 0 to 63 for 16 channels of 4 happenings so that channel is step/16.
+ * I could have used step as happening but that seemed to use slightly more maths but very little in it. May change at a later time.
+ * 
+ * @param step the timed response step
+ * @return the status of sending SoD responses
+ */
+unsigned char APP_doSOD(unsigned char step) {
+    unsigned char io;
+    unsigned char happeningIndex;
     BOOL disable_off;
 	BOOL send_on_ok;
 	BOOL send_off_ok;
 	BOOL event_inverted;
-    BOOL enable_SOD_response;
-    unsigned char io;
+    BOOL disable_SOD_response;
     unsigned char flags;
-    
-    // Although I agreed with Pete that SOD is only applicable to EV#2 I actually allow it at any EV#
+    unsigned char value;
 
-    for (io=0; io < NUM_IO; io++) {
-        flags = NV->io[io].flags;
-        event_inverted = flags & FLAG_RESULT_EVENT_INVERTED;
-        disable_off = flags & FLAG_DISABLE_OFF;
-        send_on_ok  = !( disable_off && event_inverted );
-		send_off_ok = !( disable_off && !event_inverted);
-        enable_SOD_response = !(flags & FLAG_INPUT_DISABLE_SOD_RESPONSE);
-                
-        switch(NV->io[io].type) {
-            case TYPE_INPUT:
-                if (enable_SOD_response) {
-                    /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted, send_on_ok, send_off_ok));
+
+    // The step is used to index through the events and the channels
+    io = step/HAPPENINGS_PER_IO;
+    if (io >= NUM_IO) {     // finished?
+        return TIMED_RESPONSE_APP_FINISHED;
+    }
+    happeningIndex = step%HAPPENINGS_PER_IO;
+    flags = NV->io[io].flags;
+    disable_SOD_response = flags & FLAG_INPUT_DISABLE_SOD_RESPONSE;
+                     
+    event_inverted = flags & FLAG_RESULT_EVENT_INVERTED;
+    disable_off = flags & FLAG_DISABLE_OFF;
+    send_on_ok  = !( disable_off && event_inverted );
+    send_off_ok = !( disable_off && !event_inverted);
+    value = 255;    // indicates no response at this step
+                    
+    switch(NV->io[io].type) {
+        case TYPE_INPUT:
+            if (disable_SOD_response) {
+                return TIMED_RESPONSE_APP_NEXT;
+            }
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    // The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again
+                    value = outputState[io];
+                    break;
+                case HAPPENING_IO_2:
                     // TWO_ON is only sent if DISABLE_OFF is set GP//
                     if (disable_off) {
-                        while (! sendInvertedProducedEvent(HAPPENING_IO_INPUT_TWO_ON(io), outputState[io]==0, event_inverted, send_on_ok, send_off_ok));
+                        value = (outputState[io]==0);
                     }
-                }
-                break;
-            case TYPE_OUTPUT:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_OUTPUT(io), ee_read(EE_OP_STATE+io)!=ACTION_IO_3, event_inverted, send_on_ok, send_off_ok));
-                break;
+                    break;
+            }
+            break;
+        case TYPE_OUTPUT:
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    value = (ee_read(EE_OP_STATE+io)!=ACTION_IO_3);
+                    break;
+            }
+            break;
 #ifdef SERVO
-            case TYPE_SERVO:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted, TRUE, TRUE));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted, TRUE, TRUE));
-                // send the last mid
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_MID(io), currentPos[io] >= (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
-                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2, event_inverted, TRUE, TRUE));
-                break;
+        case TYPE_SERVO:
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    value = (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
+                    break;
+                case HAPPENING_IO_3:
+                    value = (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
+                    break;
+                    // send the last mid
+                case HAPPENING_IO_2:
+                    value = (currentPos[io] >= (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2);
+                    break;
+            }
+            send_on_ok = TRUE;
+            send_off_ok = TRUE;
+            break;
 #ifdef BOUNCE
-            case TYPE_BOUNCE:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_BOUNCE(io), ee_read(EE_OP_STATE+io), event_inverted, TRUE, TRUE));
-                break;
+        case TYPE_BOUNCE:
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    value = ee_read(EE_OP_STATE+io);
+                    break;
+            }
+            send_on_ok = TRUE;
+            send_off_ok = TRUE;
+            break;
 #endif
 #ifdef MULTI
-            case TYPE_MULTI:
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted, TRUE, TRUE));
-                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted, TRUE, TRUE));
+        case TYPE_MULTI:
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
+                    break;
+                case HAPPENING_IO_2:
+                    value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
+                    break;
                 // it is more logical to use servo rather than multi with <3 positions but check anyway GP//
-                if (NV->io[io].nv_io.nv_multi.multi_num_pos > 2) { 
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted, TRUE, TRUE));
-                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                        while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted, TRUE, TRUE));
+                case HAPPENING_IO_3:
+                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 2) { 
+                        value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
                     }
-                }
-                break;
+                    break;
+                case HAPPENING_IO_4:
+                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
+                        value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
+                    }
+                    break;
+            }
+            send_on_ok = TRUE;
+            send_off_ok = TRUE;
+            break;
 #endif
 #endif
 #ifdef ANALOGUE
-            case TYPE_ANALOGUE_IN:
-            case TYPE_MAGNET:
-                if (enable_SOD_response) {
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), analogueState[io].eventState == ANALOGUE_EVENT_LOWER, event_inverted, send_on_ok, send_off_ok));
-                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), analogueState[io].eventState == ANALOGUE_EVENT_UPPER, event_inverted, send_on_ok, send_off_ok));
-                }
-                break;
+        case TYPE_ANALOGUE_IN:
+        case TYPE_MAGNET:
+            if (disable_SOD_response) {
+                    return TIMED_RESPONSE_APP_NEXT;
+            }
+            switch (happeningIndex) {
+                case HAPPENING_IO_1:
+                    value = (analogueState[io].eventState == ANALOGUE_EVENT_LOWER);
+                    break;
+                case HAPPENING_IO_2:
+                    value = (analogueState[io].eventState == ANALOGUE_EVENT_UPPER);
+                    break;
+            }
+            break;
 #endif
         }
+    if (value != 255) {
+        if (!sendInvertedProducedEvent(HAPPENING_IO_BASE(io)+happeningIndex, value, event_inverted, send_on_ok, send_off_ok)) {
+            return TIMED_RESPONSE_APP_RETRY;
+        }
     }
+    return TIMED_RESPONSE_APP_NEXT;
 }
 
 /**
- * Helper function used in doSod(). Inverts the polarity of event if required and also
+ * Helper function used when sending SOD response. Inverts the polarity of event if required and also
  * checks if we are allowed to send on or off events.
  * @param happening the happening number to send
  * @param state the event polarity
  * @param invert whether the event should be inverted
  * @param can_send_on if we are allowed to send ON events 
  * @param can_send_off is we are allowed to send OFF events
- * @return whether the event was able to be sent
+ * @return true if the event was able to be sent
  */
 BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off) 
 {
@@ -561,3 +640,68 @@ BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, B
 		return TRUE;
 	}
 }
+
+#else
+/**
+ * Do the consumed SOD action. This sends events to indicate current state of the system.
+ */
+void doSOD(void) {
+    unsigned char midway;
+    BOOL state;
+    unsigned char io;
+    
+    // Although I agreed with Pete that SOD is only applicable to EV#2 I actually allow it at any EV#
+
+    for (io=0; io < NUM_IO; io++) {
+        unsigned char event_inverted = NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED;
+        switch(NV->io[io].type) {
+            case TYPE_INPUT:
+                /* The TRIGGER_INVERTED has already been taken into account when saved in outputState. No need to check again */
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), outputState[io], event_inverted)) ;
+                break;
+            case TYPE_OUTPUT:
+                state = ee_read(EE_OP_STATE+io);
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_OUTPUT(io), state!=ACTION_IO_3, event_inverted));
+                break;
+#ifdef SERVO
+            case TYPE_SERVO:
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_START(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_END(io), currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos, event_inverted));
+                // send the last mid
+                midway = (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
+                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2;
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_SERVO_MID(io), currentPos[io] >= midway, event_inverted));
+                break;
+#ifdef BOUNCE
+            case TYPE_BOUNCE:
+                state = ee_read(EE_OP_STATE+io);
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_BOUNCE(io), state, event_inverted));
+                break;
+#endif
+#ifdef MULTI
+            case TYPE_MULTI:
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT1(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT2(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT3(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3, event_inverted));
+                if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
+                    while ( ! sendInvertedProducedEvent(HAPPENING_IO_MULTI_AT4(io), currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4, event_inverted));
+                }
+                break;
+#endif
+#endif
+#ifdef ANALOGUE
+            case TYPE_ANALOGUE_IN:
+            case TYPE_MAGNET:
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETL(io), eventState[io] == ANALOGUE_EVENT_LOWER, event_inverted));
+                while ( ! sendInvertedProducedEvent(HAPPENING_IO_MAGNETH(io), eventState[io] == ANALOGUE_EVENT_UPPER, event_inverted));
+                break;
+#endif
+        }
+    }
+}
+
+BOOL sendInvertedProducedEvent(HAPPENING_T action, BOOL state, BOOL invert) {
+    return sendProducedEvent(action, invert?!state:state);
+}
+
+#endif

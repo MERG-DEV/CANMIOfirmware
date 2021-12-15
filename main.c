@@ -138,6 +138,7 @@
 #endif
 #include "digitalOut.h"
 #include "outputs.h"
+#include "timedResponse.h"
 
 
 #ifdef NV_CACHE
@@ -250,6 +251,9 @@ static BOOL        started;
 TickValue   lastServoStartTime;
 static TickValue   lastInputScanTime;
 static TickValue   lastActionPollTime;
+#ifdef TIMED_RESPONSE
+static TickValue   lastTimedResponseTime;
+#endif
 static unsigned char io;
 
 #ifdef BOOTLOADER_PRESENT
@@ -282,6 +286,9 @@ int main(void) @0x800 {
     lastServoStartTime.Val = startTime.Val;
     lastInputScanTime.Val = startTime.Val;
     lastActionPollTime.Val = startTime.Val;
+#ifdef TIMED_RESPONSE
+    lastTimedResponseTime.Val = startTime.Val;
+#endif
     started = FALSE;
 
     while (TRUE) {
@@ -312,6 +319,12 @@ int main(void) @0x800 {
                 processOutputs();
                 lastActionPollTime.Val = tickGet();
             }
+#ifdef TIMED_RESPONSE
+            if (tickTimeSince(lastTimedResponseTime) > ((NV->responseDelay) * ONE_MILI_SECOND)) {
+                doTimedResponse();
+                lastTimedResponseTime.Val = tickGet();
+            }
+#endif
 #ifdef ANALOGUE
             pollAnalogue();
 #endif
@@ -480,6 +493,7 @@ void initialise(void) {
         configIO(io);
     }
     initInputScan();
+    initTimedResponse();
 
     // enable interrupts, all init now done
     ei(); 

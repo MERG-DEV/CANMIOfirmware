@@ -257,7 +257,7 @@ void pollServos(void) {
                             
                             if (stepsPerPollSpeed[io]) {
                                 if (currentPos[io] + stepsPerPollSpeed[io] < currentPos[io]) {
-                                    // will wrap
+                                    // will wrap over
                                     currentPos[io] =255;
                                 } else {
                                     currentPos[io] += stepsPerPollSpeed[io];
@@ -384,7 +384,12 @@ void pollServos(void) {
                     case MOVING:
                         if (targetPos[io] > currentPos[io]) {
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] += stepsPerPollSpeed[io];
+                                if (currentPos[io] + stepsPerPollSpeed[io] < currentPos[io]) {
+                                    // will wrap
+                                    currentPos[io] =255;
+                                } else {
+                                    currentPos[io] += stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {
@@ -398,7 +403,12 @@ void pollServos(void) {
                         } else if (targetPos[io] < currentPos[io]) {
                               
                             if (stepsPerPollSpeed[io]) {
-                                currentPos[io] -= stepsPerPollSpeed[io];
+                                if (currentPos[io] - stepsPerPollSpeed[io] > currentPos[io]) {
+                                    // would under wrap
+                                    currentPos[io] = 0;
+                                } else {
+                                    currentPos[io] -= stepsPerPollSpeed[io];
+                                }
                             } else {
                                 pollCount[io]--;
                                 if (pollCount[io] == 0) {

@@ -196,6 +196,7 @@ void factoryResetGlobalNv(void) {
     writeFlashByte((BYTE*)(AT_NV + NV_HB_DELAY), (BYTE)0);
     writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)PIVOT);
     writeFlashByte((BYTE*)(AT_NV + NV_PULLUPS), (BYTE)0x33);
+    writeFlashByte((BYTE*)(AT_NV + NV_RESPONSE_DELAY), (BYTE)10);
 #ifdef NV_CACHE
     loadNvCache();
 #endif

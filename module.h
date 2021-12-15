@@ -92,6 +92,8 @@ extern "C" {
 #define TEST_DEFAULT_EVENTS
 //#define TEST_DEFAULT_NVS
     
+// Whether we want to be sbale to sends response to NERD and SoD slowly
+#define TIMED_RESPONSE
     
 /************************* END OF OPTIONS ************************/
 
