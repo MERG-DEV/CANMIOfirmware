@@ -38,7 +38,11 @@
 #include "romops.h"
 static volatile ModuleNvDefs nvCache;        // RAM storage for NVs
 
+#ifdef __C18
 extern const rom near BYTE * NvBytePtr;
+#else
+extern const BYTE * NvBytePtr;
+#endif
 
 ModuleNvDefs* loadNvCache(void) {
     BYTE * np = (BYTE*)(&nvCache);
@@ -47,6 +51,6 @@ ModuleNvDefs* loadNvCache(void) {
     for (i=0; i<sizeof(ModuleNvDefs); i++) {
         *(np+i) = readFlashBlock((WORD)(NvBytePtr+i));
     }
-    return &nvCache;
+    return (ModuleNvDefs*)&nvCache;
 }
 #endif

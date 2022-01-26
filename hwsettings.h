@@ -58,7 +58,7 @@ extern "C" {
 
 // Control bit defintions
 
-#ifdef __18CXX
+#if defined( __18F25K80) || defined(__18F26K80)
     #define INTEN               INTCONbits.GIEH
 #endif
 
@@ -91,11 +91,13 @@ extern BYTE clkMHz;
 #define GetSystemMHz()                 clkMHz
 #define GetInstructionMHz()            clkMHz
 
-#ifdef __18CXX
+#if defined( __18CXX)
 #define ei()    INTCONbits.GIEH = 1;INTCONbits.GIEL = 1
 #define di()    INTCONbits.GIEH = 0;INTCONbits.GIEL = 0
-#define geti()  INTCONbits.GIE
 #endif
+
+#define geti()  INTCONbits.GIE
+
 
 // Global routine definitions
 

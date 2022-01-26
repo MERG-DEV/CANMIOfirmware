@@ -53,7 +53,7 @@
 #include "analogue.h"
 
 extern void setType(unsigned char i, unsigned char type);
-#ifdef __XC8
+#ifdef __XC8__
 const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. Declared const so it gets put into Flash
 #else
 //#pragma romdata myNV=AT_NV
@@ -61,12 +61,13 @@ const ModuleNvDefs moduleNvDefs @AT_NV; // = {    //  Allow 128 bytes for NVs. D
 /*
  Module specific NV routines
  */
-#ifdef __XC8
-const NodeVarTable nodeVarTable @AT_NV;
-ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
-#else
+
 #ifdef NV_CACHE
 ModuleNvDefs * NV; // = &(nodeVarTable.moduleNVs);
+#else
+#ifdef __XC8__
+const NodeVarTable nodeVarTable @AT_NV;
+ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV structure
 #else
 volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
 #endif

@@ -180,7 +180,7 @@ void startServos(void) {
  */
 void setupTimer1(unsigned char io) {
     WORD ticks = 0xFFFF-(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
-#ifdef __XC8
+#ifdef __XC8__
     TMR1 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #else
     TMR1H = ticks >> 8;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
@@ -192,7 +192,7 @@ void setupTimer1(unsigned char io) {
 }
 void setupTimer3(unsigned char io) {
     WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
-#ifdef __XC8
+#ifdef __XC8__
     TMR3 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #else
     TMR3H = ticks >> 8;

@@ -98,7 +98,6 @@ void initInputScan(void) {
  *   
  */
 void inputScan(void) {
-    volatile rom near Event * ev;
     for (io=0; io< NUM_IO; io++) {
         if (NV->io[io].type == TYPE_INPUT) {
             BYTE input = readInput(io);

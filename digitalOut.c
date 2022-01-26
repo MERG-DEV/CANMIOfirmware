@@ -185,13 +185,13 @@ void processOutputs(void) {
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
                 flashDelays[io] = - flashDelays[io];
             }
-            if (flashDelays[io] == -1) {
+            if (flashDelays[io] == (char)-1) {
                 setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
             }
             if (flashDelays[io] > 1) {
                 flashDelays[io]--;
-            } else if (flashDelays[io] < -1) {
+            } else if (flashDelays[io] < (char)-1) {
                 flashDelays[io]++;
             }
             // Handle PULSEd outputs

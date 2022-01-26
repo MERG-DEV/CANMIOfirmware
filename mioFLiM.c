@@ -55,7 +55,7 @@ extern void mioNvInit();
 #define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+(NV_NUM-1)+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
 
 
-
+#ifdef __C18
 const rom ParamVals     FLiMparams = { 
     MANU_ID,        // manufacturer
     MINOR_VER,      // minor version
@@ -75,6 +75,31 @@ const rom ParamVals     FLiMparams = {
 };
 const rom SpareParams   spareparams;
 const rom FCUParams     FCUparams   = { 
+    sizeof(ParamVals),
+    (DWORD)module_type,
+    (WORD)PRM_CKSUM
+};
+#else
+const rom ParamVals     FLiMparams @0x820 = { 
+    MANU_ID,        // manufacturer
+    MINOR_VER,      // minor version
+    MODULE_ID,      // module id
+    NUM_EVENTS,     // number of events
+    EVperEVT,       // number of event variable per event
+    (NV_NUM-1),     // number of node variables -1 since NV#0 is reserved for version
+    MAJOR_VER,      // Major version
+    MODULE_FLAGS,   // flags
+    CPU,            // Processor Id 
+    PB_CAN,         // Interface protocol
+    LOAD_ADDRESS,   //  load address
+    0,              // processor code read from DeviD at run time
+    CPUM_MICROCHIP, // manufacturer code
+    BETA           // beta release flag
+    // rest of parameters are filled in by doRqnpn in FLiM.c
+};
+#endif
+const rom SpareParams   spareparams;
+const rom FCUParams     FCUparams @0x838  = { 
     sizeof(ParamVals),
     (DWORD)module_type,
     (WORD)PRM_CKSUM
