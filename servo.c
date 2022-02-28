@@ -71,8 +71,12 @@
 #include "outputs.h"
 #include "happeningsActions.h"
 
+// These setting for 1ms to 2ms
 #define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
 #define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
+// These setting for 0.5ms to 2.5ms
+//#define POS2TICK_OFFSET         1999    // change this to affect the min pulse width
+//#define POS2TICK_MULTIPLIER     32      // change this to affect the max pulse width
 
 #define MAX_SERVO_LOOP          250      // Max number of loops 
 #define MAX_BOUNCE_LOOP         250      // Max number of loops 
