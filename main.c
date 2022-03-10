@@ -196,14 +196,14 @@ void setType(unsigned char i, unsigned char type);
 BOOL sendProducedEvent(unsigned char action, BOOL on);
 void factoryResetEE(void);
 void factoryResetFlash(void);
-
+/***
 #ifdef __18CXX
 void high_irq_errata_fix(void);
 
 /*
  * Interrupt vectors (moved higher when bootloader present)
  */
-
+/***
 // High priority interrupt vector
 
 #ifdef BOOTLOADER_PRESENT
@@ -225,16 +225,16 @@ void HIGH_INT_VECT(void)
 /*
  * See 18F2480 errata
  */
-void high_irq_errata_fix(void) {
+/***void high_irq_errata_fix(void) {
     _asm
         POP
         GOTO ISRHigh
     _endasm
-}
+} */
 
 // low priority interrupt vector
 
-#ifdef BOOTLOADER_PRESENT
+/***#ifdef BOOTLOADER_PRESENT
     #pragma code low_vector=0x818
 #else
     #pragma code low_vector=0x18
@@ -250,7 +250,7 @@ void LOW_INT_VECT(void)
 #else
     // vectors will be put at 0x0000, 0x0008 and 0x0018 automatically by XC8
 #endif
-#endif
+#endif */
 
 static TickValue   startTime;
 static BOOL        started;
@@ -413,7 +413,7 @@ __EEPROM_DATA(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x00);    //0x3F8 - 0x3FF  NOTE
 #ifdef __18CXX
 void main(void) {
 #else
-int main(void) @0x850 {
+int main(void)  {
 #endif
     
     // if using c018.c the routine to initialise data isn't called. Explicitly setting here is more efficient
@@ -839,11 +839,12 @@ void configIO(unsigned char i) {
 extern const rom near BYTE * NvBytePtr;
 
 extern rom near EventTable * eventTable;
-#endif
+
 
 void __init(void)
 {
 }
+#endif
 
 // Interrupt service routines
 #if defined(__18CXX)
