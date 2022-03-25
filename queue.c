@@ -87,7 +87,7 @@ ACTION_T peek(Queue * q, unsigned char index) {
  * Return number of items in the queue.
  */
 unsigned char quantity(Queue * q) {
-    return (q->writeIdx - q->readIdx) & (q->size -1);
+    return (unsigned char)((q->writeIdx - q->readIdx) & (q->size -1U));
 }
 
 /**

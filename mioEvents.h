@@ -74,50 +74,50 @@ extern "C" {
 #include "canmio.h"
 
 /* CONSUMED actions */
-#define ACTION_SIMULTANEOUS                 0x80    // default is SEQUENTIAL
-#define ACTION_MASK                         0x7F
+#define ACTION_SIMULTANEOUS                 0x80U    // default is SEQUENTIAL
+#define ACTION_MASK                         0x7FU
     
     // Global consumed actions first
-#define ACTION_SOD                 1
-#define ACTION_WAIT05              2
-#define ACTION_WAIT1               3
-#define ACTION_WAIT2               4
-#define ACTION_WAIT5               5
+#define ACTION_SOD                 1U
+#define ACTION_WAIT05              2U
+#define ACTION_WAIT1               3U
+#define ACTION_WAIT2               4U
+#define ACTION_WAIT5               5U
 
-#define ACTION_STOP_PROCESSING     7
+#define ACTION_STOP_PROCESSING     7U
 
 
         // Now Consumed actions per io
 /* VERSION 1*/
-#define V1_BASE_ACTION_IO             8
-#define V1_ACTION_IO_1                0
-#define V1_ACTION_IO_2                1
-#define V1_ACTION_IO_3                2
-#define V1_ACTION_IO_4                3
-#define V1_ACTIONS_PER_IO             4   
+#define V1_BASE_ACTION_IO             8U
+#define V1_ACTION_IO_1                0U
+#define V1_ACTION_IO_2                1U
+#define V1_ACTION_IO_3                2U
+#define V1_ACTION_IO_4                3U
+#define V1_ACTIONS_PER_IO             4U   
 #define V1_NUM_ACTIONS                (V1_BASE_ACTION_IO + NUM_IO * V1_ACTIONS_PER_IO)
     
 /* Version 2*/
-#define BASE_ACTION_IO             8
-#define ACTION_IO_1                0
-#define ACTION_IO_2                1
-#define ACTION_IO_3                2
-#define ACTION_IO_4                3
-#define ACTION_IO_5                4
-#define ACTIONS_PER_IO             5   
+#define BASE_ACTION_IO             8U
+#define ACTION_IO_1                0U
+#define ACTION_IO_2                1U
+#define ACTION_IO_3                2U
+#define ACTION_IO_4                3U
+#define ACTION_IO_5                4U
+#define ACTIONS_PER_IO             5U   
 #define NUM_ACTIONS                (BASE_ACTION_IO + NUM_IO * ACTIONS_PER_IO)   
     
 /* PRODUCED actions */    
-#define HAPPENING_BASE                1
+#define HAPPENING_BASE                1U
     // Global produced actions next
-#define HAPPENING_SOD                 1
+#define HAPPENING_SOD                 1U
     // produced actions per io
-#define BASE_HAPPENING_IO             8
-#define HAPPENING_IO_1                0
-#define HAPPENING_IO_2                1
-#define HAPPENING_IO_3                2
-#define HAPPENING_IO_4                3
-#define HAPPENINGS_PER_IO             4
+#define BASE_HAPPENING_IO             8U
+#define HAPPENING_IO_1                0U
+#define HAPPENING_IO_2                1U
+#define HAPPENING_IO_3                2U
+#define HAPPENING_IO_4                3U
+#define HAPPENINGS_PER_IO             4U
 #define NUM_HAPPENINGS                (BASE_HAPPENING_IO + NUM_IO * HAPPENINGS_PER_IO)
     
 
@@ -184,17 +184,17 @@ extern void clearEvents(unsigned char i);
 
 // These are chosen so we don't use too much memory 32*20 = 640 bytes.
 // Used to size the hash table used to lookup events in the events2actions table.
-#define HASH_LENGTH     32
-#define CHAIN_LENGTH    20
+#define HASH_LENGTH     32U
+#define CHAIN_LENGTH    20U
 
-#define NUM_EVENTS              255         // must be less than 256 otherwise loops fail
-#define EVENT_TABLE_WIDTH       10          // Width of eventTable
-#define EVperEVT                20          // Max number of EVs per event
+#define NUM_EVENTS              255U         // must be less than 256 otherwise loops fail
+#define EVENT_TABLE_WIDTH       10U          // Width of eventTable
+#define EVperEVT                20U          // Max number of EVs per event
 #ifdef __18F25K80
-#define AT_EVENTS               0x6F80      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
+#define AT_EVENTS               0x6F80U      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
 #endif
 #ifdef __18F26K80
-#define AT_EVENTS               0xEF80      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
+#define AT_EVENTS               0xEF80U      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
 #endif
 
 // We'll also be using configurable produced events

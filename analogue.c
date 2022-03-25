@@ -110,7 +110,7 @@ void pollAnalogue(void) {
                     if ((analogueState[portInProgress].eventState != ANALOGUE_EVENT_UPPER) && (adc >= hthreshold)) {
                         //High on
                         if (analogueState[portInProgress].portState == ANALOGUE_PORT_READY) {
-                            sendProducedEvent(HAPPENING_IO_MAGNETH(portInProgress), !(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED));
+                            sendProducedEvent(HAPPENING_IO_MAGNETH(portInProgress), (BOOL)(!(NV->io[portInProgress].flags & FLAG_RESULT_EVENT_INVERTED)));
                         }
                         analogueState[portInProgress].eventState = ANALOGUE_EVENT_UPPER;
                     } else if ((analogueState[portInProgress].eventState == ANALOGUE_EVENT_UPPER) && (adc <= hhysteresis)) {
@@ -148,12 +148,12 @@ void pollAnalogue(void) {
             } else {
                 // we are setting up this channel
                 // report adc value
-                cbusMsg[d3] = 0;
-                cbusMsg[d4] = portInProgress + 1;
-                cbusMsg[d5] = portInProgress + 1;
-                cbusMsg[d7] = adc & 0xFF;
-                cbusMsg[d6] = adc >> 8;
-                cbusSendOpcNN(ALL_CBUS, OPC_ARSON3, -1, cbusMsg);
+                cbusMsg[d3] = 0U;
+                cbusMsg[d4] = portInProgress + 1U;
+                cbusMsg[d5] = portInProgress + 1U;
+                cbusMsg[d7] = adc & 0xFFU;
+                cbusMsg[d6] = adc >> 8U;
+                cbusSendOpcNN(ALL_CBUS, OPC_ARSON3, -1U, cbusMsg);
                 if (setupState == SETUP_REPORT_AND_SAVE) {
                     // save the offset
                     writeFlashByte((BYTE*) (AT_NV + NV_IO_MAGNET_OFFSETH(portInProgress)), cbusMsg[d6]);
@@ -167,14 +167,14 @@ void pollAnalogue(void) {
     // try next IO
     portInProgress++;
     if (portInProgress >= NUM_IO) {
-        portInProgress = 0;
+        portInProgress = 0U;
     }
     // If necessary start a conversion
     if ((NV->io[portInProgress].type == TYPE_ANALOGUE_IN) || (NV->io[portInProgress].type == TYPE_MAGNET)) {
         // start a conversion
         ADCON0bits.CHS = configs[portInProgress].an;
-        ADCON0bits.GO = 1;
-        haveRequestedAdc = 1;
+        ADCON0bits.GO = 1U;
+        haveRequestedAdc = 1U;
     }
 }
 /*

@@ -71,14 +71,14 @@
 #include "outputs.h"
 #include "happeningsActions.h"
 
-#define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
-#define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
+#define POS2TICK_OFFSET         3600U    // change this to affect the min pulse width
+#define POS2TICK_MULTIPLIER     19U      // change this to affect the max pulse width
 
-#define MAX_SERVO_LOOP          250      // Max number of loops 
-#define MAX_BOUNCE_LOOP         250      // Max number of loops 
+#define MAX_SERVO_LOOP          250U      // Max number of loops 
+#define MAX_BOUNCE_LOOP         250U      // Max number of loops 
 //#define MAX_MULTI_LOOP          100      // Max number of loops 
 
-#define SERVOS_IN_BLOCK         8
+#define SERVOS_IN_BLOCK         8U
 
 // forward definitions
 void setupTimer1(unsigned char io);
@@ -100,15 +100,15 @@ unsigned char pollCount[NUM_IO];
 int speed[NUM_IO];
 unsigned char loopCount[NUM_IO];
 
-#define MAX_BOUNCE_LOOPS    255
+#define MAX_BOUNCE_LOOPS    255U
 
-#define EVENT_FLAG_ON       0x01
-#define EVENT_FLAG_OFF      0x02
-#define EVENT_FLAG_MID      0x04
-#define EVENT_FLAG_POS1     0x08
-#define EVENT_FLAG_POS2     0x10
-#define EVENT_FLAG_POS3     0x20
-#define EVENT_FLAG_POS4     0x40
+#define EVENT_FLAG_ON       0x01U
+#define EVENT_FLAG_OFF      0x02U
+#define EVENT_FLAG_MID      0x04U
+#define EVENT_FLAG_POS1     0x08U
+#define EVENT_FLAG_POS2     0x10U
+#define EVENT_FLAG_POS3     0x20U
+#define EVENT_FLAG_POS4     0x40U
 TickValue  ticksWhenStopped[NUM_IO];
 
 static unsigned char servoInBlock;
@@ -147,7 +147,7 @@ void initServos(void) {
     T3CONbits.RD16 = 1;         // 16bit read/write
     PIE2bits.TMR3IE = 1;        // enable interrupt
     
-    servoInBlock = io -1;
+    servoInBlock = io - 1U;
 }
 /**
  * This gets called every approx 2.5ms to start the next set of servo pulses.

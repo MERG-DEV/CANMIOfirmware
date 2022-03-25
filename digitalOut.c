@@ -88,7 +88,7 @@ void initOutputs(void) {
     // probably initialised to 0 by the compiler but make sure here
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
-       pulseDelays[io] = 0;
+       pulseDelays[io] = 0U;
        flashDelays[io] = 0;
     }
 }
@@ -116,8 +116,8 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
 
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
-        pulseDelays[io] = 0;
-        setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+        pulseDelays[io] = 0U;
+        setOutputPin(io, (BOOL)(! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
         sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, 
                 NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
@@ -125,11 +125,11 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     }
     flashDelays[io] = 0;	// turn flash off
     // state is either ACTION_IO_2(on) or ACTION_IO_3(off))
-    actionState = (state == ACTION_IO_2);
+    actionState = (BOOL)(state == ACTION_IO_2);
   
     // Check if the input event is inverted
     if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
-        actionState = !actionState;
+        actionState = (BOOL)(!actionState);
     }
     
     // ignore OFF on pulse outputs
@@ -150,7 +150,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
 
     pinState = actionState;
     if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
-        pinState = !pinState;
+        pinState = (BOOL)(!pinState);
     }
     setOutputPin(io, pinState);
     
@@ -183,10 +183,10 @@ void processOutputs(void) {
             if (flashDelays[io] == 1) {
                 setOutputPin(io, NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED);
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
-                flashDelays[io] = - flashDelays[io];
+                flashDelays[io] = (char)(- flashDelays[io]);
             }
             if (flashDelays[io] == (char)-1) {
-                setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+                setOutputPin(io, (BOOL)(! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
             }
             if (flashDelays[io] > 1) {
@@ -205,7 +205,7 @@ void processOutputs(void) {
                 // check if OFF events are enabled
                 if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
                     // check if produced event is inverted
-                    sendProducedEvent(HAPPENING_IO_INPUT(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                    sendProducedEvent(HAPPENING_IO_INPUT(io), (BOOL)(!(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED)));
                 }
                 doneAction();
             }
@@ -231,12 +231,12 @@ void setDigitalOutput(unsigned char io, unsigned char state) {
             // fall through
         case ACTION_IO_2:
         case ACTION_IO_3:
-            pinState = (state == ACTION_IO_2);
+            pinState = (BOOL)(state == ACTION_IO_2);
 //            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
 //                pinState = pinState?0:1;
 //            }
             if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
-                setOutputPin(io, ! pinState);
+                setOutputPin(io, (BOOL)(! pinState));
             } else {
                 setOutputPin(io, pinState);
             }
@@ -258,28 +258,28 @@ void setOutputPin(unsigned char io, BOOL state) {
         case 'A':
             if (state) {
                 // set it
-               LATA |= (1<<configs[io].no);
+               LATA |= (1U<<configs[io].no);
             } else {
                 // clear it
-                LATA &= ~(1<<configs[io].no);
+                LATA &= ~(1U<<configs[io].no);
             }
             break;
         case 'B':
             if (state) {
                 // set it
-                LATB |= (1<<configs[io].no);
+                LATB |= (1U<<configs[io].no);
             } else {
                 // clear it
-                LATB &= ~(1<<configs[io].no);
+                LATB &= ~(1U<<configs[io].no);
             }
             break;
         case 'C':
             if (state) {
                 // set it
-                LATC |= (1<<configs[io].no);
+                LATC |= (1U<<configs[io].no);
             } else {
                 // clear it
-                LATC &= ~(1<<configs[io].no);
+                LATC &= ~(1U<<configs[io].no);
             }
             break;
     }

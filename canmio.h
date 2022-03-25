@@ -56,21 +56,21 @@ extern "C" {
  * IO pin configuration
  */
 // Number of IO pins
-#define NUM_IO 16
-#define NUM_IO_MAIN 8  // pins on the main board
+#define NUM_IO 16U
+#define NUM_IO_MAIN 8U  // pins on the main board
 // look in mioNv as the IO pin config is stored in NVs
     
 /*******************************************************************
  * Module parameters
  */ 
 #ifdef CANBIP
-#define MAJOR_VER 	3
+#define MAJOR_VER 	3U
 #define MINOR_VER 	'b'        // Minor version character
-#define BETA        1           // BETA version 0=non beta release
+#define BETA        1U           // BETA version 0=non beta release
 #else
-#define MAJOR_VER 	3
+#define MAJOR_VER 	3U
 #define MINOR_VER 	'c'        // Minor version character
-#define BETA        1           // BETA version 0=non beta release
+#define BETA        1U           // BETA version 0=non beta release
 #endif
 
 #include "GenericTypeDefs.h"
@@ -89,9 +89,9 @@ extern "C" {
 
 #define MODULE_FLAGS    (PF_COMBI+PF_BOOT+PF_COE)  // Producer, consumer, boot
 #define BUS_TYPE        PB_CAN
-#define LOAD_ADDRESS    0x0800      // Need to put in parameter block at compile time, only known to linker so hard code here
-#define MNAME_ADDRESS   (LOAD_ADDRESS + 0x20 + sizeof(ParamBlock))   // Put module type string above params so checksum can be calculated at compile time
-#define START_SOD_EVENT      0x81
+#define LOAD_ADDRESS    0x0800U      // Need to put in parameter block at compile time, only known to linker so hard code here
+#define MNAME_ADDRESS   (LOAD_ADDRESS + 0x20U + sizeof(ParamBlock))   // Put module type string above params so checksum can be calculated at compile time
+#define START_SOD_EVENT      0x81U
 
 // Time delays 
 #define CBUS_START_DELAY    TWO_SECOND

@@ -102,7 +102,7 @@ void factoryResetGlobalEvents(void) {
  * @param io the IO number
  */
 void defaultEvents(unsigned char io, unsigned char type) {
-    WORD en = io+1;
+    WORD en = io+1U;
     clearEvents(io); 
 
     // add the module's default events for this io

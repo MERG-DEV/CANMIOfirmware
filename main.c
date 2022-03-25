@@ -196,14 +196,14 @@ void setType(unsigned char i, unsigned char type);
 BOOL sendProducedEvent(unsigned char action, BOOL on);
 void factoryResetEE(void);
 void factoryResetFlash(void);
-/***
+
 #ifdef __18CXX
 void high_irq_errata_fix(void);
 
 /*
  * Interrupt vectors (moved higher when bootloader present)
  */
-/***
+
 // High priority interrupt vector
 
 #ifdef BOOTLOADER_PRESENT
@@ -225,16 +225,16 @@ void HIGH_INT_VECT(void)
 /*
  * See 18F2480 errata
  */
-/***void high_irq_errata_fix(void) {
+void high_irq_errata_fix(void) {
     _asm
         POP
         GOTO ISRHigh
     _endasm
-} */
+}
 
 // low priority interrupt vector
 
-/***#ifdef BOOTLOADER_PRESENT
+#ifdef BOOTLOADER_PRESENT
     #pragma code low_vector=0x818
 #else
     #pragma code low_vector=0x18
@@ -245,12 +245,20 @@ void LOW_INT_VECT(void)
     _asm GOTO ISRLow _endasm
 }
 #else
-#ifdef BOOTLOADER_PRESENT
-    // put vectors at 0x0800, 0x0808, 0x0818
-#else
-    // vectors will be put at 0x0000, 0x0008 and 0x0018 automatically by XC8
-#endif
-#endif */
+    // Due to the codeoffset=0x840 option we need put vectors at 0x0800, 0x0808, 0x0818
+#asm
+PSECT vectors,class=MYVECTS,reloc=2,delta=1,abs
+        org  0x0800
+        goto 0x0840
+
+        org  0x0808
+        goto 0x0848
+        
+        org  0x0818
+        goto 0x0858
+#endasm
+
+#endif 
 
 static TickValue   startTime;
 static BOOL        started;
@@ -442,7 +450,7 @@ int main(void)  {
 
     while (TRUE) {
         // Startup delay for CBUS about 2 seconds to let other modules get powered up - ISR will be running so incoming packets processed
-        if (!started && (tickTimeSince(startTime) > (NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND)) {
+        if (!started && (unsigned char)(tickTimeSince(startTime) > (unsigned long)((NV->sendSodDelay * HUNDRED_MILI_SECOND) + TWO_SECOND))) {
             started = TRUE;
 //            if (NV->sendSodDelay > 0) {
                 sendProducedEvent(HAPPENING_SOD, TRUE);
@@ -469,7 +477,7 @@ int main(void)  {
                 lastActionPollTime.Val = tickGet();
             }
 #ifdef TIMED_RESPONSE
-            if (tickTimeSince(lastTimedResponseTime) > ((NV->responseDelay) * ONE_MILI_SECOND)) {
+            if (tickTimeSince(lastTimedResponseTime) > (unsigned long)((NV->responseDelay) * ONE_MILI_SECOND)) {
                 doTimedResponse();
                 lastTimedResponseTime.Val = tickGet();
             }
@@ -527,14 +535,14 @@ void initialise(void) {
                 for (evIndex=1; evIndex<EVperEVT; evIndex++) {  
                     int ev = getEv(i, evIndex);
                     if (ev > 0) {
-                        if ((ev & ACTION_MASK) >= V1_BASE_ACTION_IO) {
+                        if (((unsigned char)ev & ACTION_MASK) >= V1_BASE_ACTION_IO) {
                             unsigned char action;
-                            unsigned char simultaneous = ev & ACTION_SIMULTANEOUS;
+                            unsigned char simultaneous = (unsigned char)ev & ACTION_SIMULTANEOUS;
                             ev &= ACTION_MASK;
-                            io = V1_ACTION_IO(ev);
-                            action = V1_ACTION(ev);
+                            io = V1_ACTION_IO((unsigned char)ev);
+                            action = V1_ACTION((unsigned char)ev);
                             ev = simultaneous | (ACTION_IO_BASE(io) + action);
-                            writeEv(i, evIndex, ev);    // ignore any return error
+                            writeEv(i, evIndex, (unsigned char)ev);    // ignore any return error
                         }
                     } 
                     if (ev == -CMDERR_NO_EV) {   // no more EVs for this event
@@ -548,7 +556,7 @@ void initialise(void) {
              */
             for (io=0; io<NUM_IO; io++) {
                 HAPPENING_T paction;
-                WORD en = io+1;
+                WORD en = io+1U;
                 switch (NV->io[io].type) {
                     case TYPE_INPUT:
                         paction = HAPPENING_IO_INPUT(io);
@@ -793,40 +801,40 @@ void configIO(unsigned char i) {
         case 'A':
             
             if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
-                TRISA |= (1 << configs[i].no);  // input
+                TRISA |= (1U << configs[i].no);  // input
             } else {
-                TRISA &= ~(1 << configs[i].no); // output
+                TRISA &= ~(1U << configs[i].no); // output
             }
             break;
         case 'B':
             if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
-                TRISB |= (1 << configs[i].no);  // input
+                TRISB |= (1U << configs[i].no);  // input
             } else {
-                TRISB &= ~(1 << configs[i].no); // output
+                TRISB &= ~(1U << configs[i].no); // output
             }
             break;
         case 'C':
             if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
-                TRISC |= (1 << configs[i].no);  // input
+                TRISC |= (1U << configs[i].no);  // input
             } else {
-                TRISC &= ~(1 << configs[i].no); // output
+                TRISC &= ~(1U << configs[i].no); // output
             }
             break;          
     }
 #ifdef ANALOGUE
     if ((NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
         // set analogue
-        if (configs[i].an < 8) {
-            ANCON0 |= (1 << configs[i].an);
-        } else if (configs[i].an < 16) {
-            ANCON1 |= (1 << (configs[i].an - 8));
+        if (configs[i].an < 8U) {
+            ANCON0 |= (1U << configs[i].an);
+        } else if (configs[i].an < 16U) {
+            ANCON1 |= (1U << (configs[i].an - 8U));
         }
     } else {
         // set digital
-        if (configs[i].an < 8) {
-            ANCON0 &= ~(1 << configs[i].an);
-        } else if (configs[i].an < 16) {
-            ANCON1 &= ~(1 << (configs[i].an - 8));
+        if (configs[i].an < 8U) {
+            ANCON0 &= ~(1U << configs[i].an);
+        } else if (configs[i].an < 16U) {
+            ANCON1 &= ~(1U << (configs[i].an - 8U));
         }
     }
 #endif

@@ -77,7 +77,7 @@ void initInputScan(void) {
         BYTE input = readInput(io);
         inputState[io] = input;
         if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
-            input = !input;
+            input = (BYTE)(!input);
         }
         outputState[io] = input;
         if (NV->io[io].flags & FLAGS_TOGGLE) {
@@ -116,12 +116,12 @@ void inputScan(void) {
                     inputState[io] = input;
                     // check if input pin is inverted
                     if (!(NV->io[io].flags & FLAG_TRIGGER_INVERTED)) {
-                        input = !input;
+                        input = (BOOL)(!input);
                     }
                     // Check if toggle
                     if (NV->io[io].flags & FLAGS_TOGGLE) {
                         if (input) {
-                            outputState[io] = ! outputState[io];
+                            outputState[io] = (BOOL)(! outputState[io]);
                         } else {
                             continue;
                         }
@@ -150,7 +150,7 @@ void inputScan(void) {
                     } else {
                         // check if produced event is inverted
                         if (NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED) {
-                            sendProducedEvent(HAPPENING_IO_INPUT(io), !outputState[io]);
+                            sendProducedEvent(HAPPENING_IO_INPUT(io), (BOOL)(!outputState[io]));
                         } else {
                             sendProducedEvent(HAPPENING_IO_INPUT(io), outputState[io]);
                         }
@@ -174,11 +174,11 @@ BOOL readInput(unsigned char io) {
     if (NV->io[io].type == TYPE_INPUT) {
             switch(configs[io].port) {
             case 'A':
-                return PORTA & (1<<configs[io].no);
+                return PORTA & (1U<<configs[io].no);
             case 'B':
-                return PORTB & (1<<configs[io].no);
+                return PORTB & (1U<<configs[io].no);
             case 'C':
-                return PORTC & (1<<configs[io].no);
+                return PORTC & (1U<<configs[io].no);
             }
         }
     return FALSE;
