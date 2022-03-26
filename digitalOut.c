@@ -88,7 +88,7 @@ void initOutputs(void) {
     // probably initialised to 0 by the compiler but make sure here
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
-       pulseDelays[io] = 0U;
+       pulseDelays[io] = 0;
        flashDelays[io] = 0;
     }
 }
@@ -116,8 +116,8 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
 
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
-        pulseDelays[io] = 0U;
-        setOutputPin(io, (BOOL)(! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
+        pulseDelays[io] = 0;
+        setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
         sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, 
                 NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
@@ -125,11 +125,11 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     }
     flashDelays[io] = 0;	// turn flash off
     // state is either ACTION_IO_2(on) or ACTION_IO_3(off))
-    actionState = (BOOL)(state == ACTION_IO_2);
+    actionState = (state == ACTION_IO_2);
   
     // Check if the input event is inverted
     if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
-        actionState = (BOOL)(!actionState);
+        actionState = (!actionState);
     }
     
     // ignore OFF on pulse outputs
@@ -183,15 +183,15 @@ void processOutputs(void) {
             if (flashDelays[io] == 1) {
                 setOutputPin(io, NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED);
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
-                flashDelays[io] = (char)(- flashDelays[io]);
+                flashDelays[io] = - flashDelays[io];
             }
-            if (flashDelays[io] == (char)-1) {
-                setOutputPin(io, (BOOL)(! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
+            if (flashDelays[io] == -1) {
+                setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
             }
             if (flashDelays[io] > 1) {
                 flashDelays[io]--;
-            } else if (flashDelays[io] < (char)-1) {
+            } else if (flashDelays[io] < -1) {
                 flashDelays[io]++;
             }
             // Handle PULSEd outputs

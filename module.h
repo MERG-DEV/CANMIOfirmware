@@ -49,7 +49,7 @@ extern "C" {
     
 /*********************** MODULE OPTIONS **************************/
 // BOOTLOADER
-#undef BOOTLOADER_PRESENT
+#define BOOTLOADER_PRESENT
 
 // We'll be using event hash tables for fast access - at the expense of some RAM
 #define HASH_TABLE
