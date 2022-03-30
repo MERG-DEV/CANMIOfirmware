@@ -245,7 +245,11 @@ void LOW_INT_VECT(void)
     _asm GOTO ISRLow _endasm
 }
 #else
-    // Due to the codeoffset=0x840 option we need put vectors at 0x0800, 0x0808, 0x0818
+#ifdef BOOTLOADER
+    /* When BOOTLOADER is defined then -mcodeoffset=0x840 should be set within the
+     * MPLAB X XC8 Global Options within the project.
+     * Due to the codeoffset=0x840 option we need put new vectors at 0x0800, 0x0808, 0x0818 
+     */
 #asm
 PSECT vectors,class=MYVECTS,reloc=2,delta=1,abs
         org  0x0800
@@ -257,7 +261,7 @@ PSECT vectors,class=MYVECTS,reloc=2,delta=1,abs
         org  0x0818
         goto 0x0858
 #endasm
-
+#endif
 #endif 
 
 static TickValue   startTime;
@@ -277,7 +281,6 @@ static unsigned char io;
 rom BYTE eeBootFlag = 0;
 #pragma code
 #else
-// eeprom unsigned char eeBootFlag @0xF003FF = 0; 
 /*
  * Tried many different ways to clear the last byte of EEPROM. 
  * Using __EPROM_DATA() will only start at bottom of EEPROM so would corrupt
@@ -285,7 +288,7 @@ rom BYTE eeBootFlag = 0;
  * The suggested use of __section() doesn't work as this tries to align on 
  *  a 2 byte boundary.
  * Only way I found to get it to work is that rather ugly and non portable assembler.
- * Interrestingly this is what the __EEPROM_DATA() macro uses.
+ * Interestingly this is what the __EEPROM_DATA() macro uses.
  */
 #asm
     psect eeprom_data,class=EEDATA
@@ -311,8 +314,11 @@ int main(void)  {
     // if using c018.c the routine to initialise data isn't called. Explicitly setting here is more efficient
 # ifdef __C18
     NvBytePtr = (const rom near BYTE*)AT_NV;
-#endif
     eventTable = (rom near EventTable*)AT_EVENTS;
+#else
+    eventTable = (const EventTable *)AT_EVENTS;
+#endif
+    
 
     initRomOps();
 #ifdef NV_CACHE

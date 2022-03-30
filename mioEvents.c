@@ -243,7 +243,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
             action = evs[e];  // we don't mask out the SEQUENTIAL flag so it could be specified in EVs
             if (action != NO_ACTION) {
                 // check this is a consumed action
-                masked_action = action&ACTION_MASK;
+                masked_action = (unsigned char)action&ACTION_MASK;
                 if ((masked_action) <= NUM_ACTIONS) {
                     // check global consumed actions
                     if ((masked_action) == ACTION_STOP_PROCESSING) {
@@ -296,27 +296,27 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
 
             // get the Simultaneous flag from the next action
             if (e > 1) {
-                nextAction = evs[e-1];
-                nextSimultaneous = nextAction & ACTION_SIMULTANEOUS;
+                nextAction = evs[e-1U];
+                nextSimultaneous = (unsigned char)nextAction & ACTION_SIMULTANEOUS;
             } else {
-                nextSimultaneous = firstAction & ACTION_SIMULTANEOUS;
+                nextSimultaneous = (unsigned char)firstAction & ACTION_SIMULTANEOUS;
             }
             if (action != NO_ACTION) {
                 // record the first action we come to - which is actually the last action when doing an ON event
                 if (firstAction == NO_ACTION) {
-                    firstAction = action;
+                    firstAction = (unsigned char)action;
                 }
                 action &= ACTION_MASK;
-                if (action <= NUM_ACTIONS) {
+                if ((unsigned char)action <= NUM_ACTIONS) {
                     // check global consumed actions
-                    if ((action) == ACTION_STOP_PROCESSING) {
+                    if ((unsigned char)action == ACTION_STOP_PROCESSING) {
                         break;
                     }            
-                    if ((action < BASE_ACTION_IO) && (action != ACTION_SOD)) {  // Only do SoD on ON events
-                        pushAction(action|nextSimultaneous);
+                    if (((unsigned char)action < BASE_ACTION_IO) && ((unsigned char)action != ACTION_SOD)) {  // Only do SoD on ON events
+                        pushAction((unsigned char)((unsigned char)action|nextSimultaneous));
                     } else {
-                        io = ACTION_IO(action);
-                        ca = ACTION(action);
+                        io = ACTION_IO((unsigned char)action);
+                        ca = ACTION((unsigned char)action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
                                 if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
@@ -337,11 +337,11 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                                     // action 5 (EV) must be converted to 3(ON)
                                     action -= 3;
                                 }
-                                pushAction(action|nextSimultaneous);
+                                pushAction((unsigned char)((unsigned char)action|nextSimultaneous));
                                 setNormalActions();
                                 break;
                             case TYPE_MULTI:
-                                pushAction(action|nextSimultaneous);
+                                pushAction((unsigned char)((unsigned char)action|nextSimultaneous));
                                 break;
                             default:
                                 // shouldn't happen - just ignore
@@ -460,7 +460,7 @@ void doWait(unsigned int duration) {
         return;
     } else {
         // check if timer expired
-        if ((tickTimeSince(startWait) > ((long)duration * (long)HUNDRED_MILI_SECOND))) {
+        if ((tickTimeSince(startWait) > ((unsigned long)duration * (unsigned long)HUNDRED_MILI_SECOND))) {
             doneAction();
             startWait.Val = 0;
             return;
@@ -512,9 +512,9 @@ unsigned char APP_doSOD(unsigned char step) {
                      
     event_inverted = flags & FLAG_RESULT_EVENT_INVERTED;
     disable_off = flags & FLAG_DISABLE_OFF;
-    send_on_ok  = !( disable_off && event_inverted );
-    send_off_ok = !( disable_off && !event_inverted);
-    value = 255;    // indicates no response at this step
+    send_on_ok  = (unsigned char)!( disable_off && event_inverted );
+    send_off_ok = (unsigned char)!( disable_off && !event_inverted);
+    value = 255U;    // indicates no response at this step
                     
     switch(NV->io[io].type) {
         case TYPE_INPUT:
@@ -529,7 +529,7 @@ unsigned char APP_doSOD(unsigned char step) {
                 case HAPPENING_IO_2:
                     // TWO_ON is only sent if DISABLE_OFF is set GP//
                     if (disable_off) {
-                        value = (outputState[io]==0);
+                        value = (unsigned char)(outputState[io]==0);
                     }
                     break;
             }
@@ -537,7 +537,7 @@ unsigned char APP_doSOD(unsigned char step) {
         case TYPE_OUTPUT:
             switch (happeningIndex) {
                 case HAPPENING_IO_1:
-                    value = (ee_read(EE_OP_STATE+io)!=ACTION_IO_3);
+                    value = (unsigned char)(ee_read(EE_OP_STATE+io)!=ACTION_IO_3);
                     break;
             }
             break;
@@ -545,15 +545,15 @@ unsigned char APP_doSOD(unsigned char step) {
         case TYPE_SERVO:
             switch (happeningIndex) {
                 case HAPPENING_IO_1:
-                    value = (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
+                    value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_servo.servo_start_pos);
                     break;
                 case HAPPENING_IO_3:
-                    value = (currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
+                    value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_servo.servo_end_pos);
                     break;
                     // send the last mid
                 case HAPPENING_IO_2:
-                    value = (currentPos[io] >= (NV->io[io].nv_io.nv_servo.servo_end_pos)/2 + 
-                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2);
+                    value = (unsigned char)((currentPos[io] >= (NV->io[io].nv_io.nv_servo.servo_end_pos)/2U + 
+                         (NV->io[io].nv_io.nv_servo.servo_start_pos)/2U));
                     break;
             }
             send_on_ok = TRUE;
@@ -574,20 +574,20 @@ unsigned char APP_doSOD(unsigned char step) {
         case TYPE_MULTI:
             switch (happeningIndex) {
                 case HAPPENING_IO_1:
-                    value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
+                    value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos1);
                     break;
                 case HAPPENING_IO_2:
-                    value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
+                    value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos2);
                     break;
                 // it is more logical to use servo rather than multi with <3 positions but check anyway GP//
                 case HAPPENING_IO_3:
-                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 2) { 
-                        value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
+                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 2U) { 
+                        value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos3);
                     }
                     break;
                 case HAPPENING_IO_4:
-                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3) {
-                        value = (currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
+                    if (NV->io[io].nv_io.nv_multi.multi_num_pos > 3U) {
+                        value = (unsigned char)(currentPos[io] == NV->io[io].nv_io.nv_multi.multi_pos4);
                     }
                     break;
             }
@@ -604,10 +604,10 @@ unsigned char APP_doSOD(unsigned char step) {
             }
             switch (happeningIndex) {
                 case HAPPENING_IO_1:
-                    value = (analogueState[io].eventState == ANALOGUE_EVENT_LOWER);
+                    value = (unsigned char)(analogueState[io].eventState == ANALOGUE_EVENT_LOWER);
                     break;
                 case HAPPENING_IO_2:
-                    value = (analogueState[io].eventState == ANALOGUE_EVENT_UPPER);
+                    value = (unsigned char)(analogueState[io].eventState == ANALOGUE_EVENT_UPPER);
                     break;
             }
             break;
@@ -633,7 +633,7 @@ unsigned char APP_doSOD(unsigned char step) {
  */
 BOOL sendInvertedProducedEvent(HAPPENING_T happening, BOOL state, BOOL invert, BOOL can_send_on, BOOL can_send_off) 
 {
-	BOOL state_to_send = invert?!state:state;
+	BOOL state_to_send = (unsigned char)(invert?!state:state);
 	if ((state_to_send && can_send_on) || (!state_to_send && can_send_off)) {
 		return sendProducedEvent(happening, state_to_send);
 	} else {

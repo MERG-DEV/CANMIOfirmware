@@ -71,6 +71,6 @@ extern void startMultiOutput(unsigned char io, ACTION_T action);
 
 extern unsigned char isNoServoPulses(void);
 
-#define PIVOT                   234     // the value at which we switch from steps per poll to polls per step
+#define PIVOT                   234U     // the value at which we switch from steps per poll to polls per step
 
 #endif  //__SERVO_H__

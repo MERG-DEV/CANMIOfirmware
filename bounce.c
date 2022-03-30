@@ -63,13 +63,13 @@ extern unsigned char currentPos[NUM_IO];
 extern unsigned char targetPos[NUM_IO];
 extern int speed[NUM_IO];
 
-#define SPEED_FACTOR    30U
+#define SPEED_FACTOR    30
 #define BOUNCE_G        3U   // The effect of Gravity
 /**
  * Used to determine when the signal position is 'good enough' to stop. If this is too small 
  * the due to integer arithmetic rounding errors this can cause the bouncing to repeat for ever.
  */
-#define BOUNDS 3U
+#define BOUNDS 3
 
 typedef enum {
     STATE_FIRST_PULL,
@@ -90,7 +90,7 @@ BounceState bounceState[NUM_IO];
 
 void initBounce(unsigned char io) {
     bounceState[io] = STATE_FIRST_PULL;
-    speed[io] = 0U;
+    speed[io] = 0;
 }
 
 /**
@@ -104,17 +104,16 @@ void initBounce(unsigned char io) {
  */
 BOOL bounceDown(unsigned char io) {
     // check if we still need to move the signal
-    if ((currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
+    if ( (currentPos[io]>targetPos[io]+BOUNDS) || (currentPos[io]<targetPos[io]-BOUNDS) || (speed[io]>BOUNDS) || (speed[io]<-BOUNDS)) {
         BOOL reversed = (BOOL)(NV->io[io].nv_io.nv_bounce.bounce_lower_pos > NV->io[io].nv_io.nv_bounce.bounce_upper_pos);
         int tmp;
         // move position
         if (! reversed) {
-            
             // check for bounce at bottom
             if (currentPos[io] < (NV->io[io].nv_io.nv_bounce.bounce_lower_pos + speed[io]/SPEED_FACTOR)) {
                 // bounce
                 // calculate new speed
-                speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100U;
+                speed[io] = (-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100;
                 // calculate new position
                 tmp = NV->io[io].nv_io.nv_bounce.bounce_lower_pos -
                     (currentPos[io] - NV->io[io].nv_io.nv_bounce.bounce_lower_pos) -
@@ -124,7 +123,7 @@ BOOL bounceDown(unsigned char io) {
                 // no bounce
                 // calculate new speed
                 speed[io] += BOUNCE_G;
-                currentPos[io] -= ((speed[io]/SPEED_FACTOR)+1U);
+                currentPos[io] -= (unsigned char)((speed[io]/SPEED_FACTOR)+1);
             }
         } else {
             // Reversed i.e. upper is less than lower
@@ -132,17 +131,17 @@ BOOL bounceDown(unsigned char io) {
             if (currentPos[io] > NV->io[io].nv_io.nv_bounce.bounce_lower_pos - speed[io]/SPEED_FACTOR) {
                 // bounce
                 // calculate new speed
-                speed[io] = (unsigned char)((-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100U);
+                speed[io] = (unsigned char)((-speed[io]*NV->io[io].nv_io.nv_bounce.bounce_coeff)/100);
                 // calculate new position
                 tmp = NV->io[io].nv_io.nv_bounce.bounce_lower_pos +
                     (NV->io[io].nv_io.nv_bounce.bounce_lower_pos - currentPos[io]) +
                     (speed[io]/SPEED_FACTOR);
-                currentPos[io] = tmp;
+                currentPos[io] = (unsigned char)tmp;
             } else {
                 // no bounce
                 // calculate new speed
                 speed[io] += BOUNCE_G;
-                currentPos[io] += (unsigned char)((speed[io]/SPEED_FACTOR)+1U);
+                currentPos[io] += (unsigned char)((speed[io]/SPEED_FACTOR)+1);
             }
         }
         
