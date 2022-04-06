@@ -245,7 +245,7 @@ void LOW_INT_VECT(void)
     _asm GOTO ISRLow _endasm
 }
 #else
-#ifdef BOOTLOADER
+#ifdef BOOTLOADER_PRESENT
     /* When BOOTLOADER is defined then -mcodeoffset=0x840 should be set within the
      * MPLAB X XC8 Global Options within the project.
      * Due to the codeoffset=0x840 option we need put new vectors at 0x0800, 0x0808, 0x0818 
