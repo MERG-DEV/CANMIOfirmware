@@ -181,25 +181,21 @@ void startServos(void) {
  * @param io
  */
 void setupTimer1(unsigned char io) {
+    // Tried the following but TMR1H doesn't get written. It's as if the value 
+    // isn't promoted to a unsigned short and is left as a unsigned char
+    //    TMR1 = -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
     WORD ticks = 0xFFFF-(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
-#ifdef __XC8__
-    TMR1 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
-#else
     TMR1H = ticks >> 8;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
     TMR1L = ticks & 0xFF;
-#endif
+
     // turn on output
     setOutputPin(io, (unsigned char)( ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
     T1CONbits.TMR1ON = 1;       // enable Timer1
-}
+} 
 void setupTimer3(unsigned char io) {
     WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
-#ifdef __XC8__
-    TMR3 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
-#else
     TMR3H = ticks >> 8;
     TMR3L = ticks & 0xFF;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
-#endif
     // turn on output
     setOutputPin(io, (unsigned char)( ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
     T3CONbits.TMR3ON = 1;       // enable Timer3
