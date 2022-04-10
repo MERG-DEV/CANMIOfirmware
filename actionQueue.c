@@ -35,7 +35,7 @@
  * Implemented as two separated queues - a normal and an expedited priority queue.
  */
 
-#include "GenericTypeDefs.h"
+#include <GenericTypeDefs.h>
 #include "mioEvents.h"
 #include "actionQueue.h"
 #include "queue.h"

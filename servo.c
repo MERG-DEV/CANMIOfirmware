@@ -187,7 +187,6 @@ void setupTimer1(unsigned char io) {
     WORD ticks = 0xFFFF-(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
     TMR1H = ticks >> 8;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
     TMR1L = ticks & 0xFF;
-
     // turn on output
     setOutputPin(io, (unsigned char)( ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED)));
     T1CONbits.TMR1ON = 1;       // enable Timer1

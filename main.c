@@ -276,7 +276,7 @@ static unsigned char io;
 
 #ifdef BOOTLOADER_PRESENT
 // ensure that the bootflag is zeroed
-#ifdef __C18
+#ifdef __18CXX
 #pragma romdata BOOTFLAG
 rom BYTE eeBootFlag = 0;
 #pragma code
@@ -312,10 +312,7 @@ int main(void)  {
 #endif
     
     // if using c018.c the routine to initialise data isn't called. Explicitly setting here is more efficient
-# ifdef __C18
-    NvBytePtr = (const rom near BYTE*)AT_NV;
-    eventTable = (rom near EventTable*)AT_EVENTS;
-#else
+# ifndef __18CXX
     eventTable = (const EventTable *)AT_EVENTS;
 #endif
     
@@ -741,6 +738,9 @@ extern rom near EventTable * eventTable;
 
 void __init(void)
 {
+    // if using c018.c the routine to initialise data isn't called. Explicitly setting here is more efficient
+    NvBytePtr = (const rom near BYTE*)AT_NV;
+    eventTable = (rom near EventTable*)AT_EVENTS;
 }
 #endif
 

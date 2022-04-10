@@ -55,7 +55,7 @@ extern void mioNvInit();
 #define PRM_CKSUM MANU_ID+MINOR_VER+MODULE_ID+NUM_EVENTS+EVperEVT+(NV_NUM-1)+MAJOR_VER+MODULE_FLAGS+CPU+PB_CAN +(LOAD_ADDRESS>>8)+(LOAD_ADDRESS&0xFF)+CPUM_MICROCHIP+BETA+sizeof(ParamVals)+(MNAME_ADDRESS>>8)+(MNAME_ADDRESS&0xFF)
 
 
-#ifdef __C18
+#ifdef __18CXX
 const rom ParamVals     FLiMparams = { 
     MANU_ID,        // manufacturer
     MINOR_VER,      // minor version
@@ -97,13 +97,13 @@ const rom ParamVals     FLiMparams @0x820 = {
     BETA           // beta release flag
     // rest of parameters are filled in by doRqnpn in FLiM.c
 };
-#endif
-const rom SpareParams   spareparams;
 const rom FCUParams     FCUparams @0x838  = { 
     sizeof(ParamVals),
     (DWORD)module_type,
     (WORD)PRM_CKSUM
 };
+#endif
+const rom SpareParams   spareparams;
 const rom char          module_type[] = MODULE_TYPE;
 
 
