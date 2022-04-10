@@ -151,7 +151,7 @@
     #pragma config EBTR0=OFF, EBTR1=OFF, EBTRB=OFF
 #endif
 
-#ifndef __XC8__
+#ifndef __XC8
 #pragma udata MAIN_VARS
 #endif
 

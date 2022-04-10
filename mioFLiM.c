@@ -46,7 +46,7 @@
 #include "mioNv.h"
 #include "mioEvents.h"
 
-#ifndef __XC8__
+#ifndef __XC8
 #pragma romdata PARAMETERS
 #endif
 

@@ -43,7 +43,7 @@ extern "C" {
 
 #include "devincs.h" // include processor files - each processor file is guarded.  
 
-#ifdef __XC8__
+#ifdef __XC8
 #define AT_NAME_ADDRESS @0x810
 #define AT_PARAM_ADDRESS @0x820
     // XC8 compiler doesn't use rom
