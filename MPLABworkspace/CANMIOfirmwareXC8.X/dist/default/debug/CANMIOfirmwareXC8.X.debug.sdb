@@ -1,0 +1,3622 @@
+[p GLOBOPT AUTOSTATIC LFSROK EMI_WORD ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 18F26K80 ]
+[d frameptr 4065 ]
+"151 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[e E12403 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"80 C:\Users\Ian/github/CANMIOfirmware/bounce.c
+[e E12424 . `uc
+STATE_FIRST_PULL 0
+STATE_PAUSE 1
+STATE_SECOND_PULL 2
+STATE_DONE 3
+]
+"555 C:\Users\Ian/github/CANMIOfirmware/main.c
+[e E12180 FLiMStates `uc
+fsSLiM 0
+fsFLiM 1
+fsPressed 2
+fsFlashing 3
+fsFLiMSetup 4
+fsFLiMRelease 5
+fsSetupDone 6
+fsFLiMLearn 7
+fsPressedFLiM 8
+fsPressedSetup 9
+fsNoData 255
+]
+"644
+[e E12481 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"236 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[e E12425 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"191 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[e E12445 . `uc
+OFF 0
+STOPPED 1
+MOVING 2
+STARTING 3
+]
+"94 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[e E12445 . `uc
+OFF 0
+STOPPED 1
+MOVING 2
+STARTING 3
+]
+"70 C:\Users\Ian/github/CBUSlib/can18.c
+[e E12423 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"63 C:\Users\Ian/github/CBUSlib/cbus.c
+[e E12073 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"331 C:\Users\Ian/github/CBUSlib/events.c
+[e E12385 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"82 C:\Users\Ian/github/CBUSlib/FliM.c
+[e E12263 FLiMStates `uc
+fsSLiM 0
+fsFLiM 1
+fsPressed 2
+fsFlashing 3
+fsFLiMSetup 4
+fsFLiMRelease 5
+fsSetupDone 6
+fsFLiMLearn 7
+fsPressedFLiM 8
+fsPressedSetup 9
+fsNoData 255
+]
+"146
+[e E12534 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"203 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[e E12442 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"55 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[e E12383 FlashStates `uc
+flNone 0
+flFLiMSlow 1
+flFLiMFast 2
+]
+"58
+[e E12387 FlickerStates `uc
+flickOff 0
+flickWaitingOn 1
+flickOn 2
+]
+"144
+[e E12178 FLiMStates `uc
+fsSLiM 0
+fsFLiM 1
+fsPressed 2
+fsFlashing 3
+fsFLiMSetup 4
+fsFLiMRelease 5
+fsSetupDone 6
+fsFLiMLearn 7
+fsPressedFLiM 8
+fsPressedSetup 9
+fsNoData 255
+]
+"110 C:\Users\Ian/github/CBUSlib/timedResponse.c
+[e E12447 CanBytes `uc
+con 0
+sidh 1
+sidl 2
+eidh 3
+eidl 4
+dlc 5
+d0 6
+d1 7
+d2 8
+d3 9
+d4 10
+d5 11
+d6 12
+d7 13
+pktsize 14
+]
+"58 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _actionQueueInit actionQueueInit `(v  1 e 1 0 ]
+"77
+[v _pushAction pushAction `(uc  1 e 1 0 ]
+"91
+[v _getAction getAction `(uc  1 e 1 0 ]
+"100
+[v _popAction popAction `(uc  1 e 1 0 ]
+"113
+[v _doneAction doneAction `(v  1 e 1 0 ]
+"123
+[v _peekActionQueue peekActionQueue `(uc  1 e 1 0 ]
+"139
+[v _deleteActionQueue deleteActionQueue `(v  1 e 1 0 ]
+"151
+[v _setExpeditedActions setExpeditedActions `(v  1 e 1 0 ]
+"158
+[v _setNormalActions setNormalActions `(v  1 e 1 0 ]
+"51 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[v _initAnalogue initAnalogue `(v  1 e 1 0 ]
+"67
+[v _initAnaloguePort initAnaloguePort `(v  1 e 1 0 ]
+"73
+[v _pollAnalogue pollAnalogue `(v  1 e 1 0 ]
+"91 C:\Users\Ian/github/CANMIOfirmware/bounce.c
+[v _initBounce initBounce `(v  1 e 1 0 ]
+"105
+[v _bounceDown bounceDown `(uc  1 e 1 0 ]
+"163
+[v _bounceUp bounceUp `(uc  1 e 1 0 ]
+"87 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _initOutputs initOutputs `(v  1 e 1 0 ]
+"108
+[v _startDigitalOutput startDigitalOutput `(v  1 e 1 0 ]
+"178
+[v _processOutputs processOutputs `(v  1 e 1 0 ]
+"227
+[v _setDigitalOutput setDigitalOutput `(v  1 e 1 0 ]
+"257
+[v _setOutputPin setOutputPin `(v  1 e 1 0 ]
+[v i2_setOutputPin setOutputPin `(v  1 e 1 0 ]
+"165 C:\Users\Ian/github/CANMIOfirmware/hwsettings.c
+[v _setclkMHz setclkMHz `(v  1 e 1 0 ]
+"75 C:\Users\Ian/github/CANMIOfirmware/inputs.c
+[v _initInputScan initInputScan `(v  1 e 1 0 ]
+"100
+[v _inputScan inputScan `(v  1 e 1 0 ]
+"173
+[v _readInput readInput `(uc  1 e 1 0 ]
+"311 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _main main `(i  1 e 2 0 ]
+"388
+[v _initialise initialise `(v  1 e 1 0 ]
+"551
+[v _factoryResetEE factoryResetEE `(v  1 e 1 0 ]
+"563
+[v _factoryReset factoryReset `(v  1 e 1 0 ]
+"568
+[v _factoryResetFlash factoryResetFlash `(v  1 e 1 0 ]
+"583
+[v _isSuitableTimeToWriteFlash isSuitableTimeToWriteFlash `(uc  1 e 1 0 ]
+"596
+[v _setType setType `(v  1 e 1 0 ]
+"626
+[v _checkCBUS checkCBUS `(uc  1 e 1 0 ]
+"664
+[v _configIO configIO `(v  1 e 1 0 ]
+"756
+[v _low_isr low_isr `IIL(v  1 e 1 0 ]
+"772
+[v _high_isr high_isr `IIH(v  1 e 1 0 ]
+"88 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _mioEventsInit mioEventsInit `(v  1 e 1 0 ]
+"95
+[v _factoryResetGlobalEvents factoryResetGlobalEvents `(v  1 e 1 0 ]
+"104
+[v _defaultEvents defaultEvents `(v  1 e 1 0 ]
+"167
+[v _APP_addEvent APP_addEvent `(uc  1 e 1 0 ]
+"189
+[v _getDefaultProducedEvent getDefaultProducedEvent `(uc  1 e 1 0 ]
+"198
+[v _clearEvents clearEvents `(v  1 e 1 0 ]
+"223
+[v _processEvent processEvent `(v  1 e 1 0 ]
+"361
+[v _processActions processActions `(v  1 e 1 0 ]
+"456
+[v _doWait doWait `(v  1 e 1 0 ]
+"477
+[v _doSOD doSOD `(v  1 e 1 0 ]
+"492
+[v _APP_doSOD APP_doSOD `(uc  1 e 1 0 ]
+"634
+[v _sendInvertedProducedEvent sendInvertedProducedEvent `(uc  1 e 1 0 ]
+"139 C:\Users\Ian/github/CANMIOfirmware/mioFLiM.c
+[v _mioFlimInit mioFlimInit `(v  1 e 1 0 ]
+"76 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[v _mioNvInit mioNvInit `(v  1 e 1 0 ]
+"84
+[v _validateNV validateNV `(uc  1 e 1 0 ]
+"118
+[v _actUponNVchange actUponNVchange `(v  1 e 1 0 ]
+"195
+[v _factoryResetGlobalNv factoryResetGlobalNv `(v  1 e 1 0 ]
+"210
+[v _defaultNVs defaultNVs `(v  1 e 1 0 ]
+"228 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+"178
+"181
+"182
+[s S272 . 2 `uc 1 input_on_delay 1 0 `uc 1 input_off_delay 1 1 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"186 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S275 . 2 `uc 1 output_pulse_duration 1 0 `uc 1 output_flash_period 1 1 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"190 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S278 . 4 `uc 1 servo_start_pos 1 0 `uc 1 servo_end_pos 1 1 `uc 1 servo_se_speed 1 2 `uc 1 servo_es_speed 1 3 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"196 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S283 . 5 `uc 1 bounce_upper_pos 1 0 `uc 1 bounce_lower_pos 1 1 `uc 1 bounce_coeff 1 2 `uc 1 bounce_pull_speed 1 3 `uc 1 bounce_pull_pause 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"203 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S289 . 5 `uc 1 multi_num_pos 1 0 `uc 1 multi_pos1 1 1 `uc 1 multi_pos2 1 2 `uc 1 multi_pos3 1 3 `uc 1 multi_pos4 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"210 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S295 . 3 `uc 1 analogue_unused 1 0 `uc 1 analogue_threshold 1 1 `uc 1 analogue_hysteresis 1 2 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"215 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S299 . 5 `uc 1 magnet_setup 1 0 `uc 1 magnet_threshold 1 1 `uc 1 magnet_hysteresis 1 2 `uc 1 magnet_offset_h 1 3 `uc 1 magnet_offset_l 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+[u S305 . 5 `S272 1 nv_input 2 0 `S275 1 nv_output 2 0 `S278 1 nv_servo 4 0 `S283 1 nv_bounce 5 0 `S289 1 nv_multi 5 0 `S295 1 nv_analogue_in 3 0 `S299 1 nv_magnet 5 0 ]
+[s S313 . 7 `uc 1 type 1 0 `uc 1 flags 1 1 `S305 1 nv_io 5 2 ]
+[s S317 . 128 `uc 1 nv_version 1 0 `uc 1 sendSodDelay 1 1 `uc 1 hbDelay 1 2 `uc 1 servo_speed 1 3 `uc 1 pullups 1 4 `uc 1 responseDelay 1 5 `[10]uc 1 spare 10 6 `[16]S313 1 io 112 16 ]
+[v _loadNvCache loadNvCache `(*.39S317  1 e 2 0 ]
+"69 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[v _startOutput startOutput `(v  1 e 1 0 ]
+"102
+[v _setOutputState setOutputState `(v  1 e 1 0 ]
+"137
+[v _setOutputPosition setOutputPosition `(v  1 e 1 0 ]
+"167
+[v _needsStarting needsStarting `(uc  1 e 1 0 ]
+"201
+[v _completed completed `(uc  1 e 1 0 ]
+"46 C:\Users\Ian/github/CANMIOfirmware/queue.c
+[v _push push `(uc  1 e 1 0 ]
+"59
+[v _pop pop `(uc  1 e 1 0 ]
+"74
+[v _peek peek `(uc  1 e 1 0 ]
+"89
+[v _quantity quantity `(uc  1 e 1 0 ]
+"97
+[v _delete delete `(v  1 e 1 0 ]
+"116 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _initServos initServos `(v  1 e 1 0 ]
+"159
+[v _startServos startServos `(v  1 e 1 0 ]
+"183
+[v _setupTimer1 setupTimer1 `(v  1 e 1 0 ]
+"196
+[v _setupTimer3 setupTimer3 `(v  1 e 1 0 ]
+"216
+[v _timer1DoneInterruptHandler timer1DoneInterruptHandler `(v  1 e 1 0 ]
+"221
+[v _timer3DoneInterruptHandler timer3DoneInterruptHandler `(v  1 e 1 0 ]
+"235
+[v _pollServos pollServos `(v  1 e 1 0 ]
+"479
+[v _startServoOutput startServoOutput `(v  1 e 1 0 ]
+"507
+[v _startBounceOutput startBounceOutput `(v  1 e 1 0 ]
+"525
+[v _startMultiOutput startMultiOutput `(v  1 e 1 0 ]
+"547
+[v _setServoState setServoState `(v  1 e 1 0 ]
+"574
+[v _setBounceState setBounceState `(v  1 e 1 0 ]
+"598
+[v _setMultiState setMultiState `(v  1 e 1 0 ]
+"624
+[v _setServoPosition setServoPosition `(v  1 e 1 0 ]
+"635
+[v _isNoServoPulses isNoServoPulses `(uc  1 e 1 0 ]
+"113 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canInit canInit `(v  1 e 1 0 ]
+"307
+[v _setNewCanId setNewCanId `(uc  1 e 1 0 ]
+"334
+[v _canSend canSend `(uc  1 e 1 0 ]
+"350
+[v _canTX canTX `(uc  1 e 1 0 ]
+"416
+[v _canQueueRx canQueueRx `(uc  1 e 1 0 ]
+"428
+[v _checkTxFifo checkTxFifo `(v  1 e 1 0 ]
+"478
+[v _checkCANTimeout checkCANTimeout `(v  1 e 1 0 ]
+"496
+[v _canbusRecv canbusRecv `(uc  1 e 1 0 ]
+"561
+[v _insertIntoRxFifo insertIntoRxFifo `(uc  1 e 1 0 ]
+[v i1_insertIntoRxFifo insertIntoRxFifo `(uc  1 e 1 0 ]
+"589
+[v _canFillRxFifo canFillRxFifo `(v  1 e 1 0 ]
+"635
+[v _doEnum doEnum `(v  1 e 1 0 ]
+[v i1_doEnum doEnum `(v  1 e 1 0 ]
+"645
+[v _processEnumeration processEnumeration `(v  1 e 1 0 ]
+"700
+[v _checkIncomingPacket checkIncomingPacket `(uc  1 e 1 0 ]
+[v i1_checkIncomingPacket checkIncomingPacket `(uc  1 e 1 0 ]
+"740
+[v _canTxError canTxError `(v  1 e 1 0 ]
+"775
+[v _canInterruptHandler canInterruptHandler `(v  1 e 1 0 ]
+"792
+[v __PointBuffer _PointBuffer `(*.39uc  1 s 2 _PointBuffer ]
+[v i1__PointBuffer _PointBuffer `(*.39uc  1 s 2 i1__PointBuffer ]
+"74 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusInit cbusInit `(v  1 e 1 0 ]
+"105
+[v _cbusMsgReceived cbusMsgReceived `(uc  1 e 1 0 ]
+"149
+[v _cbusSendOpcMyNN cbusSendOpcMyNN `(uc  1 e 1 0 ]
+"166
+[v _cbusSendOpcNN cbusSendOpcNN `(uc  1 e 1 0 ]
+"198
+[v _cbusSendEvent cbusSendEvent `(uc  1 e 1 0 ]
+"218
+[v _cbusSendEventWithData cbusSendEventWithData `(uc  1 e 1 0 ]
+"255
+[v _cbusSendMsgMyNN cbusSendMsgMyNN `(uc  1 e 1 0 ]
+"270
+[v _cbusSendMsgNN cbusSendMsgNN `(uc  1 e 1 0 ]
+"290
+[v _cbusSendMsg cbusSendMsg `(uc  1 e 1 0 ]
+"273 C:\Users\Ian/github/CBUSlib/events.c
+[v _eventsInit eventsInit `(v  1 e 1 0 ]
+"287
+[v _validStart validStart `(uc  1 e 1 0 ]
+"303
+[v _clearAllEvents clearAllEvents `(v  1 e 1 0 ]
+"319
+[v _doNnevn doNnevn `(v  1 e 1 0 ]
+"340
+[v _doNerd doNerd `(v  1 e 1 0 ]
+"375
+[v _doNenrd doNenrd `(v  1 e 1 0 ]
+"406
+[v _doRqevn doRqevn `(v  1 e 1 0 ]
+"429
+[v _removeEvent removeEvent `(uc  1 e 1 0 ]
+"437
+[v _removeTableEntry removeTableEntry `(uc  1 e 1 0 ]
+"483
+[v _addEvent addEvent `(uc  1 e 1 0 ]
+"547
+[v _findEvent findEvent `(uc  1 e 1 0 ]
+"587
+[v _writeEv writeEv `(uc  1 e 1 0 ]
+"665
+[v _getEv getEv `(i  1 e 2 0 ]
+"700
+[v _numEv numEv `(uc  1 e 1 0 ]
+"727
+[v _getEVs getEVs `(uc  1 e 1 0 ]
+"763
+[v _getNN getNN `(ui  1 e 2 0 ]
+"784
+[v _getEN getEN `(ui  1 e 2 0 ]
+"800
+[v _parseCbusEvent parseCbusEvent `(uc  1 e 1 0 ]
+"837
+[v _evtIdxToTableIndex evtIdxToTableIndex `(uc  1 e 1 0 ]
+"847
+[v _tableIndexToEvtIdx tableIndexToEvtIdx `(uc  1 e 1 0 ]
+"857
+[v _checkRemoveTableEntry checkRemoveTableEntry `(v  1 e 1 0 ]
+"891
+[v _getHash getHash `(uc  1 e 1 0 ]
+"905
+[v _rebuildHashtable rebuildHashtable `(v  1 e 1 0 ]
+"109 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _flimInit flimInit `(v  1 e 1 0 ]
+"134
+[v _FLiMSWCheck FLiMSWCheck `(v  1 e 1 0 ]
+"272
+[v _requestNodeNumber requestNodeNumber `(v  1 e 1 0 ]
+"286
+[v _SLiMRevert SLiMRevert `(v  1 e 1 0 ]
+"301
+[v _parseCBUSMsg parseCBUSMsg `(uc  1 e 1 0 ]
+"323
+[v _parseFLiMCmd parseFLiMCmd `(uc  1 e 1 0 ]
+"522
+[v _getParFlags getParFlags `(uc  1 e 1 0 ]
+"538
+[v _QNNrespond QNNrespond `(v  1 e 1 0 ]
+"554
+[v _doRqnpn doRqnpn `(v  1 e 1 0 ]
+"590
+[v _doNvrd doNvrd `(v  1 e 1 0 ]
+"617
+[v _doNvset doNvset `(v  1 e 1 0 ]
+"658
+[v _doRqnp doRqnp `(v  1 e 1 0 ]
+"683
+[v _doRqmn doRqmn `(v  1 e 1 0 ]
+"717
+[v _doSnn doSnn `(v  1 e 1 0 ]
+"742
+[v _doError doError `(v  1 e 1 0 ]
+"754
+[v _thisNN thisNN `(uc  1 e 1 0 ]
+"767
+[v _SaveNodeDetails SaveNodeDetails `(v  1 e 1 0 ]
+"780
+[v _doNnclr doNnclr `(v  1 e 1 0 ]
+"802
+[v _doEvlrn doEvlrn `(v  1 e 1 0 ]
+"828
+[v _doReval doReval `(v  1 e 1 0 ]
+"877
+[v _doEvuln doEvuln `(v  1 e 1 0 ]
+"889
+[v _doReqev doReqev `(v  1 e 1 0 ]
+"78 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[v _getProducedEvent getProducedEvent `(uc  1 e 1 0 ]
+"109
+[v _sendProducedEvent sendProducedEvent `(uc  1 e 1 0 ]
+"152
+[v _deleteHappeningRange deleteHappeningRange `(v  1 e 1 0 ]
+"185
+[v _doAreq doAreq `(v  1 e 1 0 ]
+"226
+[v _deleteActionRange deleteActionRange `(v  1 e 1 0 ]
+"88 C:\Users\Ian/github/CBUSlib/romops.c
+[v _initRomOps initRomOps `(v  1 e 1 0 ]
+"101
+[v _writeFlashShort writeFlashShort `(v  1 e 1 0 ]
+"192
+[v _writeFlashWithErase writeFlashWithErase `(v  1 e 1 0 ]
+"217
+[v _flushFlashImage flushFlashImage `(v  1 e 1 0 ]
+"243
+[v _readFlashBlock readFlashBlock `(uc  1 e 1 0 ]
+"308
+[v _writeFlashImage writeFlashImage `(v  1 e 1 0 ]
+"341
+[v _writeFlashByte writeFlashByte `(v  1 e 1 0 ]
+"354
+[v _setFlashWord setFlashWord `(v  1 e 1 0 ]
+"382
+[v _ee_read ee_read `(uc  1 e 1 0 ]
+"409
+[v _ee_write ee_write `(v  1 e 1 0 ]
+"447
+[v _ee_read_short ee_read_short `(ui  1 e 2 0 ]
+"463
+[v _ee_write_short ee_write_short `(v  1 e 1 0 ]
+"475
+[v _readCPUType readCPUType `(ui  1 e 2 0 ]
+"65 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _initStatusLeds initStatusLeds `(v  1 e 1 0 ]
+"77
+[v _setSLiMLed setSLiMLed `(v  1 e 1 0 ]
+"86
+[v _setFLiMLed setFLiMLed `(v  1 e 1 0 ]
+"97
+[v _setStatusLed setStatusLed `(v  1 e 1 0 ]
+"108
+[v _doFLiMFlash doFLiMFlash `(v  1 e 1 0 ]
+"118
+[v _startFLiMFlash startFLiMFlash `(v  1 e 1 0 ]
+"127
+[v _checkFlashing checkFlashing `(v  1 e 1 0 ]
+"169
+[v _shortFlicker shortFlicker `(v  1 e 1 0 ]
+"179
+[v _longFlicker longFlicker `(v  1 e 1 0 ]
+"102 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v _initTicker initTicker `(v  1 e 1 0 ]
+"160
+[v _tickGet tickGet `(ul  1 e 4 0 ]
+[v i1_tickGet tickGet `(ul  1 e 4 0 ]
+"244
+[v _tickISR tickISR `(v  1 e 1 0 ]
+"75 C:\Users\Ian/github/CBUSlib/timedResponse.c
+[v _initTimedResponse initTimedResponse `(v  1 e 1 0 ]
+"83
+[v _doTimedResponse doTimedResponse `(v  1 e 1 0 ]
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+"62 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\float.c
+[v ___ftpack __ftpack `(f  1 e 3 0 ]
+"86 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\ftadd.c
+[v ___ftadd __ftadd `(f  1 e 3 0 ]
+"54 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\ftdiv.c
+[v ___ftdiv __ftdiv `(f  1 e 3 0 ]
+"62 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\ftmul.c
+[v ___ftmul __ftmul `(f  1 e 3 0 ]
+"19 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\ftsub.c
+[v ___ftsub __ftsub `(f  1 e 3 0 ]
+"4 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lbdiv.c
+[v ___lbdiv __lbdiv `(uc  1 e 1 0 ]
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+"27 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\memcpy.c
+[v _memcpy memcpy `(*.39v  1 e 2 0 ]
+[v i1_memcpy memcpy `(*.39v  1 e 2 0 ]
+"10 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 3 0 ]
+"245
+[v ___flsub __flsub `(d  1 e 3 0 ]
+"11 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\sprcdiv.c
+[v ___fldiv __fldiv `(d  1 e 3 0 ]
+"8 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\sprcmul.c
+[v ___flmul __flmul `(d  1 e 3 0 ]
+"15 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+"15 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"91 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\Umul64.c
+[v ___omul __omul `(ul  1 e 4 0 ]
+"45 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _normalQueueBuf normalQueueBuf `[64]uc  1 e 64 0 ]
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+"46
+[v _normalQueue normalQueue `S41  1 e 5 0 ]
+"50
+[v _expeditedQueueBuf expeditedQueueBuf `[8]uc  1 e 8 0 ]
+"51
+[v _expeditedQueue expeditedQueue `S41  1 e 5 0 ]
+"53
+[v _expedited expedited `uc  1 s 1 expedited ]
+"44 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[v _portInProgress portInProgress `uc  1 s 1 portInProgress ]
+[s S128 . 1 `uc 1 eventState 1 0 :2:0 
+`uc 1 portState 1 0 :1:2 
+]
+"45
+[v _analogueState analogueState `[16]S128  1 e 16 0 ]
+"47
+[v _setupIo setupIo `uc  1 e 1 0 ]
+"48
+[v _setupState setupState `uc  1 e 1 0 ]
+"49
+[v _haveRequestedAdc haveRequestedAdc `uc  1 s 1 haveRequestedAdc ]
+"80 C:\Users\Ian/github/CANMIOfirmware/bounce.c
+[v _bounceState bounceState `[16]E12424  1 e 16 0 ]
+"66 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _pulseDelays pulseDelays `[16]uc  1 e 16 0 ]
+"67
+[v _flashDelays flashDelays `[16]c  1 e 16 0 ]
+"158 C:\Users\Ian/github/CANMIOfirmware/hwsettings.c
+[v _clkMHz clkMHz `uc  1 e 1 0 ]
+"54 C:\Users\Ian/github/CANMIOfirmware/inputs.c
+[v _inputState inputState `[16]uc  1 s 16 inputState ]
+"58
+[v _outputState outputState `[16]uc  1 e 16 0 ]
+"62
+[v _delayCount delayCount `[16]uc  1 s 16 delayCount ]
+"68
+[v _io io `uc  1 s 1 io ]
+[s S370 . 4 `uc 1 pin 1 0 `uc 1 port 1 1 `uc 1 no 1 2 `uc 1 an 1 3 ]
+"166 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _configs configs `C[16]S370  1 e 64 0 ]
+[s S823 TickBytes 4 `uc 1 b0 1 0 `uc 1 b1 1 1 `uc 1 b2 1 2 `uc 1 b3 1 3 ]
+"267
+[s S828 TickWords 4 `ui 1 w0 2 0 `ui 1 w1 2 2 ]
+[u S831 _TickValue 4 `ul 1 Val 4 0 `S823 1 byte 4 0 `[4]uc 1 v 4 0 `S828 1 word 4 0 ]
+[v _startTime startTime `S831  1 s 4 startTime ]
+"268
+[v _started started `uc  1 s 1 started ]
+[s S823 TickBytes 4 `uc 1 b0 1 0 `uc 1 b1 1 1 `uc 1 b2 1 2 `uc 1 b3 1 3 ]
+"269
+[s S828 TickWords 4 `ui 1 w0 2 0 `ui 1 w1 2 2 ]
+[u S831 _TickValue 4 `ul 1 Val 4 0 `S823 1 byte 4 0 `[4]uc 1 v 4 0 `S828 1 word 4 0 ]
+[v _lastServoStartTime lastServoStartTime `S831  1 e 4 0 ]
+"270
+[v _lastInputScanTime lastInputScanTime `S831  1 s 4 lastInputScanTime ]
+"271
+[v _lastActionPollTime lastActionPollTime `S831  1 s 4 lastActionPollTime ]
+"273
+[v _lastTimedResponseTime lastTimedResponseTime `S831  1 s 4 lastTimedResponseTime ]
+"275
+[v _io@main$F1444 io `uc  1 s 1 io ]
+"86 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _startWait startWait `S831  1 s 4 startWait ]
+[s S1850 . 20 `uc 1 manufacturer 1 0 `uc 1 minor_ver 1 1 `uc 1 module_id 1 2 `uc 1 number_of_events 1 3 `uc 1 evs_per_event 1 4 `uc 1 number_of_nvs 1 5 `uc 1 major_ver 1 6 `uc 1 module_flags 1 7 `uc 1 cpu_id 1 8 `uc 1 bus_type 1 9 `ul 1 load_address 4 10 `ul 1 cpumid 4 14 `uc 1 cpuman 1 18 `uc 1 beta 1 19 ]
+"83 C:\Users\Ian/github/CANMIOfirmware/mioFLiM.c
+[v _FLiMparams FLiMparams `CS1850  1 e 20 @2080 ]
+[s S1919 . 8 `ui 1 parameter_count 2 0 `ul 1 module_type_name 4 2 `ui 1 parameter_checksum 2 6 ]
+"102
+[v _FCUparams FCUparams `CS1919  1 e 8 @2104 ]
+[s S272 . 2 `uc 1 input_on_delay 1 0 `uc 1 input_off_delay 1 1 ]
+"57 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[s S275 . 2 `uc 1 output_pulse_duration 1 0 `uc 1 output_flash_period 1 1 ]
+[s S278 . 4 `uc 1 servo_start_pos 1 0 `uc 1 servo_end_pos 1 1 `uc 1 servo_se_speed 1 2 `uc 1 servo_es_speed 1 3 ]
+[s S283 . 5 `uc 1 bounce_upper_pos 1 0 `uc 1 bounce_lower_pos 1 1 `uc 1 bounce_coeff 1 2 `uc 1 bounce_pull_speed 1 3 `uc 1 bounce_pull_pause 1 4 ]
+[s S289 . 5 `uc 1 multi_num_pos 1 0 `uc 1 multi_pos1 1 1 `uc 1 multi_pos2 1 2 `uc 1 multi_pos3 1 3 `uc 1 multi_pos4 1 4 ]
+[s S295 . 3 `uc 1 analogue_unused 1 0 `uc 1 analogue_threshold 1 1 `uc 1 analogue_hysteresis 1 2 ]
+[s S299 . 5 `uc 1 magnet_setup 1 0 `uc 1 magnet_threshold 1 1 `uc 1 magnet_hysteresis 1 2 `uc 1 magnet_offset_h 1 3 `uc 1 magnet_offset_l 1 4 ]
+[u S305 . 5 `S272 1 nv_input 2 0 `S275 1 nv_output 2 0 `S278 1 nv_servo 4 0 `S283 1 nv_bounce 5 0 `S289 1 nv_multi 5 0 `S295 1 nv_analogue_in 3 0 `S299 1 nv_magnet 5 0 ]
+[s S313 . 7 `uc 1 type 1 0 `uc 1 flags 1 1 `S305 1 nv_io 5 2 ]
+[s S317 . 128 `uc 1 nv_version 1 0 `uc 1 sendSodDelay 1 1 `uc 1 hbDelay 1 2 `uc 1 servo_speed 1 3 `uc 1 pullups 1 4 `uc 1 responseDelay 1 5 `[10]uc 1 spare 10 6 `[16]S313 1 io 112 16 ]
+[v _moduleNvDefs moduleNvDefs `CS317  1 e 128 @65408 ]
+"66
+[v _NV NV `*.39S317  1 e 2 0 ]
+"39 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+[v _nvCache nvCache `VES317  1 s 128 nvCache ]
+"94 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _servoState servoState `[16]E12445  1 e 16 0 ]
+"95
+[v _currentPos currentPos `[16]uc  1 e 16 0 ]
+"96
+[v _targetPos targetPos `[16]uc  1 e 16 0 ]
+"97
+[v _stepsPerPollSpeed stepsPerPollSpeed `[16]uc  1 e 16 0 ]
+"98
+[v _pollsPerStepSpeed pollsPerStepSpeed `[16]uc  1 e 16 0 ]
+"99
+[v _pollCount pollCount `[16]uc  1 e 16 0 ]
+"100
+[v _speed speed `[16]i  1 e 32 0 ]
+"101
+[v _loopCount loopCount `[16]uc  1 e 16 0 ]
+"112
+[v _ticksWhenStopped ticksWhenStopped `[16]S831  1 e 64 0 ]
+"114
+[v _servoInBlock servoInBlock `uc  1 s 1 servoInBlock ]
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"70 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canTxFifo canTxFifo `[16]S351  1 e 256 0 ]
+"71
+[v _canRxFifo canRxFifo `[16]S351  1 e 256 0 ]
+"74
+[v _txIndexNextFree txIndexNextFree `uc  1 e 1 0 ]
+"75
+[v _txIndexNextUsed txIndexNextUsed `uc  1 e 1 0 ]
+"76
+[v _rxIndexNextFree rxIndexNextFree `uc  1 e 1 0 ]
+"77
+[v _rxIndexNextUsed rxIndexNextUsed `uc  1 e 1 0 ]
+"79
+[v _larbRetryCount larbRetryCount `uc  1 e 1 0 ]
+"80
+[v _canTransmitTimeout canTransmitTimeout `S831  1 e 4 0 ]
+"81
+[v _canTransmitFailed canTransmitFailed `uc  1 e 1 0 ]
+"82
+[v _larbCount larbCount `uc  1 e 1 0 ]
+"83
+[v _txErrCount txErrCount `uc  1 e 1 0 ]
+"84
+[v _txTimeoutCount txTimeoutCount `uc  1 e 1 0 ]
+"85
+[v _maxCanTxFifo maxCanTxFifo `uc  1 e 1 0 ]
+"86
+[v _maxCanRxFifo maxCanRxFifo `uc  1 e 1 0 ]
+"87
+[v _txOflowCount txOflowCount `uc  1 e 1 0 ]
+"88
+[v _rxOflowCount rxOflowCount `uc  1 e 1 0 ]
+"89
+[v _txFifoUsage txFifoUsage `uc  1 e 1 0 ]
+"90
+[v _rxFifoUsage rxFifoUsage `uc  1 e 1 0 ]
+"92
+[v _enumerationStartTime enumerationStartTime `S831  1 e 4 0 ]
+"93
+[v _enumerationRequired enumerationRequired `uc  1 e 1 0 ]
+"94
+[v _resultRequired resultRequired `uc  1 e 1 0 ]
+"95
+[v _enumerationInProgress enumerationInProgress `uc  1 e 1 0 ]
+"96
+[v _enumerationResults enumerationResults `[16]uc  1 e 16 0 ]
+"98
+[v _canID canID `uc  1 e 1 0 ]
+"62 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _nodeID nodeID `ui  1 e 2 0 ]
+"63
+[v _cbusMsg cbusMsg `[16]uc  1 e 16 0 ]
+"255 C:\Users\Ian/github/CBUSlib/events.c
+[v _happening2Event happening2Event `[72]uc  1 e 72 0 ]
+"263
+[v _eventChains eventChains `[32][20]uc  1 e 640 0 ]
+"726
+[v _evs evs `[20]uc  1 e 20 0 ]
+"82 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _flimState flimState `E12180  1 e 1 0 ]
+"83
+[v _prevFlimState prevFlimState `E12263  1 e 1 0 ]
+"84
+[v _switchTime switchTime `S831  1 e 4 0 ]
+"89
+[u S4075 . 128 `S317 1 moduleNVs 128 0 `[0]uc 1 nodevars 0 0 ]
+[v _nodeVarTable nodeVarTable `CS4075  1 e 128 @65408 ]
+"102
+[v _FlashStatus FlashStatus `uc  1 e 1 0 ]
+"103
+[v _NV_changed NV_changed `uc  1 e 1 0 ]
+[s S33 . 4 `ui 1 NN 2 0 `ui 1 EN 2 2 ]
+"77 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[v _producedEvent producedEvent `S33  1 e 4 0 ]
+[s S4607 . 1 `uc 1 valid 1 0 :3:0 
+`uc 1 loaded 1 0 :1:3 
+`uc 1 modified 1 0 :1:4 
+`uc 1 zeroto1 1 0 :1:5 
+]
+"70 C:\Users\Ian/github/CBUSlib/romops.c
+[u S4612 . 1 `uc 1 asByte 1 0 `S4607 1 . 1 0 ]
+[v _flashFlags flashFlags `S4612  1 e 1 0 ]
+"71
+[v _flashbuf flashbuf `[64]uc  1 e 64 0 ]
+"73
+[v _flashblock flashblock `ui  1 e 2 0 ]
+"473
+[v _devId devId `Cui  1 e 2 @4194302 ]
+"54 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _flashTime flashTime `S831  1 e 4 0 ]
+"55
+[v _flashState flashState `E12383  1 e 1 0 ]
+"57
+[v _flickerTime flickerTime `S831  1 e 4 0 ]
+"58
+[v _flickerState flickerState `E12387  1 e 1 0 ]
+"74 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v _timerExtension1 timerExtension1 `VEuc  1 e 1 0 ]
+[v _timerExtension2 timerExtension2 `VEuc  1 e 1 0 ]
+"66 C:\Users\Ian/github/CBUSlib/timedResponse.c
+[v _timedResponse timedResponse `uc  1 e 1 0 ]
+"67
+[v _timedResponseStep timedResponseStep `uc  1 e 1 0 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"164 C:\Users\Ian/github/CBUSlib\events.h
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[s S36 . 16 `S30 1 flags 1 0 `uc 1 next 1 1 `S33 1 event 4 2 `[10]uc 1 evs 10 6 ]
+[v _eventTable eventTable `*.33CS36  1 e 3 0 ]
+"193 C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC18F-K_DFP/1.5.114/xc8\pic\include\proc\pic18f26k80.h
+[v _BRGCON1 BRGCON1 `VEuc  1 e 1 @3651 ]
+"269
+[v _BRGCON2 BRGCON2 `VEuc  1 e 1 @3652 ]
+"354
+[v _BRGCON3 BRGCON3 `VEuc  1 e 1 @3653 ]
+"5253
+[v _RXFBCON0 RXFBCON0 `VEuc  1 e 1 @3697 ]
+"5337
+[v _RXFBCON1 RXFBCON1 `VEuc  1 e 1 @3698 ]
+"5421
+[v _RXFBCON2 RXFBCON2 `VEuc  1 e 1 @3699 ]
+"5505
+[v _RXFBCON3 RXFBCON3 `VEuc  1 e 1 @3700 ]
+"5589
+[v _RXFBCON4 RXFBCON4 `VEuc  1 e 1 @3701 ]
+"5673
+[v _RXFBCON5 RXFBCON5 `VEuc  1 e 1 @3702 ]
+"5757
+[v _RXFBCON6 RXFBCON6 `VEuc  1 e 1 @3703 ]
+"5841
+[v _RXFBCON7 RXFBCON7 `VEuc  1 e 1 @3704 ]
+"5925
+[v _MSEL0 MSEL0 `VEuc  1 e 1 @3705 ]
+"6013
+[v _MSEL1 MSEL1 `VEuc  1 e 1 @3706 ]
+"6101
+[v _MSEL2 MSEL2 `VEuc  1 e 1 @3707 ]
+"6189
+[v _MSEL3 MSEL3 `VEuc  1 e 1 @3708 ]
+"6277
+[v _BSEL0 BSEL0 `VEuc  1 e 1 @3709 ]
+"6328
+[v _BIE0 BIE0 `VEuc  1 e 1 @3710 ]
+[s S3025 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 TXB0IE 1 0 :1:2 
+`uc 1 TXB1IE 1 0 :1:3 
+`uc 1 TXB2IE 1 0 :1:4 
+]
+"6423
+[s S3030 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 TX0IE 1 0 :1:2 
+`uc 1 TX1IE 1 0 :1:3 
+`uc 1 TX2IE 1 0 :1:4 
+]
+[u S3035 . 1 `S3025 1 . 1 0 `S3030 1 . 1 0 ]
+[v _TXBIEbits TXBIEbits `VES3035  1 e 1 @3711 ]
+"6458
+[v _B0CON B0CON `VEuc  1 e 1 @3712 ]
+"8089
+[v _B1CON B1CON `VEuc  1 e 1 @3728 ]
+"9720
+[v _B2CON B2CON `VEuc  1 e 1 @3744 ]
+"11360
+[v _B3CON B3CON `VEuc  1 e 1 @3760 ]
+"13000
+[v _B4CON B4CON `VEuc  1 e 1 @3776 ]
+"14640
+[v _B5CON B5CON `VEuc  1 e 1 @3792 ]
+"16400
+[v _RXF0SIDL RXF0SIDL `VEuc  1 e 1 @3809 ]
+"19082
+[v _RXM0SIDH RXM0SIDH `VEuc  1 e 1 @3832 ]
+"19202
+[v _RXM0SIDL RXM0SIDL `VEuc  1 e 1 @3833 ]
+"19309
+[v _RXM0EIDH RXM0EIDH `VEuc  1 e 1 @3834 ]
+"19429
+[v _RXM0EIDL RXM0EIDL `VEuc  1 e 1 @3835 ]
+"19549
+[v _RXM1SIDH RXM1SIDH `VEuc  1 e 1 @3836 ]
+"19669
+[v _RXM1SIDL RXM1SIDL `VEuc  1 e 1 @3837 ]
+"19776
+[v _RXM1EIDH RXM1EIDH `VEuc  1 e 1 @3838 ]
+"19896
+[v _RXM1EIDL RXM1EIDL `VEuc  1 e 1 @3839 ]
+"20016
+[v _TXB2CON TXB2CON `VEuc  1 e 1 @3840 ]
+[s S3052 . 1 `uc 1 TXPRI 1 0 :2:0 
+`uc 1 . 1 0 :1:2 
+`uc 1 TXREQ 1 0 :1:3 
+`uc 1 TXERR 1 0 :1:4 
+`uc 1 TXLARB 1 0 :1:5 
+`uc 1 TXABT 1 0 :1:6 
+`uc 1 TXBIF 1 0 :1:7 
+]
+"20046
+[s S3060 . 1 `uc 1 TXPRI0 1 0 :1:0 
+`uc 1 TXPRI1 1 0 :1:1 
+]
+[s S3161 . 1 `uc 1 TXB2PRI0 1 0 :1:0 
+`uc 1 TXB2PRI1 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 TXB2REQ 1 0 :1:3 
+`uc 1 TXB2ERR 1 0 :1:4 
+`uc 1 TXB2LARB 1 0 :1:5 
+`uc 1 TXB2ABT 1 0 :1:6 
+`uc 1 TX2IF 1 0 :1:7 
+]
+[u S3170 . 1 `S3052 1 . 1 0 `S3060 1 . 1 0 `S3161 1 . 1 0 ]
+[v _TXB2CONbits TXB2CONbits `VES3170  1 e 1 @3840 ]
+"20126
+[v _TXB2SIDH TXB2SIDH `VEuc  1 e 1 @3841 ]
+"20246
+[v _TXB2SIDL TXB2SIDL `VEuc  1 e 1 @3842 ]
+"20598
+[v _TXB2DLC TXB2DLC `VEuc  1 e 1 @3845 ]
+"21447
+[v _TXB1CON TXB1CON `VEuc  1 e 1 @3856 ]
+"21477
+[s S3112 . 1 `uc 1 TXB1PRI0 1 0 :1:0 
+`uc 1 TXB1PRI1 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 TXB1REQ 1 0 :1:3 
+`uc 1 TXB1ERR 1 0 :1:4 
+`uc 1 TXB1LARB 1 0 :1:5 
+`uc 1 TXB1ABT 1 0 :1:6 
+`uc 1 TX1IF 1 0 :1:7 
+]
+[u S3121 . 1 `S3052 1 . 1 0 `S3060 1 . 1 0 `S3112 1 . 1 0 ]
+[v _TXB1CONbits TXB1CONbits `VES3121  1 e 1 @3856 ]
+"21557
+[v _TXB1SIDH TXB1SIDH `VEuc  1 e 1 @3857 ]
+"21677
+[v _TXB1SIDL TXB1SIDL `VEuc  1 e 1 @3858 ]
+"22029
+[v _TXB1DLC TXB1DLC `VEuc  1 e 1 @3861 ]
+"22878
+[v _TXB0CON TXB0CON `VEuc  1 e 1 @3872 ]
+"22908
+[s S3063 . 1 `uc 1 TXB0PRI0 1 0 :1:0 
+`uc 1 TXB0PRI1 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 TXB0REQ 1 0 :1:3 
+`uc 1 TXB0ERR 1 0 :1:4 
+`uc 1 TXB0LARB 1 0 :1:5 
+`uc 1 TXB0ABT 1 0 :1:6 
+`uc 1 TX0IF 1 0 :1:7 
+]
+[u S3072 . 1 `S3052 1 . 1 0 `S3060 1 . 1 0 `S3063 1 . 1 0 ]
+[v _TXB0CONbits TXB0CONbits `VES3072  1 e 1 @3872 ]
+"22988
+[v _TXB0SIDH TXB0SIDH `VEuc  1 e 1 @3873 ]
+"23108
+[v _TXB0SIDL TXB0SIDL `VEuc  1 e 1 @3874 ]
+"23460
+[v _TXB0DLC TXB0DLC `VEuc  1 e 1 @3877 ]
+"24309
+[v _RXB1CON RXB1CON `VEuc  1 e 1 @3888 ]
+"26861
+[v _WPUB WPUB `VEuc  1 e 1 @3931 ]
+"26923
+[v _ANCON1 ANCON1 `VEuc  1 e 1 @3932 ]
+"26975
+[v _ANCON0 ANCON0 `VEuc  1 e 1 @3933 ]
+"27583
+[v _RXB0CON RXB0CON `VEuc  1 e 1 @3936 ]
+[s S2941 . 1 `uc 1 EICODE0 1 0 :1:0 
+`uc 1 EICODE1_ICODE0 1 0 :1:1 
+`uc 1 EICODE2_ICODE1 1 0 :1:2 
+`uc 1 EICODE3_ICODE2 1 0 :1:3 
+`uc 1 EICODE4 1 0 :1:4 
+`uc 1 OPMODE 1 0 :3:5 
+]
+"28949
+[s S2948 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 EICODE1 1 0 :1:1 
+`uc 1 EICODE2 1 0 :1:2 
+`uc 1 EICODE3 1 0 :1:3 
+`uc 1 . 1 0 :1:4 
+`uc 1 OPMODE0 1 0 :1:5 
+`uc 1 OPMODE1 1 0 :1:6 
+`uc 1 OPMODE2 1 0 :1:7 
+]
+[s S2957 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 ICODE0 1 0 :1:1 
+`uc 1 ICODE1 1 0 :1:2 
+`uc 1 ICODE2 1 0 :1:3 
+]
+[u S2962 . 1 `S2941 1 . 1 0 `S2948 1 . 1 0 `S2957 1 . 1 0 ]
+[v _CANSTATbits CANSTATbits `VES2962  1 e 1 @3950 ]
+"29029
+[v _CANCON CANCON `VEuc  1 e 1 @3951 ]
+"29121
+[v _CIOCON CIOCON `VEuc  1 e 1 @3952 ]
+[s S3284 . 1 `uc 1 EWARN 1 0 :1:0 
+`uc 1 RXWARN 1 0 :1:1 
+`uc 1 TXWARN 1 0 :1:2 
+`uc 1 RXBP 1 0 :1:3 
+`uc 1 TXBP 1 0 :1:4 
+`uc 1 TXBO 1 0 :1:5 
+`uc 1 RXB1OVFL 1 0 :1:6 
+`uc 1 RXB0OVFL 1 0 :1:7 
+]
+"29196
+[s S3293 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 NOT_FIFOEMPTY 1 0 :1:7 
+]
+[s S3296 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 nFIFOEMPTY 1 0 :1:7 
+]
+[s S3299 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 RXBNOVFL 1 0 :1:6 
+`uc 1 FIFOEMPTY 1 0 :1:7 
+]
+[u S3303 . 1 `S3284 1 . 1 0 `S3293 1 . 1 0 `S3296 1 . 1 0 `S3299 1 . 1 0 ]
+[v _COMSTATbits COMSTATbits `VES3303  1 e 1 @3953 ]
+"29261
+[v _ECANCON ECANCON `VEuc  1 e 1 @3954 ]
+"29338
+[v _EEDATA EEDATA `VEuc  1 e 1 @3955 ]
+"29358
+[v _EEADR EEADR `VEuc  1 e 1 @3956 ]
+"29378
+[v _EEADRH EEADRH `VEuc  1 e 1 @3957 ]
+[s S3199 . 1 `uc 1 RXB0IE 1 0 :1:0 
+`uc 1 RXB1IE 1 0 :1:1 
+`uc 1 TXB0IE 1 0 :1:2 
+`uc 1 TXB1IE 1 0 :1:3 
+`uc 1 TXB2IE 1 0 :1:4 
+`uc 1 ERRIE 1 0 :1:5 
+`uc 1 WAKIE 1 0 :1:6 
+`uc 1 IRXIE 1 0 :1:7 
+]
+"29421
+[s S3208 . 1 `uc 1 FIFOWMIE 1 0 :1:0 
+`uc 1 RXBnIE 1 0 :1:1 
+`uc 1 . 1 0 :2:2 
+`uc 1 TXBnIE 1 0 :1:4 
+]
+[u S3213 . 1 `S3199 1 . 1 0 `S3208 1 . 1 0 ]
+[v _PIE5bits PIE5bits `VES3213  1 e 1 @3958 ]
+[s S3248 . 1 `uc 1 RXB0IF 1 0 :1:0 
+`uc 1 RXB1IF 1 0 :1:1 
+`uc 1 TXB0IF 1 0 :1:2 
+`uc 1 TXB1IF 1 0 :1:3 
+`uc 1 TXB2IF 1 0 :1:4 
+`uc 1 ERRIF 1 0 :1:5 
+`uc 1 WAKIF 1 0 :1:6 
+`uc 1 IRXIF 1 0 :1:7 
+]
+"29504
+[s S3257 . 1 `uc 1 FIFOWMIF 1 0 :1:0 
+`uc 1 RXBnIF 1 0 :1:1 
+`uc 1 . 1 0 :2:2 
+`uc 1 TXBnIF 1 0 :1:4 
+]
+[u S3262 . 1 `S3248 1 . 1 0 `S3257 1 . 1 0 ]
+[v _PIR5bits PIR5bits `VES3262  1 e 1 @3959 ]
+"29564
+[v _IPR5 IPR5 `VEuc  1 e 1 @3960 ]
+"29774
+[v _EECON2 EECON2 `VEuc  1 e 1 @3966 ]
+"29794
+[v _EECON1 EECON1 `VEuc  1 e 1 @3967 ]
+[s S4644 . 1 `uc 1 RD 1 0 :1:0 
+`uc 1 WR 1 0 :1:1 
+`uc 1 WREN 1 0 :1:2 
+`uc 1 WRERR 1 0 :1:3 
+`uc 1 FREE 1 0 :1:4 
+`uc 1 . 1 0 :1:5 
+`uc 1 CFGS 1 0 :1:6 
+`uc 1 EEPGD 1 0 :1:7 
+]
+"29815
+[s S4653 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 EEFS 1 0 :1:6 
+]
+[u S4656 . 1 `S4644 1 . 1 0 `S4653 1 . 1 0 ]
+[v _EECON1bits EECON1bits `VES4656  1 e 1 @3967 ]
+"29860
+[v _PORTA PORTA `VEuc  1 e 1 @3968 ]
+[s S4097 . 1 `uc 1 RA0 1 0 :1:0 
+`uc 1 RA1 1 0 :1:1 
+`uc 1 RA2 1 0 :1:2 
+`uc 1 RA3 1 0 :1:3 
+`uc 1 . 1 0 :1:4 
+`uc 1 RA5 1 0 :1:5 
+`uc 1 RA6 1 0 :1:6 
+`uc 1 RA7 1 0 :1:7 
+]
+"29884
+[s S4106 . 1 `uc 1 ULPWUIN 1 0 :1:0 
+`uc 1 . 1 0 :4:1 
+`uc 1 LVDIN 1 0 :1:5 
+`uc 1 . 1 0 :1:6 
+`uc 1 RJPU 1 0 :1:7 
+]
+[u S4112 . 1 `S4097 1 . 1 0 `S4106 1 . 1 0 ]
+[v _PORTAbits PORTAbits `VES4112  1 e 1 @3968 ]
+"29939
+[v _PORTB PORTB `VEuc  1 e 1 @3969 ]
+"30010
+[v _PORTC PORTC `VEuc  1 e 1 @3970 ]
+"30226
+[v _LATA LATA `VEuc  1 e 1 @3977 ]
+"30328
+[v _LATB LATB `VEuc  1 e 1 @3978 ]
+[s S4834 . 1 `uc 1 LATB0 1 0 :1:0 
+`uc 1 LATB1 1 0 :1:1 
+`uc 1 LATB2 1 0 :1:2 
+`uc 1 LATB3 1 0 :1:3 
+`uc 1 LATB4 1 0 :1:4 
+`uc 1 LATB5 1 0 :1:5 
+`uc 1 LATB6 1 0 :1:6 
+`uc 1 LATB7 1 0 :1:7 
+]
+"30355
+[s S4843 . 1 `uc 1 LB0 1 0 :1:0 
+`uc 1 LB1 1 0 :1:1 
+`uc 1 LB2 1 0 :1:2 
+`uc 1 LB3 1 0 :1:3 
+`uc 1 LB4 1 0 :1:4 
+`uc 1 LB5 1 0 :1:5 
+`uc 1 LB6 1 0 :1:6 
+`uc 1 LB7 1 0 :1:7 
+]
+[u S4852 . 1 `S4834 1 . 1 0 `S4843 1 . 1 0 ]
+[v _LATBbits LATBbits `VES4852  1 e 1 @3978 ]
+"30440
+[v _LATC LATC `VEuc  1 e 1 @3979 ]
+"30646
+[v _TRISA TRISA `VEuc  1 e 1 @3986 ]
+"30703
+[v _TRISB TRISB `VEuc  1 e 1 @3987 ]
+[s S4813 . 1 `uc 1 TRISB0 1 0 :1:0 
+`uc 1 TRISB1 1 0 :1:1 
+`uc 1 TRISB2 1 0 :1:2 
+`uc 1 TRISB3 1 0 :1:3 
+`uc 1 TRISB4 1 0 :1:4 
+`uc 1 TRISB5 1 0 :1:5 
+`uc 1 TRISB6 1 0 :1:6 
+`uc 1 TRISB7 1 0 :1:7 
+]
+"30720
+[u S4822 . 1 `S4813 1 . 1 0 ]
+[v _TRISBbits TRISBbits `VES4822  1 e 1 @3987 ]
+"30765
+[v _TRISC TRISC `VEuc  1 e 1 @3988 ]
+[s S939 . 1 `uc 1 TUN 1 0 :6:0 
+`uc 1 PLLEN 1 0 :1:6 
+`uc 1 INTSRC 1 0 :1:7 
+]
+"30956
+[s S943 . 1 `uc 1 TUN0 1 0 :1:0 
+`uc 1 TUN1 1 0 :1:1 
+`uc 1 TUN2 1 0 :1:2 
+`uc 1 TUN3 1 0 :1:3 
+`uc 1 TUN4 1 0 :1:4 
+`uc 1 TUN5 1 0 :1:5 
+]
+[u S950 . 1 `S939 1 . 1 0 `S943 1 . 1 0 ]
+[v _OSCTUNEbits OSCTUNEbits `VES950  1 e 1 @3995 ]
+[s S2618 . 1 `uc 1 TMR1IE 1 0 :1:0 
+`uc 1 TMR2IE 1 0 :1:1 
+`uc 1 TMR1GIE 1 0 :1:2 
+`uc 1 SSPIE 1 0 :1:3 
+`uc 1 TX1IE 1 0 :1:4 
+`uc 1 RC1IE 1 0 :1:5 
+`uc 1 ADIE 1 0 :1:6 
+]
+"31093
+[s S2626 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 TXIE 1 0 :1:4 
+`uc 1 RCIE 1 0 :1:5 
+]
+[u S2630 . 1 `S2618 1 . 1 0 `S2626 1 . 1 0 ]
+[v _PIE1bits PIE1bits `VES2630  1 e 1 @3997 ]
+[s S1326 . 1 `uc 1 TMR1IF 1 0 :1:0 
+`uc 1 TMR2IF 1 0 :1:1 
+`uc 1 TMR1GIF 1 0 :1:2 
+`uc 1 SSPIF 1 0 :1:3 
+`uc 1 TX1IF 1 0 :1:4 
+`uc 1 RC1IF 1 0 :1:5 
+`uc 1 ADIF 1 0 :1:6 
+]
+"31164
+[s S1334 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 TXIF 1 0 :1:4 
+`uc 1 RCIF 1 0 :1:5 
+]
+[u S1338 . 1 `S1326 1 . 1 0 `S1334 1 . 1 0 ]
+[v _PIR1bits PIR1bits `VES1338  1 e 1 @3998 ]
+[s S2752 . 1 `uc 1 TMR3GIE 1 0 :1:0 
+`uc 1 TMR3IE 1 0 :1:1 
+`uc 1 HLVDIE 1 0 :1:2 
+`uc 1 BCLIE 1 0 :1:3 
+`uc 1 . 1 0 :3:4 
+`uc 1 OSCFIE 1 0 :1:7 
+]
+"31304
+[s S2759 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 LVDIE 1 0 :1:2 
+]
+[u S2762 . 1 `S2752 1 . 1 0 `S2759 1 . 1 0 ]
+[v _PIE2bits PIE2bits `VES2762  1 e 1 @4000 ]
+[s S1358 . 1 `uc 1 TMR3GIF 1 0 :1:0 
+`uc 1 TMR3IF 1 0 :1:1 
+`uc 1 HLVDIF 1 0 :1:2 
+`uc 1 BCLIF 1 0 :1:3 
+`uc 1 . 1 0 :3:4 
+`uc 1 OSCFIF 1 0 :1:7 
+]
+"31358
+[s S1365 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 LVDIF 1 0 :1:2 
+]
+[u S1368 . 1 `S1358 1 . 1 0 `S1365 1 . 1 0 ]
+[v _PIR2bits PIR2bits `VES1368  1 e 1 @4001 ]
+[s S2519 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 T1GGO_NOT_T1DONE 1 0 :1:3 
+]
+"32073
+[s S2522 . 1 `uc 1 T1GSS 1 0 :2:0 
+`uc 1 T1GVAL 1 0 :1:2 
+`uc 1 T1GGO_nT1DONE 1 0 :1:3 
+`uc 1 T1GSPM 1 0 :1:4 
+`uc 1 T1GTM 1 0 :1:5 
+`uc 1 T1GPOL 1 0 :1:6 
+`uc 1 TMR1GE 1 0 :1:7 
+]
+[s S2530 . 1 `uc 1 T1GSS0 1 0 :1:0 
+`uc 1 T1GSS1 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 T1GGO 1 0 :1:3 
+]
+[s S2535 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 NOT_T1DONE 1 0 :1:3 
+]
+[s S2538 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 nT1DONE 1 0 :1:3 
+]
+[u S2541 . 1 `S2519 1 . 1 0 `S2522 1 . 1 0 `S2530 1 . 1 0 `S2535 1 . 1 0 `S2538 1 . 1 0 ]
+[v _T1GCONbits T1GCONbits `VES2541  1 e 1 @4010 ]
+[s S2646 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 T3GGO_NOT_T3DONE 1 0 :1:3 
+]
+"32917
+[s S2649 . 1 `uc 1 T3GSS 1 0 :2:0 
+`uc 1 T3GVAL 1 0 :1:2 
+`uc 1 T3GGO_nT3DONE 1 0 :1:3 
+`uc 1 T3GSPM 1 0 :1:4 
+`uc 1 T3GTM 1 0 :1:5 
+`uc 1 T3GPOL 1 0 :1:6 
+`uc 1 TMR3GE 1 0 :1:7 
+]
+"32917
+[s S2657 . 1 `uc 1 T3GSS0 1 0 :1:0 
+`uc 1 T3GSS1 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 T3GGO 1 0 :1:3 
+]
+"32917
+[s S2662 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 NOT_T3DONE 1 0 :1:3 
+]
+"32917
+[s S2665 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 nT3DONE 1 0 :1:3 
+]
+"32917
+[u S2668 . 1 `S2646 1 . 1 0 `S2649 1 . 1 0 `S2657 1 . 1 0 `S2662 1 . 1 0 `S2665 1 . 1 0 ]
+"32917
+"32917
+[v _T3GCONbits T3GCONbits `VES2668  1 e 1 @4016 ]
+[s S2697 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 NOT_T3SYNC 1 0 :1:2 
+]
+"33023
+[s S2700 . 1 `uc 1 TMR3ON 1 0 :1:0 
+`uc 1 RD16 1 0 :1:1 
+`uc 1 nT3SYNC 1 0 :1:2 
+`uc 1 SOSCEN 1 0 :1:3 
+`uc 1 T3CKPS 1 0 :2:4 
+`uc 1 TMR3CS 1 0 :2:6 
+]
+"33023
+[s S2707 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 T3CKPS0 1 0 :1:4 
+`uc 1 T3CKPS1 1 0 :1:5 
+`uc 1 TMR3CS0 1 0 :1:6 
+`uc 1 TMR3CS1 1 0 :1:7 
+]
+"33023
+[s S2713 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 SOSCEN3 1 0 :1:3 
+`uc 1 . 1 0 :3:4 
+`uc 1 RD163 1 0 :1:7 
+]
+"33023
+[s S2718 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 T3RD16 1 0 :1:7 
+]
+"33023
+[u S2721 . 1 `S2697 1 . 1 0 `S2700 1 . 1 0 `S2707 1 . 1 0 `S2713 1 . 1 0 `S2718 1 . 1 0 ]
+"33023
+"33023
+[v _T3CONbits T3CONbits `VES2721  1 e 1 @4017 ]
+"33098
+"33098
+[v _TMR3 TMR3 `VEus  1 e 2 @4018 ]
+[s S4679 . 1 `uc 1 CCP3IF 1 0 :1:0 
+`uc 1 CCP4IF 1 0 :1:1 
+`uc 1 CCP5IF 1 0 :1:2 
+`uc 1 . 1 0 :1:3 
+`uc 1 CMP1IF 1 0 :1:4 
+`uc 1 CMP2IF 1 0 :1:5 
+`uc 1 EEIF 1 0 :1:6 
+`uc 1 TMR4IF 1 0 :1:7 
+]
+"33386
+[u S4688 . 1 `S4679 1 . 1 0 ]
+"33386
+"33386
+[v _PIR4bits PIR4bits `VES4688  1 e 1 @4023 ]
+[s S174 . 1 `uc 1 ADCS 1 0 :3:0 
+`uc 1 ACQT 1 0 :3:3 
+`uc 1 . 1 0 :1:6 
+`uc 1 ADFM 1 0 :1:7 
+]
+"34230
+[s S179 . 1 `uc 1 ADCS0 1 0 :1:0 
+`uc 1 ADCS1 1 0 :1:1 
+`uc 1 ADCS2 1 0 :1:2 
+`uc 1 ACQT0 1 0 :1:3 
+`uc 1 ACQT1 1 0 :1:4 
+`uc 1 ACQT2 1 0 :1:5 
+]
+"34230
+[u S186 . 1 `S174 1 . 1 0 `S179 1 . 1 0 ]
+"34230
+"34230
+[v _ADCON2bits ADCON2bits `VES186  1 e 1 @4032 ]
+[s S131 . 1 `uc 1 CHSN 1 0 :3:0 
+`uc 1 VNCFG 1 0 :1:3 
+`uc 1 VCFG 1 0 :2:4 
+`uc 1 TRIGSEL 1 0 :2:6 
+]
+"34309
+[s S136 . 1 `uc 1 CHSN0 1 0 :1:0 
+`uc 1 CHSN1 1 0 :1:1 
+`uc 1 CHSN2 1 0 :1:2 
+`uc 1 . 1 0 :1:3 
+`uc 1 VCFG0 1 0 :1:4 
+`uc 1 VCFG1 1 0 :1:5 
+`uc 1 TRIGSEL0 1 0 :1:6 
+`uc 1 TRIGSEL1 1 0 :1:7 
+]
+"34309
+[s S145 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 CHSN3 1 0 :1:3 
+`uc 1 VCFG01 1 0 :1:4 
+`uc 1 VCFG11 1 0 :1:5 
+]
+"34309
+[u S150 . 1 `S131 1 . 1 0 `S136 1 . 1 0 `S145 1 . 1 0 ]
+"34309
+"34309
+[v _ADCON1bits ADCON1bits `VES150  1 e 1 @4033 ]
+[s S202 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GO_NOT_DONE 1 0 :1:1 
+]
+"34429
+[s S205 . 1 `uc 1 ADON 1 0 :1:0 
+`uc 1 GO_nDONE 1 0 :1:1 
+`uc 1 CHS 1 0 :5:2 
+]
+"34429
+[s S209 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 DONE 1 0 :1:1 
+`uc 1 CHS0 1 0 :1:2 
+`uc 1 CHS1 1 0 :1:3 
+`uc 1 CHS2 1 0 :1:4 
+`uc 1 CHS3 1 0 :1:5 
+`uc 1 CHS4 1 0 :1:6 
+]
+"34429
+[s S217 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GO 1 0 :1:1 
+]
+"34429
+[s S220 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 NOT_DONE 1 0 :1:1 
+]
+"34429
+[s S223 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 nDONE 1 0 :1:1 
+]
+"34429
+[s S226 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GODONE 1 0 :1:1 
+]
+"34429
+[s S229 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 GO_DONE 1 0 :1:1 
+]
+"34429
+[u S232 . 1 `S202 1 . 1 0 `S205 1 . 1 0 `S209 1 . 1 0 `S217 1 . 1 0 `S220 1 . 1 0 `S223 1 . 1 0 `S226 1 . 1 0 `S229 1 . 1 0 ]
+"34429
+"34429
+[v _ADCON0bits ADCON0bits `VES232  1 e 1 @4034 ]
+"34516
+[v _ADRESL ADRESL `VEuc  1 e 1 @4035 ]
+"34536
+[v _ADRESH ADRESH `VEuc  1 e 1 @4036 ]
+[s S2570 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 NOT_T1SYNC 1 0 :1:2 
+]
+"35292
+[s S2573 . 1 `uc 1 TMR1ON 1 0 :1:0 
+`uc 1 RD16 1 0 :1:1 
+`uc 1 nT1SYNC 1 0 :1:2 
+`uc 1 SOSCEN 1 0 :1:3 
+`uc 1 T1CKPS 1 0 :2:4 
+`uc 1 TMR1CS 1 0 :2:6 
+]
+"35292
+[s S2580 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 T1CKPS0 1 0 :1:4 
+`uc 1 T1CKPS1 1 0 :1:5 
+`uc 1 TMR1CS0 1 0 :1:6 
+`uc 1 TMR1CS1 1 0 :1:7 
+]
+"35292
+[s S2586 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 T1OSCEN 1 0 :1:3 
+`uc 1 . 1 0 :3:4 
+`uc 1 T1RD16 1 0 :1:7 
+]
+"35292
+[u S2591 . 1 `S2570 1 . 1 0 `S2573 1 . 1 0 `S2580 1 . 1 0 `S2586 1 . 1 0 ]
+"35292
+"35292
+[v _T1CONbits T1CONbits `VES2591  1 e 1 @4045 ]
+"35362
+[v _TMR1 TMR1 `VEus  1 e 2 @4046 ]
+[s S965 . 1 `uc 1 NOT_BOR 1 0 :1:0 
+]
+"35457
+[s S967 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 NOT_POR 1 0 :1:1 
+]
+"35457
+[s S970 . 1 `uc 1 . 1 0 :2:0 
+`uc 1 NOT_PD 1 0 :1:2 
+]
+"35457
+[s S973 . 1 `uc 1 . 1 0 :3:0 
+`uc 1 NOT_TO 1 0 :1:3 
+]
+"35457
+[s S976 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 NOT_RI 1 0 :1:4 
+]
+"35457
+[s S979 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 NOT_CM 1 0 :1:5 
+]
+"35457
+[s S982 . 1 `uc 1 nBOR 1 0 :1:0 
+`uc 1 nPOR 1 0 :1:1 
+`uc 1 nPD 1 0 :1:2 
+`uc 1 nTO 1 0 :1:3 
+`uc 1 nRI 1 0 :1:4 
+`uc 1 nCM 1 0 :1:5 
+`uc 1 SBOREN 1 0 :1:6 
+`uc 1 IPEN 1 0 :1:7 
+]
+"35457
+[s S991 . 1 `uc 1 BOR 1 0 :1:0 
+`uc 1 POR 1 0 :1:1 
+`uc 1 PD 1 0 :1:2 
+`uc 1 TO 1 0 :1:3 
+`uc 1 RI 1 0 :1:4 
+`uc 1 CM 1 0 :1:5 
+]
+"35457
+[u S998 . 1 `S965 1 . 1 0 `S967 1 . 1 0 `S970 1 . 1 0 `S973 1 . 1 0 `S976 1 . 1 0 `S979 1 . 1 0 `S982 1 . 1 0 `S991 1 . 1 0 ]
+"35457
+"35457
+[v _RCONbits RCONbits `VES998  1 e 1 @4048 ]
+"35771
+[v _T0CON T0CON `VEuc  1 e 1 @4053 ]
+[s S4995 . 1 `uc 1 T0PS 1 0 :3:0 
+`uc 1 PSA 1 0 :1:3 
+`uc 1 T0SE 1 0 :1:4 
+`uc 1 T0CS 1 0 :1:5 
+`uc 1 T08BIT 1 0 :1:6 
+`uc 1 TMR0ON 1 0 :1:7 
+]
+"35791
+[s S5002 . 1 `uc 1 T0PS0 1 0 :1:0 
+`uc 1 T0PS1 1 0 :1:1 
+`uc 1 T0PS2 1 0 :1:2 
+]
+"35791
+[u S5006 . 1 `S4995 1 . 1 0 `S5002 1 . 1 0 ]
+"35791
+"35791
+[v _T0CONbits T0CONbits `VES5006  1 e 1 @4053 ]
+"35848
+[v _TMR0L TMR0L `VEuc  1 e 1 @4054 ]
+"35868
+[v _TMR0H TMR0H `VEuc  1 e 1 @4055 ]
+[s S1085 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 NOT_RBPU 1 0 :1:7 
+]
+"36580
+[s S1088 . 1 `uc 1 RBIP 1 0 :1:0 
+`uc 1 INT3IP 1 0 :1:1 
+`uc 1 TMR0IP 1 0 :1:2 
+`uc 1 INTEDG3 1 0 :1:3 
+`uc 1 INTEDG2 1 0 :1:4 
+`uc 1 INTEDG1 1 0 :1:5 
+`uc 1 INTEDG0 1 0 :1:6 
+`uc 1 nRBPU 1 0 :1:7 
+]
+"36580
+[s S1097 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 INT3P 1 0 :1:1 
+`uc 1 T0IP 1 0 :1:2 
+`uc 1 . 1 0 :4:3 
+`uc 1 RBPU 1 0 :1:7 
+]
+"36580
+[u S1103 . 1 `S1085 1 . 1 0 `S1088 1 . 1 0 `S1097 1 . 1 0 ]
+"36580
+"36580
+[v _INTCON2bits INTCON2bits `VES1103  1 e 1 @4081 ]
+[s S1154 . 1 `uc 1 RBIF 1 0 :1:0 
+`uc 1 INT0IF 1 0 :1:1 
+`uc 1 TMR0IF 1 0 :1:2 
+`uc 1 RBIE 1 0 :1:3 
+`uc 1 INT0IE 1 0 :1:4 
+`uc 1 TMR0IE 1 0 :1:5 
+`uc 1 PEIE_GIEL 1 0 :1:6 
+`uc 1 GIE_GIEH 1 0 :1:7 
+]
+"36682
+[s S1163 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 INT0F 1 0 :1:1 
+`uc 1 T0IF 1 0 :1:2 
+`uc 1 . 1 0 :1:3 
+`uc 1 INT0E 1 0 :1:4 
+`uc 1 T0IE 1 0 :1:5 
+`uc 1 PEIE 1 0 :1:6 
+`uc 1 GIE 1 0 :1:7 
+]
+"36682
+[s S1172 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 GIEL 1 0 :1:6 
+`uc 1 GIEH 1 0 :1:7 
+]
+"36682
+[u S1176 . 1 `S1154 1 . 1 0 `S1163 1 . 1 0 `S1172 1 . 1 0 ]
+"36682
+"36682
+[v _INTCONbits INTCONbits `VES1176  1 e 1 @4082 ]
+"36924
+[v _TABLAT TABLAT `VEuc  1 e 1 @4085 ]
+"36945
+"36945
+[v _TBLPTR TBLPTR `VEum  1 e 3 @4086 ]
+"36993
+[v _TBLPTRU TBLPTRU `VEuc  1 e 1 @4088 ]
+"311 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _main main `(i  1 e 2 0 ]
+{
+"382
+} 0
+"159 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _startServos startServos `(v  1 e 1 0 ]
+{
+"160
+[v startServos@type type `uc  1 a 1 99 ]
+"176
+} 0
+"196
+[v _setupTimer3 setupTimer3 `(v  1 e 1 0 ]
+{
+[v setupTimer3@io io `uc  1 a 1 wreg ]
+[v setupTimer3@io io `uc  1 a 1 wreg ]
+"199
+[v setupTimer3@io io `uc  1 a 1 28 ]
+"208
+} 0
+"183
+[v _setupTimer1 setupTimer1 `(v  1 e 1 0 ]
+{
+[v setupTimer1@io io `uc  1 a 1 wreg ]
+[v setupTimer1@io io `uc  1 a 1 wreg ]
+"186
+[v setupTimer1@io io `uc  1 a 1 28 ]
+"195
+} 0
+"235
+[v _pollServos pollServos `(v  1 e 1 0 ]
+{
+"238
+[v pollServos@io io `uc  1 a 1 96 ]
+"236
+[v pollServos@midway midway `uc  1 a 1 95 ]
+"237
+[v pollServos@beforeMidway beforeMidway `uc  1 a 1 94 ]
+"239
+[v pollServos@target target `uc  1 a 1 93 ]
+"468
+} 0
+"91 C:\Users\Ian/github/CANMIOfirmware/bounce.c
+[v _initBounce initBounce `(v  1 e 1 0 ]
+{
+[v initBounce@io io `uc  1 a 1 wreg ]
+[v initBounce@io io `uc  1 a 1 wreg ]
+[v initBounce@io io `uc  1 a 1 17 ]
+"94
+} 0
+"163
+[v _bounceUp bounceUp `(uc  1 e 1 0 ]
+{
+[v bounceUp@io io `uc  1 a 1 wreg ]
+"165
+[v bounceUp@midway midway `uc  1 a 1 25 ]
+"164
+[v bounceUp@reversed reversed `uc  1 a 1 24 ]
+"163
+[v bounceUp@io io `uc  1 a 1 wreg ]
+[v bounceUp@io io `uc  1 a 1 26 ]
+"208
+} 0
+"105
+[v _bounceDown bounceDown `(uc  1 e 1 0 ]
+{
+[v bounceDown@io io `uc  1 a 1 wreg ]
+"109
+[v bounceDown@tmp tmp `i  1 a 2 39 ]
+"108
+[v bounceDown@reversed reversed `uc  1 a 1 38 ]
+"105
+[v bounceDown@io io `uc  1 a 1 wreg ]
+"107
+[v bounceDown@io io `uc  1 a 1 41 ]
+"151
+} 0
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+{
+"10
+[v ___awdiv@quotient quotient `i  1 a 2 29 ]
+"11
+[v ___awdiv@sign sign `uc  1 a 1 28 ]
+[v ___awdiv@counter counter `uc  1 a 1 27 ]
+"7
+[v ___awdiv@dividend dividend `i  1 p 2 23 ]
+[v ___awdiv@divisor divisor `i  1 p 2 25 ]
+"41
+} 0
+"178 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _processOutputs processOutputs `(v  1 e 1 0 ]
+{
+"180
+[v processOutputs@io io `uc  1 a 1 88 ]
+"218
+} 0
+"361 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _processActions processActions `(v  1 e 1 0 ]
+{
+"414
+[v processActions@nextAction nextAction `uc  1 a 1 114 ]
+"415
+[v processActions@nextIo nextIo `uc  1 a 1 111 ]
+"416
+[v processActions@nextType nextType `uc  1 a 1 109 ]
+"365
+[v processActions@ioAction ioAction `uc  1 a 1 113 ]
+"364
+[v processActions@action action `uc  1 a 1 112 ]
+"362
+[v processActions@io io `uc  1 a 1 110 ]
+"363
+[v processActions@type type `uc  1 a 1 108 ]
+"367
+[v processActions@peekItem peekItem `uc  1 a 1 107 ]
+"366
+[v processActions@simultaneous simultaneous `uc  1 a 1 106 ]
+"449
+} 0
+"69 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[v _startOutput startOutput `(v  1 e 1 0 ]
+{
+[v startOutput@io io `uc  1 a 1 wreg ]
+[v startOutput@io io `uc  1 a 1 wreg ]
+[v startOutput@action action `uc  1 p 1 101 ]
+[v startOutput@type type `uc  1 p 1 102 ]
+[v startOutput@io io `uc  1 a 1 103 ]
+"93
+} 0
+"108 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _startDigitalOutput startDigitalOutput `(v  1 e 1 0 ]
+{
+[v startDigitalOutput@io io `uc  1 a 1 wreg ]
+"110
+[v startDigitalOutput@actionState actionState `uc  1 a 1 99 ]
+"109
+[v startDigitalOutput@pinState pinState `uc  1 a 1 98 ]
+"108
+[v startDigitalOutput@io io `uc  1 a 1 wreg ]
+[v startDigitalOutput@state state `uc  1 p 1 93 ]
+"118
+[v startDigitalOutput@io io `uc  1 a 1 100 ]
+"173
+} 0
+"102 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[v _setOutputState setOutputState `(v  1 e 1 0 ]
+{
+[v setOutputState@io io `uc  1 a 1 wreg ]
+[v setOutputState@io io `uc  1 a 1 wreg ]
+[v setOutputState@action action `uc  1 p 1 22 ]
+[v setOutputState@type type `uc  1 p 1 23 ]
+[v setOutputState@io io `uc  1 a 1 24 ]
+"128
+} 0
+"167
+[v _needsStarting needsStarting `(uc  1 e 1 0 ]
+{
+[v needsStarting@io io `uc  1 a 1 wreg ]
+[v needsStarting@io io `uc  1 a 1 wreg ]
+[v needsStarting@action action `uc  1 p 1 17 ]
+[v needsStarting@type type `uc  1 p 1 18 ]
+[v needsStarting@io io `uc  1 a 1 21 ]
+"195
+} 0
+"91 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _getAction getAction `(uc  1 e 1 0 ]
+{
+"93
+} 0
+"123
+[v _peekActionQueue peekActionQueue `(uc  1 e 1 0 ]
+{
+[v peekActionQueue@index index `uc  1 a 1 wreg ]
+[v peekActionQueue@index index `uc  1 a 1 wreg ]
+[v peekActionQueue@index index `uc  1 a 1 23 ]
+"132
+} 0
+"74 C:\Users\Ian/github/CANMIOfirmware/queue.c
+[v _peek peek `(uc  1 e 1 0 ]
+{
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+[v peek@q q `*.39S41  1 p 2 17 ]
+[v peek@index index `uc  1 p 1 19 ]
+"83
+} 0
+"456 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _doWait doWait `(v  1 e 1 0 ]
+{
+[v doWait@duration duration `ui  1 p 2 29 ]
+"469
+} 0
+"113 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _doneAction doneAction `(v  1 e 1 0 ]
+{
+"115
+} 0
+"100
+[v _popAction popAction `(uc  1 e 1 0 ]
+{
+"101
+[v popAction@ret ret `uc  1 a 1 23 ]
+"106
+} 0
+"59 C:\Users\Ian/github/CANMIOfirmware/queue.c
+[v _pop pop `(uc  1 e 1 0 ]
+{
+"60
+[v pop@ret ret `uc  1 a 1 22 ]
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+"59
+[v pop@q q `*.39S41  1 p 2 17 ]
+"67
+} 0
+"15 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+{
+"17
+[v ___lmul@product product `ul  1 a 4 25 ]
+"15
+[v ___lmul@multiplier multiplier `ul  1 p 4 17 ]
+[v ___lmul@multiplicand multiplicand `ul  1 p 4 21 ]
+"129
+} 0
+"477 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _doSOD doSOD `(v  1 e 1 0 ]
+{
+"480
+} 0
+"139 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _deleteActionQueue deleteActionQueue `(v  1 e 1 0 ]
+{
+[v deleteActionQueue@index index `uc  1 a 1 wreg ]
+[v deleteActionQueue@index index `uc  1 a 1 wreg ]
+[v deleteActionQueue@index index `uc  1 a 1 24 ]
+"146
+} 0
+"89 C:\Users\Ian/github/CANMIOfirmware/queue.c
+[v _quantity quantity `(uc  1 e 1 0 ]
+{
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+[v quantity@q q `*.39S41  1 p 2 17 ]
+"91
+} 0
+"97
+[v _delete delete `(v  1 e 1 0 ]
+{
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+[v delete@q q `*.39S41  1 p 2 17 ]
+[v delete@index index `uc  1 p 1 19 ]
+"106
+} 0
+"201 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[v _completed completed `(uc  1 e 1 0 ]
+{
+[v completed@io io `uc  1 a 1 wreg ]
+[v completed@io io `uc  1 a 1 wreg ]
+[v completed@action action `uc  1 p 1 17 ]
+[v completed@type type `uc  1 p 1 18 ]
+[v completed@io io `uc  1 a 1 22 ]
+"221
+} 0
+"73 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[v _pollAnalogue pollAnalogue `(v  1 e 1 0 ]
+{
+"74
+[v pollAnalogue@adc adc `ui  1 a 2 96 ]
+"76
+[v pollAnalogue@lthreshold lthreshold `s  1 a 2 94 ]
+"77
+[v pollAnalogue@hthreshold hthreshold `s  1 a 2 92 ]
+"78
+[v pollAnalogue@lhysteresis lhysteresis `s  1 a 2 90 ]
+"79
+[v pollAnalogue@hhysteresis hhysteresis `s  1 a 2 88 ]
+"179
+} 0
+"100 C:\Users\Ian/github/CANMIOfirmware/inputs.c
+[v _inputScan inputScan `(v  1 e 1 0 ]
+{
+"105
+[v inputScan@change change `uc  1 a 1 89 ]
+"103
+[v inputScan@input input `uc  1 a 1 90 ]
+"166
+} 0
+"388 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _initialise initialise `(v  1 e 1 0 ]
+{
+"430
+[v initialise@simultaneous simultaneous `uc  1 a 1 119 ]
+"429
+[v initialise@action action `uc  1 a 1 118 ]
+"426
+[v initialise@ev ev `i  1 a 2 122 ]
+"449
+[v initialise@en en `ui  1 a 2 124 ]
+"448
+[v initialise@paction paction `uc  1 a 1 126 ]
+"417
+[v initialise@evIndex evIndex `uc  1 a 1 121 ]
+[v initialise@i i `uc  1 a 1 120 ]
+"546
+} 0
+"139 C:\Users\Ian/github/CANMIOfirmware/mioFLiM.c
+[v _mioFlimInit mioFlimInit `(v  1 e 1 0 ]
+{
+"143
+} 0
+"76 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[v _mioNvInit mioNvInit `(v  1 e 1 0 ]
+{
+"78
+} 0
+"109 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _flimInit flimInit `(v  1 e 1 0 ]
+{
+"124
+} 0
+"273 C:\Users\Ian/github/CBUSlib/events.c
+[v _eventsInit eventsInit `(v  1 e 1 0 ]
+{
+"279
+} 0
+"74 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusInit cbusInit `(v  1 e 1 0 ]
+{
+[v cbusInit@initNodeID initNodeID `ui  1 p 2 30 ]
+"95
+} 0
+"447 C:\Users\Ian/github/CBUSlib/romops.c
+[v _ee_read_short ee_read_short `(ui  1 e 2 0 ]
+{
+"451
+[v ee_read_short@ret ret `ui  1 a 2 26 ]
+"450
+[v ee_read_short@ee_addr ee_addr `ui  1 a 2 24 ]
+"447
+[v ee_read_short@addr addr `ui  1 p 2 19 ]
+"455
+} 0
+"113 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canInit canInit `(v  1 e 1 0 ]
+{
+[v canInit@initCanID initCanID `uc  1 p 1 27 ]
+"303
+} 0
+"88 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _mioEventsInit mioEventsInit `(v  1 e 1 0 ]
+{
+"90
+} 0
+"75 C:\Users\Ian/github/CBUSlib/timedResponse.c
+[v _initTimedResponse initTimedResponse `(v  1 e 1 0 ]
+{
+"77
+} 0
+"102 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v _initTicker initTicker `(v  1 e 1 0 ]
+{
+[v initTicker@priority priority `uc  1 a 1 wreg ]
+"104
+[v initTicker@i i `uc  1 a 1 19 ]
+[v initTicker@divider divider `uc  1 a 1 18 ]
+"102
+[v initTicker@priority priority `uc  1 a 1 wreg ]
+"106
+[v initTicker@priority priority `uc  1 a 1 17 ]
+"133
+} 0
+"165 C:\Users\Ian/github/CANMIOfirmware/hwsettings.c
+[v _setclkMHz setclkMHz `(v  1 e 1 0 ]
+{
+"182
+} 0
+"116 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _initServos initServos `(v  1 e 1 0 ]
+{
+"117
+[v initServos@io io `uc  1 a 1 37 ]
+"153
+} 0
+"137 C:\Users\Ian/github/CANMIOfirmware/outputs.c
+[v _setOutputPosition setOutputPosition `(v  1 e 1 0 ]
+{
+[v setOutputPosition@io io `uc  1 a 1 wreg ]
+[v setOutputPosition@io io `uc  1 a 1 wreg ]
+[v setOutputPosition@pos pos `uc  1 p 1 28 ]
+[v setOutputPosition@type type `uc  1 p 1 29 ]
+[v setOutputPosition@io io `uc  1 a 1 32 ]
+"161
+} 0
+"624 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _setServoPosition setServoPosition `(v  1 e 1 0 ]
+{
+[v setServoPosition@io io `uc  1 a 1 wreg ]
+[v setServoPosition@io io `uc  1 a 1 wreg ]
+[v setServoPosition@pos pos `uc  1 p 1 17 ]
+[v setServoPosition@io io `uc  1 a 1 18 ]
+"627
+} 0
+"87 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _initOutputs initOutputs `(v  1 e 1 0 ]
+{
+"89
+[v initOutputs@io io `uc  1 a 1 17 ]
+"94
+} 0
+"75 C:\Users\Ian/github/CANMIOfirmware/inputs.c
+[v _initInputScan initInputScan `(v  1 e 1 0 ]
+{
+"77
+[v initInputScan@input input `uc  1 a 1 24 ]
+"88
+} 0
+"173
+[v _readInput readInput `(uc  1 e 1 0 ]
+{
+[v readInput@io io `uc  1 a 1 wreg ]
+[v readInput@io io `uc  1 a 1 wreg ]
+[v readInput@io io `uc  1 a 1 21 ]
+"185
+} 0
+"51 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[v _initAnalogue initAnalogue `(v  1 e 1 0 ]
+{
+"65
+} 0
+"58 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _actionQueueInit actionQueueInit `(v  1 e 1 0 ]
+{
+"70
+} 0
+"65 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _initStatusLeds initStatusLeds `(v  1 e 1 0 ]
+{
+"73
+} 0
+"88 C:\Users\Ian/github/CBUSlib/romops.c
+[v _initRomOps initRomOps `(v  1 e 1 0 ]
+{
+"93
+} 0
+"83 C:\Users\Ian/github/CBUSlib/timedResponse.c
+[v _doTimedResponse doTimedResponse `(v  1 e 1 0 ]
+{
+"109
+[v doTimedResponse@n n `ui  1 a 2 115 ]
+"126
+} 0
+"847 C:\Users\Ian/github/CBUSlib/events.c
+[v _tableIndexToEvtIdx tableIndexToEvtIdx `(uc  1 e 1 0 ]
+{
+[v tableIndexToEvtIdx@tableIndex tableIndex `uc  1 a 1 wreg ]
+[v tableIndexToEvtIdx@tableIndex tableIndex `uc  1 a 1 wreg ]
+[v tableIndexToEvtIdx@tableIndex tableIndex `uc  1 a 1 17 ]
+"849
+} 0
+"492 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _APP_doSOD APP_doSOD `(uc  1 e 1 0 ]
+{
+[v APP_doSOD@step step `uc  1 a 1 wreg ]
+"493
+[v APP_doSOD@io io `uc  1 a 1 114 ]
+"494
+[v APP_doSOD@happeningIndex happeningIndex `uc  1 a 1 113 ]
+"501
+[v APP_doSOD@value value `uc  1 a 1 112 ]
+"500
+[v APP_doSOD@flags flags `uc  1 a 1 111 ]
+"498
+[v APP_doSOD@event_inverted event_inverted `uc  1 a 1 110 ]
+"495
+[v APP_doSOD@disable_off disable_off `uc  1 a 1 109 ]
+"499
+[v APP_doSOD@disable_SOD_response disable_SOD_response `uc  1 a 1 108 ]
+"497
+[v APP_doSOD@send_off_ok send_off_ok `uc  1 a 1 107 ]
+"496
+[v APP_doSOD@send_on_ok send_on_ok `uc  1 a 1 106 ]
+"492
+[v APP_doSOD@step step `uc  1 a 1 wreg ]
+"505
+[v APP_doSOD@step step `uc  1 a 1 105 ]
+"622
+} 0
+"634
+[v _sendInvertedProducedEvent sendInvertedProducedEvent `(uc  1 e 1 0 ]
+{
+[v sendInvertedProducedEvent@happening happening `uc  1 a 1 wreg ]
+"636
+[v sendInvertedProducedEvent@state_to_send state_to_send `uc  1 a 1 92 ]
+"634
+[v sendInvertedProducedEvent@happening happening `uc  1 a 1 wreg ]
+[v sendInvertedProducedEvent@state state `uc  1 p 1 85 ]
+[v sendInvertedProducedEvent@invert invert `uc  1 p 1 86 ]
+[v sendInvertedProducedEvent@can_send_on can_send_on `uc  1 p 1 87 ]
+[v sendInvertedProducedEvent@can_send_off can_send_off `uc  1 p 1 88 ]
+"636
+[v sendInvertedProducedEvent@happening happening `uc  1 a 1 89 ]
+"642
+} 0
+"109 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[v _sendProducedEvent sendProducedEvent `(uc  1 e 1 0 ]
+{
+[v sendProducedEvent@happening happening `uc  1 a 1 wreg ]
+"112
+[v sendProducedEvent@thisByte thisByte `uc  1 a 1 83 ]
+"111
+[v sendProducedEvent@thisBit thisBit `uc  1 a 1 82 ]
+"113
+[v sendProducedEvent@status status `uc  1 a 1 81 ]
+"109
+[v sendProducedEvent@happening happening `uc  1 a 1 wreg ]
+[v sendProducedEvent@on on `uc  1 p 1 78 ]
+"111
+[v sendProducedEvent@happening happening `uc  1 a 1 84 ]
+"146
+} 0
+"78
+[v _getProducedEvent getProducedEvent `(uc  1 e 1 0 ]
+{
+[v getProducedEvent@happening happening `uc  1 a 1 wreg ]
+[v getProducedEvent@happening happening `uc  1 a 1 wreg ]
+"82
+[v getProducedEvent@happening happening `uc  1 a 1 41 ]
+"100
+} 0
+"189 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _getDefaultProducedEvent getDefaultProducedEvent `(uc  1 e 1 0 ]
+{
+"191
+} 0
+"198 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusSendEvent cbusSendEvent `(uc  1 e 1 0 ]
+{
+[v cbusSendEvent@cbusNum cbusNum `uc  1 a 1 wreg ]
+"200
+[v cbusSendEvent@msg msg `[10]uc  1 a 10 67 ]
+"198
+[v cbusSendEvent@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendEvent@eventNode eventNode `ui  1 p 2 62 ]
+[v cbusSendEvent@eventNum eventNum `ui  1 p 2 64 ]
+[v cbusSendEvent@onEvent onEvent `uc  1 p 1 66 ]
+"202
+[v cbusSendEvent@cbusNum cbusNum `uc  1 a 1 77 ]
+"203
+} 0
+"218
+[v _cbusSendEventWithData cbusSendEventWithData `(uc  1 e 1 0 ]
+{
+[v cbusSendEventWithData@cbusNum cbusNum `uc  1 a 1 wreg ]
+"220
+[v cbusSendEventWithData@ret ret `uc  1 a 1 60 ]
+"218
+[v cbusSendEventWithData@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendEventWithData@eventNode eventNode `ui  1 p 2 51 ]
+[v cbusSendEventWithData@eventNum eventNum `ui  1 p 2 53 ]
+[v cbusSendEventWithData@onEvent onEvent `uc  1 p 1 55 ]
+[v cbusSendEventWithData@msg msg `*.30uc  1 p 1 56 ]
+[v cbusSendEventWithData@datalen datalen `uc  1 p 1 57 ]
+"221
+[v cbusSendEventWithData@cbusNum cbusNum `uc  1 a 1 61 ]
+"246
+} 0
+"416 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canQueueRx canQueueRx `(uc  1 e 1 0 ]
+{
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+[v canQueueRx@msg msg `*.30S351  1 p 1 31 ]
+"423
+} 0
+"561
+[v _insertIntoRxFifo insertIntoRxFifo `(uc  1 e 1 0 ]
+{
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+[v insertIntoRxFifo@ptr ptr `*.39S351  1 p 2 28 ]
+"582
+} 0
+"127 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _checkFlashing checkFlashing `(v  1 e 1 0 ]
+{
+"164
+} 0
+"626 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _checkCBUS checkCBUS `(uc  1 e 1 0 ]
+{
+"627
+[v checkCBUS@msg msg `[20]uc  1 a 20 0 ]
+"656
+} 0
+"169 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _shortFlicker shortFlicker `(v  1 e 1 0 ]
+{
+"174
+} 0
+"301 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _parseCBUSMsg parseCBUSMsg `(uc  1 e 1 0 ]
+{
+[v parseCBUSMsg@msg msg `*.39uc  1 p 2 132 ]
+"313
+} 0
+"323
+[v _parseFLiMCmd parseFLiMCmd `(uc  1 e 1 0 ]
+{
+"326
+[v parseFLiMCmd@cmdProcessed cmdProcessed `uc  1 a 1 131 ]
+"323
+[v parseFLiMCmd@rx_ptr rx_ptr `*.39uc  1 p 2 129 ]
+"513
+} 0
+"754
+[v _thisNN thisNN `(uc  1 e 1 0 ]
+{
+[v thisNN@rx_ptr rx_ptr `*.39uc  1 p 2 17 ]
+"760
+} 0
+"717
+[v _doSnn doSnn `(v  1 e 1 0 ]
+{
+[v doSnn@rx_ptr rx_ptr `*.39uc  1 p 2 59 ]
+"735
+} 0
+"554
+[v _doRqnpn doRqnpn `(v  1 e 1 0 ]
+{
+[v doRqnpn@idx idx `uc  1 a 1 wreg ]
+[s S1850 . 20 `uc 1 manufacturer 1 0 `uc 1 minor_ver 1 1 `uc 1 module_id 1 2 `uc 1 number_of_events 1 3 `uc 1 evs_per_event 1 4 `uc 1 number_of_nvs 1 5 `uc 1 major_ver 1 6 `uc 1 module_flags 1 7 `uc 1 cpu_id 1 8 `uc 1 bus_type 1 9 `ul 1 load_address 4 10 `ul 1 cpumid 4 14 `uc 1 cpuman 1 18 `uc 1 beta 1 19 ]
+"556
+[u S4278 . 20 `S1850 1 params 20 0 `[20]uc 1 bytes 20 0 ]
+[v doRqnpn@paramptr paramptr `*.33S4278  1 a 3 59 ]
+"554
+[v doRqnpn@idx idx `uc  1 a 1 wreg ]
+"558
+[v doRqnpn@idx idx `uc  1 a 1 62 ]
+"581
+} 0
+"475 C:\Users\Ian/github/CBUSlib/romops.c
+[v _readCPUType readCPUType `(ui  1 e 2 0 ]
+{
+"502
+} 0
+"658 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doRqnp doRqnp `(v  1 e 1 0 ]
+{
+[s S1850 . 20 `uc 1 manufacturer 1 0 `uc 1 minor_ver 1 1 `uc 1 module_id 1 2 `uc 1 number_of_events 1 3 `uc 1 evs_per_event 1 4 `uc 1 number_of_nvs 1 5 `uc 1 major_ver 1 6 `uc 1 module_flags 1 7 `uc 1 cpu_id 1 8 `uc 1 bus_type 1 9 `ul 1 load_address 4 10 `ul 1 cpumid 4 14 `uc 1 cpuman 1 18 `uc 1 beta 1 19 ]
+"660
+[u S4278 . 20 `S1850 1 params 20 0 `[20]uc 1 bytes 20 0 ]
+[v doRqnp@paramptr paramptr `*.33S4278  1 a 3 53 ]
+"661
+[v doRqnp@copyCounter copyCounter `uc  1 a 1 56 ]
+"677
+} 0
+"683
+[v _doRqmn doRqmn `(v  1 e 1 0 ]
+{
+"691
+[v doRqmn@namadr namadr `ul  1 a 4 47 ]
+"687
+[v doRqmn@namptr namptr `*.33Cuc  1 a 3 51 ]
+"685
+[v doRqmn@copyCounter copyCounter `uc  1 a 1 54 ]
+"711
+} 0
+"406 C:\Users\Ian/github/CBUSlib/events.c
+[v _doRqevn doRqevn `(v  1 e 1 0 ]
+{
+"410
+[v doRqevn@i i `uc  1 a 1 53 ]
+"409
+[v doRqevn@count count `uc  1 a 1 52 ]
+"418
+} 0
+"828 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doReval doReval `(v  1 e 1 0 ]
+{
+[v doReval@enNum enNum `uc  1 a 1 wreg ]
+"848
+[v doReval@evVal evVal `i  1 a 2 56 ]
+"833
+[v doReval@tableIndex tableIndex `uc  1 a 1 58 ]
+"832
+[v doReval@evIndex evIndex `uc  1 a 1 54 ]
+"828
+[v doReval@enNum enNum `uc  1 a 1 wreg ]
+[v doReval@evNum evNum `uc  1 p 1 52 ]
+"833
+[v doReval@enNum enNum `uc  1 a 1 55 ]
+"870
+} 0
+"889
+[v _doReqev doReqev `(v  1 e 1 0 ]
+{
+"891
+[v doReqev@evVal evVal `i  1 a 2 66 ]
+"893
+[v doReqev@tableIndex tableIndex `uc  1 a 1 65 ]
+"889
+[v doReqev@nodeNumber nodeNumber `ui  1 p 2 59 ]
+[v doReqev@eventNumber eventNumber `ui  1 p 2 61 ]
+[v doReqev@evNum evNum `uc  1 p 1 63 ]
+"924
+} 0
+"700 C:\Users\Ian/github/CBUSlib/events.c
+[v _numEv numEv `(uc  1 e 1 0 ]
+{
+[v numEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"701
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v numEv@f f `S30  1 a 1 36 ]
+"702
+[v numEv@num num `uc  1 a 1 35 ]
+"700
+[v numEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+"702
+[v numEv@tableIndex tableIndex `uc  1 a 1 37 ]
+"718
+} 0
+"617 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doNvset doNvset `(v  1 e 1 0 ]
+{
+[v doNvset@NVindex NVindex `uc  1 a 1 wreg ]
+"626
+[v doNvset@flashIndex flashIndex `ui  1 a 2 125 ]
+"627
+[v doNvset@oldValue oldValue `uc  1 a 1 127 ]
+"617
+[v doNvset@NVindex NVindex `uc  1 a 1 wreg ]
+[v doNvset@NVvalue NVvalue `uc  1 p 1 122 ]
+"620
+[v doNvset@NVindex NVindex `uc  1 a 1 128 ]
+"649
+} 0
+"84 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[v _validateNV validateNV `(uc  1 e 1 0 ]
+{
+[v validateNV@index index `uc  1 a 1 wreg ]
+"86
+[v validateNV@io io `uc  1 a 1 28 ]
+"84
+[v validateNV@index index `uc  1 a 1 wreg ]
+[v validateNV@oldValue oldValue `uc  1 p 1 24 ]
+[v validateNV@value value `uc  1 p 1 25 ]
+"87
+[v validateNV@index index `uc  1 a 1 29 ]
+"116
+} 0
+"118
+[v _actUponNVchange actUponNVchange `(v  1 e 1 0 ]
+{
+[v actUponNVchange@index index `uc  1 a 1 wreg ]
+"120
+[v actUponNVchange@io io `uc  1 a 1 121 ]
+"118
+[v actUponNVchange@index index `uc  1 a 1 wreg ]
+[v actUponNVchange@oldValue oldValue `uc  1 p 1 114 ]
+[v actUponNVchange@value value `uc  1 p 1 115 ]
+"122
+[v actUponNVchange@index index `uc  1 a 1 120 ]
+"189
+} 0
+"479 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _startServoOutput startServoOutput `(v  1 e 1 0 ]
+{
+[v startServoOutput@io io `uc  1 a 1 wreg ]
+[v startServoOutput@io io `uc  1 a 1 wreg ]
+[v startServoOutput@action action `uc  1 p 1 17 ]
+[v startServoOutput@io io `uc  1 a 1 20 ]
+"497
+} 0
+"525
+[v _startMultiOutput startMultiOutput `(v  1 e 1 0 ]
+{
+[v startMultiOutput@io io `uc  1 a 1 wreg ]
+[v startMultiOutput@io io `uc  1 a 1 wreg ]
+[v startMultiOutput@action action `uc  1 p 1 17 ]
+"527
+[v startMultiOutput@io io `uc  1 a 1 19 ]
+"537
+} 0
+"507
+[v _startBounceOutput startBounceOutput `(v  1 e 1 0 ]
+{
+[v startBounceOutput@io io `uc  1 a 1 wreg ]
+[v startBounceOutput@io io `uc  1 a 1 wreg ]
+[v startBounceOutput@action action `uc  1 p 1 17 ]
+[v startBounceOutput@io io `uc  1 a 1 18 ]
+"518
+} 0
+"547
+[v _setServoState setServoState `(v  1 e 1 0 ]
+{
+[v setServoState@io io `uc  1 a 1 wreg ]
+[v setServoState@io io `uc  1 a 1 wreg ]
+[v setServoState@action action `uc  1 p 1 17 ]
+[v setServoState@io io `uc  1 a 1 20 ]
+"564
+} 0
+"598
+[v _setMultiState setMultiState `(v  1 e 1 0 ]
+{
+[v setMultiState@io io `uc  1 a 1 wreg ]
+[v setMultiState@io io `uc  1 a 1 wreg ]
+[v setMultiState@action action `uc  1 p 1 17 ]
+[v setMultiState@io io `uc  1 a 1 21 ]
+"617
+} 0
+"574
+[v _setBounceState setBounceState `(v  1 e 1 0 ]
+{
+[v setBounceState@io io `uc  1 a 1 wreg ]
+[v setBounceState@io io `uc  1 a 1 wreg ]
+[v setBounceState@action action `uc  1 p 1 17 ]
+[v setBounceState@io io `uc  1 a 1 20 ]
+"591
+} 0
+"4 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lbdiv.c
+[v ___lbdiv __lbdiv `(uc  1 e 1 0 ]
+{
+[v ___lbdiv@dividend dividend `uc  1 a 1 wreg ]
+"6
+[v ___lbdiv@quotient quotient `uc  1 a 1 20 ]
+"7
+[v ___lbdiv@counter counter `uc  1 a 1 19 ]
+"4
+[v ___lbdiv@dividend dividend `uc  1 a 1 wreg ]
+[v ___lbdiv@divisor divisor `uc  1 p 1 17 ]
+"9
+[v ___lbdiv@dividend dividend `uc  1 a 1 18 ]
+"26
+} 0
+"590 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doNvrd doNvrd `(v  1 e 1 0 ]
+{
+[v doNvrd@NVindex NVindex `uc  1 a 1 wreg ]
+"599
+[v doNvrd@flashIndex flashIndex `ui  1 a 2 52 ]
+"590
+[v doNvrd@NVindex NVindex `uc  1 a 1 wreg ]
+"593
+[v doNvrd@NVindex NVindex `uc  1 a 1 54 ]
+"609
+} 0
+"319 C:\Users\Ian/github/CBUSlib/events.c
+[v _doNnevn doNnevn `(v  1 e 1 0 ]
+{
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"325
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v doNnevn@f f `S30  1 a 1 54 ]
+"323
+[v doNnevn@i i `uc  1 a 1 56 ]
+"322
+[v doNnevn@count count `uc  1 a 1 55 ]
+"333
+} 0
+"780 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doNnclr doNnclr `(v  1 e 1 0 ]
+{
+"791
+} 0
+"340 C:\Users\Ian/github/CBUSlib/events.c
+[v _doNerd doNerd `(v  1 e 1 0 ]
+{
+"343
+} 0
+"375
+[v _doNenrd doNenrd `(v  1 e 1 0 ]
+{
+[v doNenrd@index index `uc  1 a 1 wreg ]
+"377
+[v doNenrd@n n `ui  1 a 2 54 ]
+"376
+[v doNenrd@tableIndex tableIndex `uc  1 a 1 53 ]
+"375
+[v doNenrd@index index `uc  1 a 1 wreg ]
+"379
+[v doNenrd@index index `uc  1 a 1 52 ]
+"399
+} 0
+"837
+[v _evtIdxToTableIndex evtIdxToTableIndex `(uc  1 e 1 0 ]
+{
+[v evtIdxToTableIndex@evtIdx evtIdx `uc  1 a 1 wreg ]
+[v evtIdxToTableIndex@evtIdx evtIdx `uc  1 a 1 wreg ]
+[v evtIdxToTableIndex@evtIdx evtIdx `uc  1 a 1 17 ]
+"839
+} 0
+"877 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doEvuln doEvuln `(v  1 e 1 0 ]
+{
+[v doEvuln@nodeNumber nodeNumber `ui  1 p 2 68 ]
+[v doEvuln@eventNumber eventNumber `ui  1 p 2 70 ]
+"881
+} 0
+"429 C:\Users\Ian/github/CBUSlib/events.c
+[v _removeEvent removeEvent `(uc  1 e 1 0 ]
+{
+"431
+[v removeEvent@tableIndex tableIndex `uc  1 a 1 67 ]
+"429
+[v removeEvent@nodeNumber nodeNumber `ui  1 p 2 63 ]
+[v removeEvent@eventNumber eventNumber `ui  1 p 2 65 ]
+"435
+} 0
+"802 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doEvlrn doEvlrn `(v  1 e 1 0 ]
+{
+"804
+[v doEvlrn@error error `uc  1 a 1 118 ]
+"802
+[v doEvlrn@nodeNumber nodeNumber `ui  1 p 2 112 ]
+[v doEvlrn@eventNumber eventNumber `ui  1 p 2 114 ]
+[v doEvlrn@evNum evNum `uc  1 p 1 116 ]
+[v doEvlrn@evVal evVal `uc  1 p 1 117 ]
+"823
+} 0
+"167 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _APP_addEvent APP_addEvent `(uc  1 e 1 0 ]
+{
+"170
+[v APP_addEvent@tableIndex tableIndex `uc  1 a 1 111 ]
+"167
+[v APP_addEvent@nodeNumber nodeNumber `ui  1 p 2 104 ]
+[v APP_addEvent@eventNumber eventNumber `ui  1 p 2 106 ]
+[v APP_addEvent@evNum evNum `uc  1 p 1 108 ]
+[v APP_addEvent@evVal evVal `uc  1 p 1 109 ]
+[v APP_addEvent@forceOwnNN forceOwnNN `uc  1 p 1 110 ]
+"180
+} 0
+"185 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[v _doAreq doAreq `(v  1 e 1 0 ]
+{
+"201
+[v doAreq@status status `uc  1 a 1 69 ]
+"200
+[v doAreq@thisByte thisByte `uc  1 a 1 68 ]
+"199
+[v doAreq@thisBit thisBit `uc  1 a 1 67 ]
+"187
+[v doAreq@ev0 ev0 `i  1 a 2 75 ]
+"186
+[v doAreq@happening happening `uc  1 a 1 77 ]
+"189
+[v doAreq@tableIndex tableIndex `uc  1 a 1 74 ]
+"185
+[v doAreq@nodeNumber nodeNumber `ui  1 p 2 59 ]
+[v doAreq@eventNumber eventNumber `ui  1 p 2 61 ]
+"218
+} 0
+"538 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _QNNrespond QNNrespond `(v  1 e 1 0 ]
+{
+[s S1850 . 20 `uc 1 manufacturer 1 0 `uc 1 minor_ver 1 1 `uc 1 module_id 1 2 `uc 1 number_of_events 1 3 `uc 1 evs_per_event 1 4 `uc 1 number_of_nvs 1 5 `uc 1 major_ver 1 6 `uc 1 module_flags 1 7 `uc 1 cpu_id 1 8 `uc 1 bus_type 1 9 `ul 1 load_address 4 10 `ul 1 cpumid 4 14 `uc 1 cpuman 1 18 `uc 1 beta 1 19 ]
+"540
+[u S4278 . 20 `S1850 1 params 20 0 `[20]uc 1 bytes 20 0 ]
+[v QNNrespond@paramptr paramptr `*.33S4278  1 a 3 51 ]
+"549
+} 0
+"522
+[v _getParFlags getParFlags `(uc  1 e 1 0 ]
+{
+[s S1850 . 20 `uc 1 manufacturer 1 0 `uc 1 minor_ver 1 1 `uc 1 module_id 1 2 `uc 1 number_of_events 1 3 `uc 1 evs_per_event 1 4 `uc 1 number_of_nvs 1 5 `uc 1 major_ver 1 6 `uc 1 module_flags 1 7 `uc 1 cpu_id 1 8 `uc 1 bus_type 1 9 `ul 1 load_address 4 10 `ul 1 cpumid 4 14 `uc 1 cpuman 1 18 `uc 1 beta 1 19 ]
+"523
+[u S4278 . 20 `S1850 1 params 20 0 `[20]uc 1 bytes 20 0 ]
+[v getParFlags@paramptr paramptr `*.33S4278  1 a 3 17 ]
+"532
+} 0
+"800 C:\Users\Ian/github/CBUSlib/events.c
+[v _parseCbusEvent parseCbusEvent `(uc  1 e 1 0 ]
+{
+"801
+[v parseCbusEvent@nodeNumber nodeNumber `ui  1 a 2 65 ]
+"802
+[v parseCbusEvent@eventNumber eventNumber `ui  1 a 2 63 ]
+"803
+[v parseCbusEvent@tableIndex tableIndex `uc  1 a 1 62 ]
+"800
+[v parseCbusEvent@msg msg `*.39uc  1 p 2 59 ]
+"822
+} 0
+"223 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _processEvent processEvent `(v  1 e 1 0 ]
+{
+[v processEvent@tableIndex tableIndex `uc  1 a 1 wreg ]
+"292
+[v processEvent@nextSimultaneous nextSimultaneous `uc  1 a 1 48 ]
+"290
+[v processEvent@nextAction nextAction `i  1 a 2 46 ]
+"227
+[v processEvent@action action `i  1 a 2 53 ]
+"224
+[v processEvent@e e `uc  1 a 1 52 ]
+"226
+[v processEvent@ca ca `uc  1 a 1 51 ]
+"228
+[v processEvent@masked_action masked_action `uc  1 a 1 50 ]
+"225
+[v processEvent@io io `uc  1 a 1 49 ]
+"230
+[v processEvent@opc opc `uc  1 a 1 45 ]
+"223
+[v processEvent@tableIndex tableIndex `uc  1 a 1 wreg ]
+[v processEvent@msg msg `*.39uc  1 p 2 40 ]
+"230
+[v processEvent@tableIndex tableIndex `uc  1 a 1 44 ]
+"355
+} 0
+"158 C:\Users\Ian/github/CANMIOfirmware/actionQueue.c
+[v _setNormalActions setNormalActions `(v  1 e 1 0 ]
+{
+"160
+} 0
+"151
+[v _setExpeditedActions setExpeditedActions `(v  1 e 1 0 ]
+{
+"153
+} 0
+"77
+[v _pushAction pushAction `(uc  1 e 1 0 ]
+{
+[v pushAction@a a `uc  1 a 1 wreg ]
+[v pushAction@a a `uc  1 a 1 wreg ]
+[v pushAction@a a `uc  1 a 1 28 ]
+"82
+} 0
+"46 C:\Users\Ian/github/CANMIOfirmware/queue.c
+[v _push push `(uc  1 e 1 0 ]
+{
+[s S41 Queue 5 `uc 1 size 1 0 `uc 1 readIdx 1 1 `uc 1 writeIdx 1 2 `*.39uc 1 queue 2 3 ]
+[v push@q q `*.39S41  1 p 2 17 ]
+[v push@a a `uc  1 p 1 19 ]
+"51
+} 0
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+{
+"10
+[v ___lwmod@counter counter `uc  1 a 1 21 ]
+"7
+[v ___lwmod@dividend dividend `ui  1 p 2 17 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 19 ]
+"25
+} 0
+"7 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\lwdiv.c
+[v ___lwdiv __lwdiv `(ui  1 e 2 0 ]
+{
+"10
+[v ___lwdiv@quotient quotient `ui  1 a 2 22 ]
+"11
+[v ___lwdiv@counter counter `uc  1 a 1 21 ]
+"7
+[v ___lwdiv@dividend dividend `ui  1 p 2 17 ]
+[v ___lwdiv@divisor divisor `ui  1 p 2 19 ]
+"30
+} 0
+"179 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _longFlicker longFlicker `(v  1 e 1 0 ]
+{
+"182
+} 0
+"563 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _factoryReset factoryReset `(v  1 e 1 0 ]
+{
+"566
+} 0
+"568
+[v _factoryResetFlash factoryResetFlash `(v  1 e 1 0 ]
+{
+"577
+} 0
+"596
+[v _setType setType `(v  1 e 1 0 ]
+{
+[v setType@io io `uc  1 a 1 wreg ]
+"597
+[v setType@addr addr `ui  1 a 2 111 ]
+"596
+[v setType@io io `uc  1 a 1 wreg ]
+[v setType@type type `uc  1 p 1 108 ]
+"598
+[v setType@io io `uc  1 a 1 113 ]
+"619
+} 0
+"67 C:\Users\Ian/github/CANMIOfirmware/analogue.c
+[v _initAnaloguePort initAnaloguePort `(v  1 e 1 0 ]
+{
+[v initAnaloguePort@io io `uc  1 a 1 wreg ]
+[v initAnaloguePort@io io `uc  1 a 1 wreg ]
+[v initAnaloguePort@io io `uc  1 a 1 17 ]
+"70
+} 0
+"210 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[v _defaultNVs defaultNVs `(v  1 e 1 0 ]
+{
+[v defaultNVs@i i `uc  1 a 1 wreg ]
+[v defaultNVs@i i `uc  1 a 1 wreg ]
+[v defaultNVs@type type `uc  1 p 1 43 ]
+"212
+[v defaultNVs@i i `uc  1 a 1 46 ]
+"280
+} 0
+"15 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+{
+"17
+[v ___wmul@product product `ui  1 a 2 21 ]
+"15
+[v ___wmul@multiplier multiplier `ui  1 p 2 17 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 19 ]
+"53
+} 0
+"104 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _defaultEvents defaultEvents `(v  1 e 1 0 ]
+{
+[v defaultEvents@io io `uc  1 a 1 wreg ]
+"105
+[v defaultEvents@en en `ui  1 a 2 105 ]
+"104
+[v defaultEvents@io io `uc  1 a 1 wreg ]
+[v defaultEvents@type type `uc  1 p 1 104 ]
+[v defaultEvents@io io `uc  1 a 1 107 ]
+"153
+} 0
+"198
+[v _clearEvents clearEvents `(v  1 e 1 0 ]
+{
+[v clearEvents@io io `uc  1 a 1 wreg ]
+[v clearEvents@io io `uc  1 a 1 wreg ]
+[v clearEvents@io io `uc  1 a 1 93 ]
+"202
+} 0
+"152 C:\Users\Ian/github/CBUSlib/happeningsActions.c
+[v _deleteHappeningRange deleteHappeningRange `(v  1 e 1 0 ]
+{
+[v deleteHappeningRange@action action `uc  1 a 1 wreg ]
+"157
+[v deleteHappeningRange@pa pa `uc  1 a 1 90 ]
+"153
+[v deleteHappeningRange@tableIndex tableIndex `uc  1 a 1 91 ]
+"152
+[v deleteHappeningRange@action action `uc  1 a 1 wreg ]
+[v deleteHappeningRange@number number `uc  1 p 1 83 ]
+"154
+[v deleteHappeningRange@action action `uc  1 a 1 89 ]
+"170
+} 0
+"226
+[v _deleteActionRange deleteActionRange `(v  1 e 1 0 ]
+{
+[v deleteActionRange@action action `uc  1 a 1 wreg ]
+"231
+[v deleteActionRange@e e `uc  1 a 1 91 ]
+"230
+[v deleteActionRange@updated updated `uc  1 a 1 89 ]
+"227
+[v deleteActionRange@tableIndex tableIndex `uc  1 a 1 92 ]
+"226
+[v deleteActionRange@action action `uc  1 a 1 wreg ]
+[v deleteActionRange@number number `uc  1 p 1 83 ]
+"228
+[v deleteActionRange@action action `uc  1 a 1 90 ]
+"251
+} 0
+"483 C:\Users\Ian/github/CBUSlib/events.c
+[v _addEvent addEvent `(uc  1 e 1 0 ]
+{
+"503
+[v addEvent@e e `uc  1 a 1 102 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"500
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v addEvent@f f `S30  1 a 1 101 ]
+"484
+[v addEvent@tableIndex tableIndex `uc  1 a 1 103 ]
+"485
+[v addEvent@error error `uc  1 a 1 100 ]
+"483
+[v addEvent@nodeNumber nodeNumber `ui  1 p 2 83 ]
+[v addEvent@eventNumber eventNumber `ui  1 p 2 85 ]
+[v addEvent@evNum evNum `uc  1 p 1 87 ]
+[v addEvent@evVal evVal `uc  1 p 1 88 ]
+[v addEvent@forceOwnNN forceOwnNN `uc  1 p 1 89 ]
+"538
+} 0
+"587
+[v _writeEv writeEv `(uc  1 e 1 0 ]
+{
+[v writeEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+"620
+[v writeEv@e e `uc  1 a 1 79 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"617
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v writeEv@nextF nextF `S30  1 a 1 78 ]
+"594
+[v writeEv@nextIdx nextIdx `uc  1 a 1 82 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"588
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v writeEv@f f `S30  1 a 1 80 ]
+"589
+[v writeEv@startIndex startIndex `uc  1 a 1 77 ]
+"587
+[v writeEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+[v writeEv@evNum evNum `uc  1 p 1 65 ]
+[v writeEv@evVal evVal `uc  1 p 1 66 ]
+"589
+[v writeEv@tableIndex tableIndex `uc  1 a 1 81 ]
+"656
+} 0
+"354 C:\Users\Ian/github/CBUSlib/romops.c
+[v _setFlashWord setFlashWord `(v  1 e 1 0 ]
+{
+[v setFlashWord@flashAddr flashAddr `*.33ui  1 p 3 39 ]
+[v setFlashWord@flashData flashData `ui  1 p 2 42 ]
+"360
+} 0
+"857 C:\Users\Ian/github/CBUSlib/events.c
+[v _checkRemoveTableEntry checkRemoveTableEntry `(v  1 e 1 0 ]
+{
+[v checkRemoveTableEntry@tableIndex tableIndex `uc  1 a 1 wreg ]
+"858
+[v checkRemoveTableEntry@e e `uc  1 a 1 64 ]
+"857
+[v checkRemoveTableEntry@tableIndex tableIndex `uc  1 a 1 wreg ]
+"860
+[v checkRemoveTableEntry@tableIndex tableIndex `uc  1 a 1 63 ]
+"871
+} 0
+"437
+[v _removeTableEntry removeTableEntry `(uc  1 e 1 0 ]
+{
+[v removeTableEntry@tableIndex tableIndex `uc  1 a 1 wreg ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"438
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v removeTableEntry@f f `S30  1 a 1 61 ]
+"437
+[v removeTableEntry@tableIndex tableIndex `uc  1 a 1 wreg ]
+"443
+[v removeTableEntry@tableIndex tableIndex `uc  1 a 1 62 ]
+"468
+} 0
+"727
+[v _getEVs getEVs `(uc  1 e 1 0 ]
+{
+[v getEVs@tableIndex tableIndex `uc  1 a 1 wreg ]
+"736
+[v getEVs@evIdx evIdx `uc  1 a 1 37 ]
+"729
+[v getEVs@evNum evNum `uc  1 a 1 39 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"728
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v getEVs@f f `S30  1 a 1 36 ]
+"727
+[v getEVs@tableIndex tableIndex `uc  1 a 1 wreg ]
+"731
+[v getEVs@tableIndex tableIndex `uc  1 a 1 38 ]
+"754
+} 0
+"547
+[v _findEvent findEvent `(uc  1 e 1 0 ]
+{
+"553
+[v findEvent@en en `ui  1 a 2 54 ]
+[v findEvent@nn nn `ui  1 a 2 52 ]
+"552
+[v findEvent@tableIndex tableIndex `uc  1 a 1 58 ]
+"550
+[v findEvent@chainIdx chainIdx `uc  1 a 1 57 ]
+"549
+[v findEvent@hash hash `uc  1 a 1 56 ]
+"547
+[v findEvent@nodeNumber nodeNumber `ui  1 p 2 46 ]
+[v findEvent@eventNumber eventNumber `ui  1 p 2 48 ]
+"577
+} 0
+"664 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _configIO configIO `(v  1 e 1 0 ]
+{
+[v configIO@i i `uc  1 a 1 wreg ]
+"665
+[v configIO@action action `uc  1 a 1 34 ]
+"664
+[v configIO@i i `uc  1 a 1 wreg ]
+"666
+[v configIO@i i `uc  1 a 1 35 ]
+"731
+} 0
+"227 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v _setDigitalOutput setDigitalOutput `(v  1 e 1 0 ]
+{
+[v setDigitalOutput@io io `uc  1 a 1 wreg ]
+"228
+[v setDigitalOutput@pinState pinState `uc  1 a 1 26 ]
+"227
+[v setDigitalOutput@io io `uc  1 a 1 wreg ]
+[v setDigitalOutput@state state `uc  1 p 1 23 ]
+[v setDigitalOutput@io io `uc  1 a 1 27 ]
+"250
+} 0
+"257
+[v _setOutputPin setOutputPin `(v  1 e 1 0 ]
+{
+[v setOutputPin@io io `uc  1 a 1 wreg ]
+[v setOutputPin@io io `uc  1 a 1 wreg ]
+[v setOutputPin@state state `uc  1 p 1 17 ]
+[v setOutputPin@io io `uc  1 a 1 22 ]
+"287
+} 0
+"195 C:\Users\Ian/github/CANMIOfirmware/mioNv.c
+[v _factoryResetGlobalNv factoryResetGlobalNv `(v  1 e 1 0 ]
+{
+"204
+} 0
+"228 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+"178
+"181
+"182
+[s S272 . 2 `uc 1 input_on_delay 1 0 `uc 1 input_off_delay 1 1 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"186 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S275 . 2 `uc 1 output_pulse_duration 1 0 `uc 1 output_flash_period 1 1 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"190 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S278 . 4 `uc 1 servo_start_pos 1 0 `uc 1 servo_end_pos 1 1 `uc 1 servo_se_speed 1 2 `uc 1 servo_es_speed 1 3 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"196 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S283 . 5 `uc 1 bounce_upper_pos 1 0 `uc 1 bounce_lower_pos 1 1 `uc 1 bounce_coeff 1 2 `uc 1 bounce_pull_speed 1 3 `uc 1 bounce_pull_pause 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"203 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S289 . 5 `uc 1 multi_num_pos 1 0 `uc 1 multi_pos1 1 1 `uc 1 multi_pos2 1 2 `uc 1 multi_pos3 1 3 `uc 1 multi_pos4 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"210 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S295 . 3 `uc 1 analogue_unused 1 0 `uc 1 analogue_threshold 1 1 `uc 1 analogue_hysteresis 1 2 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+"215 C:\Users\Ian/github/CANMIOfirmware/mioNv.h
+[s S299 . 5 `uc 1 magnet_setup 1 0 `uc 1 magnet_threshold 1 1 `uc 1 magnet_hysteresis 1 2 `uc 1 magnet_offset_h 1 3 `uc 1 magnet_offset_l 1 4 ]
+"47 C:\Users\Ian/github/CANMIOfirmware/nvCache.c
+[u S305 . 5 `S272 1 nv_input 2 0 `S275 1 nv_output 2 0 `S278 1 nv_servo 4 0 `S283 1 nv_bounce 5 0 `S289 1 nv_multi 5 0 `S295 1 nv_analogue_in 3 0 `S299 1 nv_magnet 5 0 ]
+[s S313 . 7 `uc 1 type 1 0 `uc 1 flags 1 1 `S305 1 nv_io 5 2 ]
+[s S317 . 128 `uc 1 nv_version 1 0 `uc 1 sendSodDelay 1 1 `uc 1 hbDelay 1 2 `uc 1 servo_speed 1 3 `uc 1 pullups 1 4 `uc 1 responseDelay 1 5 `[10]uc 1 spare 10 6 `[16]S313 1 io 112 16 ]
+[v _loadNvCache loadNvCache `(*.39S317  1 e 2 0 ]
+{
+"48
+[v loadNvCache@np np `*.39uc  1 a 2 32 ]
+"49
+[v loadNvCache@i i `uc  1 a 1 34 ]
+"55
+} 0
+"95 C:\Users\Ian/github/CANMIOfirmware/mioEvents.c
+[v _factoryResetGlobalEvents factoryResetGlobalEvents `(v  1 e 1 0 ]
+{
+"97
+} 0
+"303 C:\Users\Ian/github/CBUSlib/events.c
+[v _clearAllEvents clearAllEvents `(v  1 e 1 0 ]
+{
+"304
+[v clearAllEvents@tableIndex tableIndex `uc  1 a 1 61 ]
+"313
+} 0
+"341 C:\Users\Ian/github/CBUSlib/romops.c
+[v _writeFlashByte writeFlashByte `(v  1 e 1 0 ]
+{
+[v writeFlashByte@flashAddr flashAddr `*.36uc  1 p 3 39 ]
+[v writeFlashByte@flashData flashData `uc  1 p 1 42 ]
+"347
+} 0
+"308
+[v _writeFlashImage writeFlashImage `(v  1 e 1 0 ]
+{
+"310
+[v writeFlashImage@offset offset `*.39uc  1 a 2 37 ]
+"308
+[v writeFlashImage@addr addr `*.36uc  1 p 3 29 ]
+[v writeFlashImage@data data `uc  1 p 1 32 ]
+"334
+} 0
+"551 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _factoryResetEE factoryResetEE `(v  1 e 1 0 ]
+{
+"556
+} 0
+"105 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusMsgReceived cbusMsgReceived `(uc  1 e 1 0 ]
+{
+[v cbusMsgReceived@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusMsgReceived@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusMsgReceived@msg msg `*.39uc  1 p 2 65 ]
+"110
+[v cbusMsgReceived@cbusNum cbusNum `uc  1 a 1 67 ]
+"123
+} 0
+"496 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canbusRecv canbusRecv `(uc  1 e 1 0 ]
+{
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"499
+[v canbusRecv@ptr ptr `*.39S351  1 a 2 63 ]
+"500
+[v canbusRecv@msgFound msgFound `uc  1 a 1 62 ]
+"496
+[v canbusRecv@msg msg `*.39S351  1 p 2 59 ]
+"556
+} 0
+"645
+[v _processEnumeration processEnumeration `(v  1 e 1 0 ]
+{
+"648
+[v processEnumeration@i i `uc  1 a 1 58 ]
+[v processEnumeration@newCanId newCanId `uc  1 a 1 57 ]
+[v processEnumeration@enumResult enumResult `uc  1 a 1 56 ]
+"692
+} 0
+"307
+[v _setNewCanId setNewCanId `(uc  1 e 1 0 ]
+{
+[v setNewCanId@newCanId newCanId `uc  1 a 1 wreg ]
+[v setNewCanId@newCanId newCanId `uc  1 a 1 wreg ]
+"310
+[v setNewCanId@newCanId newCanId `uc  1 a 1 25 ]
+"329
+} 0
+"742 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _doError doError `(v  1 e 1 0 ]
+{
+[v doError@code code `uc  1 a 1 wreg ]
+[v doError@code code `uc  1 a 1 wreg ]
+"744
+[v doError@code code `uc  1 a 1 51 ]
+"747
+} 0
+"149 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusSendOpcMyNN cbusSendOpcMyNN `(uc  1 e 1 0 ]
+{
+[v cbusSendOpcMyNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendOpcMyNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendOpcMyNN@opc opc `uc  1 p 1 49 ]
+[v cbusSendOpcMyNN@msg msg `*.30uc  1 p 1 50 ]
+"151
+[v cbusSendOpcMyNN@cbusNum cbusNum `uc  1 a 1 51 ]
+"153
+} 0
+"255
+[v _cbusSendMsgMyNN cbusSendMsgMyNN `(uc  1 e 1 0 ]
+{
+[v cbusSendMsgMyNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsgMyNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsgMyNN@msg msg `*.30uc  1 p 1 47 ]
+"257
+[v cbusSendMsgMyNN@cbusNum cbusNum `uc  1 a 1 48 ]
+"260
+} 0
+"700 C:\Users\Ian/github/CBUSlib/can18.c
+[v _checkIncomingPacket checkIncomingPacket `(uc  1 e 1 0 ]
+{
+"703
+[v checkIncomingPacket@incomingCanId incomingCanId `uc  1 a 1 34 ]
+"704
+[v checkIncomingPacket@msgFound msgFound `uc  1 a 1 33 ]
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"700
+[v checkIncomingPacket@ptr ptr `*.39S351  1 p 2 27 ]
+"734
+} 0
+"635
+[v _doEnum doEnum `(v  1 e 1 0 ]
+{
+[v doEnum@sendResult sendResult `uc  1 a 1 wreg ]
+[v doEnum@sendResult sendResult `uc  1 a 1 wreg ]
+[v doEnum@sendResult sendResult `uc  1 a 1 17 ]
+"640
+} 0
+"792
+[v __PointBuffer _PointBuffer `(*.39uc  1 s 2 _PointBuffer ]
+{
+[v __PointBuffer@b b `uc  1 a 1 wreg ]
+"793
+[v __PointBuffer@pt pt `*.39uc  1 a 2 20 ]
+"792
+[v __PointBuffer@b b `uc  1 a 1 wreg ]
+[v __PointBuffer@b b `uc  1 a 1 19 ]
+"822
+} 0
+"134 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _FLiMSWCheck FLiMSWCheck `(v  1 e 1 0 ]
+{
+"263
+} 0
+"118 C:\Users\Ian/github/CBUSlib/StatusLeds.c
+[v _startFLiMFlash startFLiMFlash `(v  1 e 1 0 ]
+{
+[v startFLiMFlash@fast fast `uc  1 a 1 wreg ]
+[v startFLiMFlash@fast fast `uc  1 a 1 wreg ]
+"120
+[v startFLiMFlash@fast fast `uc  1 a 1 28 ]
+"122
+} 0
+"108
+[v _doFLiMFlash doFLiMFlash `(v  1 e 1 0 ]
+{
+"112
+} 0
+"97
+[v _setStatusLed setStatusLed `(v  1 e 1 0 ]
+{
+[v setStatusLed@FLiMLED FLiMLED `uc  1 a 1 wreg ]
+[v setStatusLed@FLiMLED FLiMLED `uc  1 a 1 wreg ]
+"99
+[v setStatusLed@FLiMLED FLiMLED `uc  1 a 1 17 ]
+"103
+} 0
+"77
+[v _setSLiMLed setSLiMLed `(v  1 e 1 0 ]
+{
+"82
+} 0
+"86
+[v _setFLiMLed setFLiMLed `(v  1 e 1 0 ]
+{
+"91
+} 0
+"272 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _requestNodeNumber requestNodeNumber `(v  1 e 1 0 ]
+{
+"274
+[v requestNodeNumber@local_cbusMsg local_cbusMsg `[9]uc  1 a 9 56 ]
+"279
+} 0
+"767
+[v _SaveNodeDetails SaveNodeDetails `(v  1 e 1 0 ]
+{
+"768
+[v SaveNodeDetails@nodeID nodeID `ui  1 p 2 56 ]
+[v SaveNodeDetails@flimState flimState `E12263  1 p 1 58 ]
+"774
+} 0
+"905 C:\Users\Ian/github/CBUSlib/events.c
+[v _rebuildHashtable rebuildHashtable `(v  1 e 1 0 ]
+{
+"910
+[v rebuildHashtable@a a `i  1 a 2 50 ]
+"909
+[v rebuildHashtable@tableIndex tableIndex `uc  1 a 1 55 ]
+"908
+[v rebuildHashtable@chainIdx chainIdx `uc  1 a 1 54 ]
+"913
+[v rebuildHashtable@happening happening `uc  1 a 1 53 ]
+"907
+[v rebuildHashtable@hash hash `uc  1 a 1 52 ]
+"951
+} 0
+"763
+[v _getNN getNN `(ui  1 e 2 0 ]
+{
+[v getNN@tableIndex tableIndex `uc  1 a 1 wreg ]
+"765
+[v getNN@lo lo `ui  1 a 2 36 ]
+"764
+[v getNN@hi hi `ui  1 a 2 34 ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"766
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v getNN@f f `S30  1 a 1 38 ]
+"763
+[v getNN@tableIndex tableIndex `uc  1 a 1 wreg ]
+"768
+[v getNN@tableIndex tableIndex `uc  1 a 1 39 ]
+"775
+} 0
+"891
+[v _getHash getHash `(uc  1 e 1 0 ]
+{
+"892
+[v getHash@hash hash `uc  1 a 1 45 ]
+"891
+[v getHash@nn nn `ui  1 p 2 40 ]
+[v getHash@en en `ui  1 p 2 42 ]
+"899
+} 0
+"665
+[v _getEv getEv `(i  1 e 2 0 ]
+{
+[v getEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"666
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v getEv@f f `S30  1 a 1 40 ]
+"665
+[v getEv@tableIndex tableIndex `uc  1 a 1 wreg ]
+[v getEv@evNum evNum `uc  1 p 1 33 ]
+"667
+[v getEv@tableIndex tableIndex `uc  1 a 1 41 ]
+"692
+} 0
+"287
+[v _validStart validStart `(uc  1 e 1 0 ]
+{
+[v validStart@tableIndex tableIndex `uc  1 a 1 wreg ]
+[s S24 . 1 `uc 1 eVsUsed 1 0 :4:0 
+`uc 1 continued 1 0 :1:4 
+`uc 1 continuation 1 0 :1:5 
+`uc 1 forceOwnNN 1 0 :1:6 
+`uc 1 freeEntry 1 0 :1:7 
+]
+"288
+[u S30 . 1 `S24 1 . 1 0 `uc 1 asByte 1 0 ]
+[v validStart@f f `S30  1 a 1 32 ]
+"287
+[v validStart@tableIndex tableIndex `uc  1 a 1 wreg ]
+"292
+[v validStart@tableIndex tableIndex `uc  1 a 1 31 ]
+"298
+} 0
+"784
+[v _getEN getEN `(ui  1 e 2 0 ]
+{
+[v getEN@tableIndex tableIndex `uc  1 a 1 wreg ]
+"786
+[v getEN@lo lo `ui  1 a 2 36 ]
+"785
+[v getEN@hi hi `ui  1 a 2 34 ]
+"784
+[v getEN@tableIndex tableIndex `uc  1 a 1 wreg ]
+"788
+[v getEN@tableIndex tableIndex `uc  1 a 1 38 ]
+"792
+} 0
+"243 C:\Users\Ian/github/CBUSlib/romops.c
+[v _readFlashBlock readFlashBlock `(uc  1 e 1 0 ]
+{
+"272
+[v readFlashBlock@i i `uc  1 a 1 28 ]
+"243
+[v readFlashBlock@flashAddr flashAddr `ui  1 p 2 22 ]
+"300
+} 0
+"217
+[v _flushFlashImage flushFlashImage `(v  1 e 1 0 ]
+{
+"226
+} 0
+"192
+[v _writeFlashWithErase writeFlashWithErase `(v  1 e 1 0 ]
+{
+"212
+} 0
+"101
+[v _writeFlashShort writeFlashShort `(v  1 e 1 0 ]
+{
+"107
+[v writeFlashShort@i i `uc  1 a 1 21 ]
+"186
+} 0
+"583 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _isSuitableTimeToWriteFlash isSuitableTimeToWriteFlash `(uc  1 e 1 0 ]
+{
+"589
+} 0
+"635 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _isNoServoPulses isNoServoPulses `(uc  1 e 1 0 ]
+{
+"640
+} 0
+"463 C:\Users\Ian/github/CBUSlib/romops.c
+[v _ee_write_short ee_write_short `(v  1 e 1 0 ]
+{
+"464
+[v ee_write_short@ee_addr ee_addr `ui  1 a 2 27 ]
+"463
+[v ee_write_short@addr addr `ui  1 p 2 23 ]
+[v ee_write_short@data data `ui  1 p 2 25 ]
+"467
+} 0
+"409
+[v _ee_write ee_write `(v  1 e 1 0 ]
+{
+"410
+[v ee_write@interruptEnabled interruptEnabled `uc  1 a 1 22 ]
+"409
+[v ee_write@addr addr `ui  1 p 2 19 ]
+[v ee_write@data data `uc  1 p 1 21 ]
+"439
+} 0
+"382
+[v _ee_read ee_read `(uc  1 e 1 0 ]
+{
+[v ee_read@addr addr `ui  1 p 2 17 ]
+"401
+} 0
+"286 C:\Users\Ian/github/CBUSlib/FliM.c
+[v _SLiMRevert SLiMRevert `(v  1 e 1 0 ]
+{
+"292
+} 0
+"166 C:\Users\Ian/github/CBUSlib/cbus.c
+[v _cbusSendOpcNN cbusSendOpcNN `(uc  1 e 1 0 ]
+{
+[v cbusSendOpcNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendOpcNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendOpcNN@opc opc `uc  1 p 1 51 ]
+[v cbusSendOpcNN@nodeID nodeID `ui  1 p 2 52 ]
+[v cbusSendOpcNN@msg msg `*.30uc  1 p 1 54 ]
+"168
+[v cbusSendOpcNN@cbusNum cbusNum `uc  1 a 1 55 ]
+"170
+} 0
+"270
+[v _cbusSendMsgNN cbusSendMsgNN `(uc  1 e 1 0 ]
+{
+[v cbusSendMsgNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsgNN@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsgNN@eventNode eventNode `ui  1 p 2 47 ]
+[v cbusSendMsgNN@msg msg `*.30uc  1 p 1 49 ]
+"272
+[v cbusSendMsgNN@cbusNum cbusNum `uc  1 a 1 50 ]
+"278
+} 0
+"290
+[v _cbusSendMsg cbusSendMsg `(uc  1 e 1 0 ]
+{
+[v cbusSendMsg@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsg@cbusNum cbusNum `uc  1 a 1 wreg ]
+[v cbusSendMsg@msg msg `*.30uc  1 p 1 43 ]
+"293
+[v cbusSendMsg@cbusNum cbusNum `uc  1 a 1 46 ]
+"306
+} 0
+"334 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canSend canSend `(uc  1 e 1 0 ]
+{
+"337
+[v canSend@success success `uc  1 a 1 42 ]
+"334
+[v canSend@msg msg `*.30uc  1 p 1 40 ]
+[v canSend@msgLen msgLen `uc  1 p 1 41 ]
+"346
+} 0
+"350
+[v _canTX canTX `(uc  1 e 1 0 ]
+{
+"352
+[v canTX@ptr ptr `*.39uc  1 a 2 34 ]
+"354
+[v canTX@hiIndex hiIndex `uc  1 a 1 39 ]
+"353
+[v canTX@fullUp fullUp `uc  1 a 1 38 ]
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"350
+[v canTX@msg msg `*.30S351  1 p 1 28 ]
+"407
+} 0
+"160 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v _tickGet tickGet `(ul  1 e 4 0 ]
+{
+[s S823 TickBytes 4 `uc 1 b0 1 0 `uc 1 b1 1 1 `uc 1 b2 1 2 `uc 1 b3 1 3 ]
+"162
+[s S828 TickWords 4 `ui 1 w0 2 0 `ui 1 w1 2 2 ]
+[u S831 _TickValue 4 `ul 1 Val 4 0 `S823 1 byte 4 0 `[4]uc 1 v 4 0 `S828 1 word 4 0 ]
+[v tickGet@currentTime currentTime `S831  1 a 4 23 ]
+"166
+[v tickGet@IntFlag1 IntFlag1 `uc  1 a 1 22 ]
+"167
+[v tickGet@IntFlag2 IntFlag2 `uc  1 a 1 21 ]
+"239
+} 0
+"27 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\memcpy.c
+[v _memcpy memcpy `(*.39v  1 e 2 0 ]
+{
+"31
+[v memcpy@s s `*.39Cuc  1 a 2 26 ]
+"30
+[v memcpy@d d `*.39uc  1 a 2 24 ]
+"32
+[v memcpy@tmp tmp `uc  1 a 1 23 ]
+"27
+[v memcpy@d1 d1 `*.39v  1 p 2 17 ]
+[v memcpy@s1 s1 `*.39Cv  1 p 2 19 ]
+[v memcpy@n n `ui  1 p 2 21 ]
+"41
+} 0
+"756 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _low_isr low_isr `IIL(v  1 e 1 0 ]
+{
+"760
+} 0
+"244 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v _tickISR tickISR `(v  1 e 1 0 ]
+{
+"260
+} 0
+"775 C:\Users\Ian/github/CBUSlib/can18.c
+[v _canInterruptHandler canInterruptHandler `(v  1 e 1 0 ]
+{
+"787
+} 0
+"478
+[v _checkCANTimeout checkCANTimeout `(v  1 e 1 0 ]
+{
+"488
+} 0
+"740
+[v _canTxError canTxError `(v  1 e 1 0 ]
+{
+"767
+} 0
+"428
+[v _checkTxFifo checkTxFifo `(v  1 e 1 0 ]
+{
+"430
+[v checkTxFifo@ptr ptr `*.39uc  1 a 2 28 ]
+"474
+} 0
+"589
+[v _canFillRxFifo canFillRxFifo `(v  1 e 1 0 ]
+{
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"591
+[v canFillRxFifo@ptr ptr `*.39S351  1 a 2 8 ]
+"592
+[v canFillRxFifo@hiIndex hiIndex `uc  1 a 1 7 ]
+"631
+} 0
+"561
+[v i1_insertIntoRxFifo insertIntoRxFifo `(uc  1 e 1 0 ]
+{
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+[v i1insertIntoRxFifo@ptr ptr `*.39S351  1 p 2 27 ]
+"582
+} 0
+"27 C:\Program Files\Microchip\xc8\v2.36\pic\sources\c90\common\memcpy.c
+[v i1_memcpy memcpy `(*.39v  1 e 2 0 ]
+{
+"31
+[v i1memcpy@s s `*.39Cuc  1 a 2 25 ]
+"30
+[v i1memcpy@d d `*.39uc  1 a 2 23 ]
+"32
+[v i1memcpy@tmp tmp `uc  1 a 1 22 ]
+"27
+[v i1memcpy@d1 d1 `*.39v  1 p 2 16 ]
+[v i1memcpy@s1 s1 `*.39Cv  1 p 2 18 ]
+[v i1memcpy@n n `ui  1 p 2 20 ]
+"41
+} 0
+"700 C:\Users\Ian/github/CBUSlib/can18.c
+[v i1_checkIncomingPacket checkIncomingPacket `(uc  1 e 1 0 ]
+{
+"703
+[v i1checkIncomingPacket@incomingCanId incomingCanId `uc  1 a 1 33 ]
+"704
+[v i1checkIncomingPacket@msgFound msgFound `uc  1 a 1 32 ]
+[s S351 . 16 `[14]uc 1 buffer 14 0 `uc 1 status 1 14 `uc 1 pad 1 15 ]
+"700
+[v i1checkIncomingPacket@ptr ptr `*.39S351  1 p 2 26 ]
+"734
+} 0
+"160 C:\Users\Ian/github/CBUSlib/ticktime.c
+[v i1_tickGet tickGet `(ul  1 e 4 0 ]
+{
+[s S823 TickBytes 4 `uc 1 b0 1 0 `uc 1 b1 1 1 `uc 1 b2 1 2 `uc 1 b3 1 3 ]
+"162
+[s S828 TickWords 4 `ui 1 w0 2 0 `ui 1 w1 2 2 ]
+[u S831 _TickValue 4 `ul 1 Val 4 0 `S823 1 byte 4 0 `[4]uc 1 v 4 0 `S828 1 word 4 0 ]
+[v i1tickGet@currentTime currentTime `S831  1 a 4 22 ]
+"166
+[v i1tickGet@IntFlag1 IntFlag1 `uc  1 a 1 21 ]
+"167
+[v i1tickGet@IntFlag2 IntFlag2 `uc  1 a 1 20 ]
+"239
+} 0
+"635 C:\Users\Ian/github/CBUSlib/can18.c
+[v i1_doEnum doEnum `(v  1 e 1 0 ]
+{
+[v i1doEnum@sendResult sendResult `uc  1 a 1 wreg ]
+[v i1doEnum@sendResult sendResult `uc  1 a 1 wreg ]
+[v i1doEnum@sendResult sendResult `uc  1 a 1 16 ]
+"640
+} 0
+"792
+[v i1__PointBuffer _PointBuffer `(*.39uc  1 s 2 i1__PointBuffer ]
+{
+[v i1__PointBuffer@b b `uc  1 a 1 wreg ]
+"793
+[v i1__PointBuffer@pt pt `*.39uc  1 a 2 19 ]
+"792
+[v i1__PointBuffer@b b `uc  1 a 1 wreg ]
+[v i1__PointBuffer@b b `uc  1 a 1 18 ]
+"822
+} 0
+"772 C:\Users\Ian/github/CANMIOfirmware/main.c
+[v _high_isr high_isr `IIH(v  1 e 1 0 ]
+{
+"786
+} 0
+"221 C:\Users\Ian/github/CANMIOfirmware/servo.c
+[v _timer3DoneInterruptHandler timer3DoneInterruptHandler `(v  1 e 1 0 ]
+{
+"224
+} 0
+"216
+[v _timer1DoneInterruptHandler timer1DoneInterruptHandler `(v  1 e 1 0 ]
+{
+"219
+} 0
+"257 C:\Users\Ian/github/CANMIOfirmware/digitalOut.c
+[v i2_setOutputPin setOutputPin `(v  1 e 1 0 ]
+{
+[v i2setOutputPin@io io `uc  1 a 1 wreg ]
+[v i2setOutputPin@io io `uc  1 a 1 wreg ]
+[v i2setOutputPin@state state `uc  1 p 1 0 ]
+[v i2setOutputPin@io io `uc  1 a 1 5 ]
+"287
+} 0

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>com.microchip.mplab.nbide.embedded.makeproject</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/make-project/1">
+            <name>CANMIOfirmware</name>
+            <creation-uuid>eede1502-22d4-4431-936f-1913a5defbef</creation-uuid>
+            <make-project-type>0</make-project-type>
+            <c-extensions>c</c-extensions>
+            <cpp-extensions/>
+            <header-extensions>h</header-extensions>
+            <asminc-extensions/>
+            <sourceEncoding>ISO-8859-1</sourceEncoding>
+            <make-dep-projects/>
+            <sourceRootList>
+                <sourceRootElem>../../github/CANMIOfirmware</sourceRootElem>
+                <sourceRootElem>../../github/CBUSlib</sourceRootElem>
+                <sourceRootElem>.</sourceRootElem>
+                <sourceRootElem>../../github/cbusdefs</sourceRootElem>
+            </sourceRootList>
+            <confList>
+                <confElem>
+                    <name>18f25k80</name>
+                    <type>2</type>
+                </confElem>
+                <confElem>
+                    <name>18f26k80</name>
+                    <type>2</type>
+                </confElem>
+            </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
+        </data>
+    </configuration>
+</project>

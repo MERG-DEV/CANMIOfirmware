@@ -1,0 +1,247 @@
+
+
+Microchip MPLAB XC8 Assembler V2.36 build 20220127204148 
+                                                                                                           Sun Apr 10 16:25:04 2022
+
+
+     1                           	processor	18F26K80
+     2                           	pagewidth 132
+     3                           	psect	const,global,reloc=2,class=CONST,delta=1,noexec
+     4                           	psect	smallconst,global,reloc=2,class=SMALLCONST,delta=1,noexec
+     5                           	psect	mediumconst,global,reloc=2,class=MEDIUMCONST,delta=1,noexec
+     6                           	psect	rbss,global,class=COMRAM,space=1,delta=1,noexec
+     7                           	psect	bss,global,class=RAM,space=1,delta=1,noexec
+     8                           	psect	rdata,global,class=COMRAM,space=1,delta=1,noexec
+     9                           	psect	irdata,global,reloc=2,class=CODE,delta=1,noexec
+    10                           	psect	data,global,class=RAM,space=1,delta=1,noexec
+    11                           	psect	idata,global,reloc=2,class=CODE,delta=1,noexec
+    12                           	psect	nvrram,global,class=COMRAM,space=1,delta=1,noexec
+    13                           	psect	nvbit,global,bit,class=COMRAM,space=1,delta=1,noexec
+    14                           	psect	temp,global,ovrld,class=COMRAM,space=1,delta=1,noexec
+    15                           	psect	struct,global,ovrld,class=COMRAM,space=1,delta=1,noexec
+    16                           	psect	rbit,global,bit,class=COMRAM,space=1,delta=1,noexec
+    17                           	psect	bigbss,global,class=BIGRAM,space=1,delta=1,noexec
+    18                           	psect	bigdata,global,class=BIGRAM,space=1,delta=1,noexec
+    19                           	psect	ibigdata,global,reloc=2,class=CODE,delta=1,noexec
+    20                           	psect	farbss,global,reloc=2,class=FARRAM,delta=1,noexec
+    21                           	psect	nvFARRAM,global,reloc=2,class=FARRAM,delta=1,noexec
+    22                           	psect	fardata,global,reloc=2,class=FARRAM,delta=1,noexec
+    23                           	psect	ifardata,global,reloc=2,class=CODE,delta=1,noexec
+    24                           	psect	reset_vec,global,reloc=2,class=CODE,delta=1
+    25                           	psect	powerup,global,reloc=2,class=CODE,delta=1
+    26                           	psect	init,global,reloc=2,class=CODE,delta=1
+    27                           	psect	text,global,reloc=2,class=CODE,delta=1
+    28                           	psect	clrtext,global,reloc=2,class=CODE,delta=1
+    29                           	psect	config,global,class=CONFIG,space=4,delta=1,noexec
+    30                           	psect	idloc,global,class=IDLOC,space=5,delta=1,noexec
+    31                           	psect	intcode,global,reloc=2,class=CODE,delta=1
+    32                           	psect	intcode_body,global,reloc=2,class=CODE,delta=1
+    33                           	psect	intcodelo,global,reloc=2,class=CODE,delta=1
+    34                           	psect	intret,global,reloc=2,class=CODE,delta=1
+    35                           	psect	intentry,global,reloc=2,class=CODE,delta=1
+    36                           	psect	intsave_regs,global,class=BIGRAM,space=1,delta=1
+    37                           	psect	eeprom_data,global,class=EEDATA,delta=1,noexec
+    38                           	psect	ramtop,global,class=RAM,delta=1,noexec
+    39                           	psect	stack,global,class=STACK,space=2,delta=1,noexec
+    40                           	psect	heap,global,class=HEAP,space=7,delta=1,noexec
+    41                           	psect	comram,global,class=COMRAM,space=1,delta=1
+    42                           	psect	abs1,global,class=ABS1,space=1,delta=1
+    43                           	psect	bigram,global,class=BIGRAM,space=1,delta=1
+    44                           	psect	ram,global,class=RAM,space=1,delta=1
+    45                           	psect	bank0,global,class=BANK0,space=1,delta=1
+    46                           	psect	bank1,global,class=BANK1,space=1,delta=1
+    47                           	psect	bank2,global,class=BANK2,space=1,delta=1
+    48                           	psect	bank3,global,class=BANK3,space=1,delta=1
+    49                           	psect	bank4,global,class=BANK4,space=1,delta=1
+    50                           	psect	bank5,global,class=BANK5,space=1,delta=1
+    51                           	psect	bank6,global,class=BANK6,space=1,delta=1
+    52                           	psect	bank7,global,class=BANK7,space=1,delta=1
+    53                           	psect	bank8,global,class=BANK8,space=1,delta=1
+    54                           	psect	bank9,global,class=BANK9,space=1,delta=1
+    55                           	psect	bank10,global,class=BANK10,space=1,delta=1
+    56                           	psect	bank11,global,class=BANK11,space=1,delta=1
+    57                           	psect	bank12,global,class=BANK12,space=1,delta=1
+    58                           	psect	bank13,global,class=BANK13,space=1,delta=1
+    59                           	psect	bank14,global,class=BANK14,space=1,delta=1
+    60                           	psect	sfr,global,class=SFR,space=1,delta=1
+    61                           	psect	bigsfr,global,class=BIGSFR,space=1,delta=1
+    62                           
+    63                           ; Microchip MPLAB XC8 C Compiler V2.36
+    64                           ; Copyright (C) 2022 Microchip Technology Inc.
+    65                           ; Auto-generated runtime startup code for final link stage.
+    66                           ;
+    67                           ; Compiler options:
+    68                           ;
+    69                           ; -q --opt=none --chip=18f26k80 \
+    70                           ; -Mdist/default/production/CANMIOfirmwareXC8.X.production.map \
+    71                           ; -DXPRJ_default=default -L--defsym=__MPLAB_BUILD=1 \
+    72                           ; --dfp=C:/Program Files/Microchip/MPLABX/v6.00/packs/Microchip/PIC18F-K_DFP/1.5.114/xc8 \
+    73                           ; --double=24 --float=24 --emi=wordwrite --opt=+2 --opt=+asmfile \
+    74                           ; --addrqual=ignore -P -I../../ -I../../github/CANMIOfirmware \
+    75                           ; -I../../github/CBUSlib -I../../github/cbusdefs --warn=-3 --asmlist \
+    76                           ; --summary=-psect,-class,+mem,-hex,-file --output=+inhx32 \
+    77                           ; --runtime=+clear --runtime=+init --runtime=+keep --runtime=-download \
+    78                           ; --runtime=+config --codeoffset=0x840 --std=c90 \
+    79                           ; --output=+elf:multilocs --stack=compiled:auto:auto:auto \
+    80                           ; --summary=+xml --summarydir=dist/default/production/memoryfile.xml \
+    81                           ; -oCANMIOfirmwareXC8.X.production.elf --objdir=dist/default/production \
+    82                           ; --outdir=dist/default/production \
+    83                           ; build/default/production/_ext/579903818/actionQueue.p1 \
+    84                           ; build/default/production/_ext/579903818/analogue.p1 \
+    85                           ; build/default/production/_ext/579903818/bounce.p1 \
+    86                           ; build/default/production/_ext/579903818/digitalOut.p1 \
+    87                           ; build/default/production/_ext/579903818/hwsettings.p1 \
+    88                           ; build/default/production/_ext/579903818/inputs.p1 \
+    89                           ; build/default/production/_ext/579903818/main.p1 \
+    90                           ; build/default/production/_ext/579903818/mioEvents.p1 \
+    91                           ; build/default/production/_ext/579903818/mioFLiM.p1 \
+    92                           ; build/default/production/_ext/579903818/mioNv.p1 \
+    93                           ; build/default/production/_ext/579903818/nvCache.p1 \
+    94                           ; build/default/production/_ext/579903818/outputs.p1 \
+    95                           ; build/default/production/_ext/579903818/queue.p1 \
+    96                           ; build/default/production/_ext/579903818/servo.p1 \
+    97                           ; build/default/production/_ext/1515116132/c018.p1 \
+    98                           ; build/default/production/_ext/1515116132/can18.p1 \
+    99                           ; build/default/production/_ext/1515116132/cbus.p1 \
+   100                           ; build/default/production/_ext/1515116132/events.p1 \
+   101                           ; build/default/production/_ext/1515116132/FliM.p1 \
+   102                           ; build/default/production/_ext/1515116132/happeningsActions.p1 \
+   103                           ; build/default/production/_ext/1515116132/romops.p1 \
+   104                           ; build/default/production/_ext/1515116132/StatusLeds.p1 \
+   105                           ; build/default/production/_ext/1515116132/ticktime.p1 \
+   106                           ; build/default/production/_ext/1515116132/timedResponse.p1 \
+   107                           ; --callgraph=none --errformat=%f:%l:%c: error: (%n) %s \
+   108                           ; --warnformat=%f:%l:%c: warning: (%n) %s \
+   109                           ; --msgformat=%f:%l:%c: advisory: (%n) %s
+   110                           ;
+   111  0000                     
+   112                           ; Version 2.35
+   113                           ; Generated 05/05/2021 GMT
+   114                           ; 
+   115                           ; Copyright © 2021, Microchip Technology Inc. and its subsidiaries ("Microchip")
+   116                           ; All rights reserved.
+   117                           ; 
+   118                           ; This software is developed by Microchip Technology Inc. and its subsidiaries ("Microchip").
+   119                           ; 
+   120                           ; Redistribution and use in source and binary forms, with or without modification, are
+   121                           ; permitted provided that the following conditions are met:
+   122                           ; 
+   123                           ;     1. Redistributions of source code must retain the above copyright notice, this list of
+   124                           ;        conditions and the following disclaimer.
+   125                           ; 
+   126                           ;     2. Redistributions in binary form must reproduce the above copyright notice, this list
+   127                           ;        of conditions and the following disclaimer in the documentation and/or other
+   128                           ;        materials provided with the distribution. Publication is not required when
+   129                           ;        this file is used in an embedded application.
+   130                           ; 
+   131                           ;     3. Microchip's name may not be used to endorse or promote products derived from this
+   132                           ;        software without specific prior written permission.
+   133                           ; 
+   134                           ; THIS SOFTWARE IS PROVIDED BY MICROCHIP "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+   135                           ; INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+   136                           ; PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL MICROCHIP BE LIABLE FOR ANY DIRECT, INDIRECT,
+   137                           ; INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED TO
+   138                           ; PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA OR PROFITS; OR BUSINESS
+   139                           ; INTERRUPTION) HOWSOEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   140                           ; LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+   141                           ; THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   142                           ; 
+   143                           ; 
+   144                           ; Code-generator required, PIC18F26K80 Definitions
+   145                           ; 
+   146                           ; SFR Addresses
+   147  0000                     
+   148                           	psect	smallconst
+   149  000F00                     __smallconst:
+   150                           	callstack 0
+   151                           
+   152                           	psect	mediumconst
+   153  000000                     __mediumconst:
+   154                           	callstack 0	; top of RAM usage
+   155                           
+   156                           	psect	reset_vec
+   157  000840                     
+   158                           ; No powerup routine
+   159                           ; jump to start
+   160  000840  EF4F  F004         	goto	start
+   161  0000                     
+   162                           ;Initialize the stack pointer (FSR1)
+   163  0000                     
+   164                           	psect	init
+   165  00089E                     start:
+   166                           	callstack 0
+   167  00089E  EF2A  F03D         	goto	start_initialization	;jump to C runtime clear & initialization
+   168                           
+   169                           	psect	text
+   170  000000                     intlevel0:
+   171                           	callstack 0
+   172  000000                     intlevel1:
+   173                           	callstack 0
+   174  000000                     intlevel2:
+   175                           	callstack 0
+   176  000000                     intlevel3:
+   177                           	callstack 0
+   178                           
+   179                           	psect	ramtop
+   180  000F00                     __ramtop:
+   181                           	callstack 0
+   182                           
+   183                           	psect	stack
+   184  000000                     ___sp:
+   185                           	callstack 0
+   186  000000                     ___inthi_sp:
+   187                           	callstack 0
+   188  000000                     ___intlo_sp:
+   189                           	callstack 0
+   190                           
+   191                           ; No heap to be allocated
+   192                           
+   193                           	psect	heap
+   194  0000                     tosu	equ	0xFFF
+   195                           tosh	equ	0xFFE
+   196                           tosl	equ	0xFFD
+   197                           stkptr	equ	0xFFC
+   198                           pclatu	equ	0xFFB
+   199                           pclath	equ	0xFFA
+   200                           pcl	equ	0xFF9
+   201                           tblptru	equ	0xFF8
+   202                           tblptrh	equ	0xFF7
+   203                           tblptrl	equ	0xFF6
+   204                           tablat	equ	0xFF5
+   205                           prodh	equ	0xFF4
+   206                           prodl	equ	0xFF3
+   207                           indf0	equ	0xFEF
+   208                           postinc0	equ	0xFEE
+   209                           postdec0	equ	0xFED
+   210                           preinc0	equ	0xFEC
+   211                           plusw0	equ	0xFEB
+   212                           fsr0h	equ	0xFEA
+   213                           fsr0l	equ	0xFE9
+   214                           wreg	equ	0xFE8
+   215                           indf1	equ	0xFE7
+   216                           postinc1	equ	0xFE6
+   217                           postdec1	equ	0xFE5
+   218                           preinc1	equ	0xFE4
+   219                           plusw1	equ	0xFE3
+   220                           fsr1h	equ	0xFE2
+   221                           fsr1l	equ	0xFE1
+   222                           bsr	equ	0xFE0
+   223                           indf2	equ	0xFDF
+   224                           postinc2	equ	0xFDE
+   225                           postdec2	equ	0xFDD
+   226                           preinc2	equ	0xFDC
+   227                           plusw2	equ	0xFDB
+   228                           fsr2h	equ	0xFDA
+   229                           fsr2l	equ	0xFD9
+   230                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.36 build 20220127204148 
+Symbol Table                                                                                               Sun Apr 10 16:25:04 2022
+
+                __S1 0980                 ___sp 0000                 _main 47B2                 start 089E  
+              __HRAM 0000                __LRAM 0001               isa$std 000001         __mediumconst 0000  
+             stackhi 000000               stacklo 000000           __accesstop 000060           ___inthi_sp 0000  
+         ___intlo_sp 0000              __ramtop 0F00  start_initialization 7A54            ___heap_hi 000000  
+          ___heap_lo 000000          __smallconst 0F00             isa$xinst 000000             intlevel0 0000  
+           intlevel1 0000             intlevel2 0000             intlevel3 0000             reset_vec 0840  
