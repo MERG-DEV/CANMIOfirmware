@@ -3,6 +3,11 @@
 The Universal firmware for CANMIO, CANBIP, CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
 
 
+# Version 3C
+
+Release version, identical to version 3C Beta 1 except for removal of the Beta flag
+
+This version uses CBUSLIB version 2M
 
 # Version 3C beta 1
 
