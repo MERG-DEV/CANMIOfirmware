@@ -69,8 +69,8 @@ extern "C" {
 #define BETA        0           // BETA version 0=non beta release
 #else
 #define MAJOR_VER 	3
-#define MINOR_VER 	'c'        // Minor version character
-#define BETA        0           // BETA version 0=non beta release
+#define MINOR_VER 	'd'        // Minor version character
+#define BETA        1           // BETA version 0=non beta release
 #endif
 
 #include "GenericTypeDefs.h"
