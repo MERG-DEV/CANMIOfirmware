@@ -699,6 +699,7 @@ void __init(void)
     NvBytePtr = (const rom near BYTE*)AT_NV;
     eventTable = (rom near EventTable*)AT_EVENTS;
 }
+#endif
 
 // Interrupt service routines
 #if defined(__18CXX)

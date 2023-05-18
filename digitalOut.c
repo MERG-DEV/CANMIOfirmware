@@ -205,7 +205,7 @@ void processOutputs(void) {
                 // check if OFF events are enabled
                 if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
                     // check if produced event is inverted
-                    sendProducedEvent(HAPPENING_IO_INPUT(io), !(NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED));
+                    sendProducedEvent(HAPPENING_IO_INPUT(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED); 
                 }
                 doneAction();
             }
