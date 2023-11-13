@@ -1,26 +1,21 @@
 # CANMIOfirmware
 
-The Universal firmware for CANMIO, CANBIP, CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
+The firmware for CANMIO, CANBIP and other compatible hardware such as CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
 
 
-# Version 3C
-
-Release version, identical to version 3C Beta 1 except for removal of the Beta flag
-
-This version uses CBUSLIB version 2M
-
-# Version 3C beta 1
+# Version 3D beta 2
 
 See CANMIO wiki page for full details of changes and bug fixes in this version
 
-Version 3C BETA 1 includes some bug fixes and the option for the user to set a delay between response messages to SoD or NERD.
+Version 3D BETA 1 includes a bug fixe for response to AREQ.
 See the commit comments for full details of the changes.
 
+This version uses CBUSLIB version 2P
 
 
 # Description
 
-The Universal firmware allows the 16 I/O channels of the CANMIO to be individually configured for:
+The CANMIO firmware allows the 16 I/O channels of the CANMIO to be individually configured for:
 
   * INPUT digital input (default for all I/O channels on CANMIO and channels 9 to 16 on CANBIP)
   * OUTPUT including relays (default for channels 1 to 8 on CANBIP)
@@ -30,17 +25,17 @@ The Universal firmware allows the 16 I/O channels of the CANMIO to be individual
   * ANALOGUE analogue input threshold. (Available on channels 9,10,11,13,14,15,16 supported on PIC18F26K80 only)
   * MAGNET for magnet detectors. (Available on channels 9,10,11,13,14,15,16 supported on PIC18F26K80 only)
 
-Documentation on MERG wiki https://www.merg.org.uk/merg_wiki/doku.php?id=cbus:canmio_fw
+Documentation on MERG knowledgebase https://www.merg.org.uk/merg_wiki/doku.php?id=cbus:canmio_fw
 
 # To compile this code:
 This code is written for the Microchip C18 toolchain.
 
-Uses the CBUSlib verion 2M  https://github.com/MERG-DEV/CBUSlib.
+Uses the CBUSlib verion 2P  https://github.com/MERG-DEV/CBUSlib.
 
 It also uses CBUSDefs  https://github.com/MERG-DEV/cbusdefs
 
-The other important thing to know is the project setup in MPLAB. I create a separate MPLAB project within the usual MPLAB workspace and then import the files from the git directory. I create logical folders thus:
-CANMIOfirmware
+The other important thing to know is the project setup in MPLABX. YOu can either create a separate MPLAB project within the usual MPLABX workspace and then import the files from the git directory. I create logical folders thus:
+CANMIOfirmware, or you can reference the files in your working branch of your local copies of the cloned repositories:
   * Header files
     - CANMIOfirmware
     - CBUSlib
@@ -49,7 +44,7 @@ CANMIOfirmware
     - CANMIOfirmware
     - CBUSlib
 
-In the project properties you need to put in the header file include paths under C18 Global Options -> mcc18 -> General -> Include directories = ../../githib/CANMIOfirmware; ../../github/CBUSlib
+In the project properties you need to put in the header file include paths under C18 Global Options, for  -> mcc18 -> General -> Include directories. For example:  ../../githib/CANMIOfirmware; ../../github/CBUSlib
 
 The actual CBUSlib files needed by the project are:
   * CBUSlib header files
@@ -90,4 +85,4 @@ Also if building on linux the C18 compiler needs the 18F26K80_e.lib copied to 18
   * Work out what to do if all CANIDs are taken can18.c
   * Heartbeat message
   * Randomise bounce
-  * RFID input - PNB now taken on this task - branch PNB
+  * Support for CANCDU and CANEMIO
