@@ -2,8 +2,11 @@
 
 The firmware for CANMIO, CANBIP and other compatible hardware such as CANFLIMIO E/F/FF/O and CANVxxxxx boards with PIC18F25K80 and PIC18F26K80 processors and 16MHz clocks.
 
+# Version 3d
 
-# Version 3D beta 2
+ersion 3d is identical to version 3d Beta 2 except for removal of the Beta flag
+
+# Version 3d beta 2
 
 See CANMIO wiki page for full details of changes and bug fixes in this version
 
