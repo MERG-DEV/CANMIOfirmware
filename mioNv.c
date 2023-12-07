@@ -68,7 +68,7 @@ ModuleNvDefs * NV = (ModuleNvDefs*)&(moduleNvDefs);    // pointer to the NV stru
 #ifdef NV_CACHE
 ModuleNvDefs * NV; // = &(nodeVarTable.moduleNVs);
 #else
-volatile rom near ModuleNvDefs * NV = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
+volatile rom near ModuleNvDefs * NV; // = (volatile rom near ModuleNvDefs*)&(nodeVarTable.moduleNVs);    // pointer to the NV structure
 #endif
 #endif
 

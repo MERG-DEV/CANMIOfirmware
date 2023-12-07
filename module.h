@@ -47,6 +47,8 @@
 extern "C" {
 #endif
     
+#include <devincs.h>
+    
 /*********************** MODULE OPTIONS **************************/
 // BOOTLOADER
 #define BOOTLOADER_PRESENT
@@ -59,23 +61,23 @@ extern "C" {
 #ifdef __18F26K80
 #define AREQ_SUPPORT
 #endif
+    
+#ifdef __18F46K80
+#define AREQ_SUPPORT
+#endif
 
 // Whether to enable servos
 #define SERVO
 
-// Whether to enable MULTI
-#ifdef __18F26K80
-#define MULTI
+// Whether to enable MULTI and ANALOGUE inputs
+#ifdef  CPUF26K
+    #define MULTI
+    #define ANALOGUE
 #endif
 
 // Whether to enable BOUNCE
 #define BOUNCE
-   
-#ifdef __18F26K80
-//Whether to support ANALOGUE INPUTS
-#define ANALOGUE
-#endif
-    
+  
 // enable this for additional validation checks
 //#define SAFETY
 
@@ -128,7 +130,7 @@ extern "C" {
 #ifdef __18F25K80
 #define MAX_WRITEABLE_FLASH     0x7FFF
 #endif
- #ifdef __18F26K80
+#ifdef CPUF26K
 #define MAX_WRITEABLE_FLASH     0xFFFF
 #endif 
     

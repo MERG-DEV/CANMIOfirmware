@@ -162,6 +162,10 @@ extern "C" {
 #define TYPE_MULTI                  4
 #define TYPE_ANALOGUE_IN            5
 #define TYPE_MAGNET                 6
+#define TYPE_CDU                    7
+#define TYPE_VDOUBLER               8   // For CANCDU only
+#define TYPE_CHGCNTROL              9   // For CANCDU only
+#define TYPE_RAILCOM                10
 
 // the flags
 #define	FLAG_TRIGGER_INVERTED               0x01	// Whether the sense of this input or output inverted
@@ -240,8 +244,12 @@ typedef struct {
 #ifdef __18F25K80
 #define AT_NV   0x7F80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
 #endif
-#ifdef __18F26K80
-#define AT_NV   0xFF80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+#ifdef CPUF26K
+    #ifdef CANEMIO
+        #define AT_NV   0xFF40                  // Where the NVs are stored. (_ROMSIZE - 184)  Size=184 bytes for 24 I/O  gives FF48, allow 8 spare bytes start at FF40
+#else
+        #define AT_NV   0xFF80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
+    #endif    
 #endif
 
 extern void mioNvInit(void);

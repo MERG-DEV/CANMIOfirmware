@@ -95,6 +95,8 @@ extern void setOutputPin(unsigned char io, BOOL state);
 extern TickValue   lastServoStartTime;
 
 // Variables
+#pragma udata servo_data
+
 ServoState servoState[NUM_IO];
 unsigned char currentPos[NUM_IO];
 unsigned char targetPos[NUM_IO];
@@ -114,6 +116,8 @@ unsigned char loopCount[NUM_IO];
 #define EVENT_FLAG_POS3     0x20
 #define EVENT_FLAG_POS4     0x40
 TickValue  ticksWhenStopped[NUM_IO];
+
+#pragma udata
 
 static unsigned char servoInBlock;
 

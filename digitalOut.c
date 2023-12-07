@@ -282,6 +282,26 @@ void setOutputPin(unsigned char io, BOOL state) {
                 LATC &= ~(1<<configs[io].no);
             }
             break;
+#ifdef CANEMIO            
+        case 'D':
+            if (state) {
+                // set it
+                LATD |= (1<<configs[io].no);
+            } else {
+                // clear it
+                LATD &= ~(1<<configs[io].no);
+            }
+            break;  
+        case 'E':
+            if (state) {
+                // set it
+                LATE |= (1<<configs[io].no);
+            } else {
+                // clear it
+                LATE &= ~(1<<configs[io].no);
+            }
+            break;   
+#endif            
     }
 }
 

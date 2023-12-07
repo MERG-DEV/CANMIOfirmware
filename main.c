@@ -165,7 +165,32 @@ void ISRHigh(void);
 // PIN configs
 const rom Config configs[NUM_IO] = {
     //PIN, PORT, PORT#, AN#
-    // TODO check ordering of 8-15
+#ifdef CANEMIO
+    {32, 'C', 0, 0xFF}, //0
+    {35, 'C', 1, 0xFF}, //1
+    {36, 'C', 2, 0xFF}, //2
+    {37, 'C', 3, 0xFF}, //3
+    {42, 'C', 4, 0xFF}, //4
+    {43, 'C', 5, 0xFF}, //5
+    {44, 'C', 6, 0xFF}, //6
+    {1,  'C', 7, 0xFF}, //7
+    {8,  'B', 0, 10},   //8
+    {9,  'B', 1, 8},    //9
+    {14, 'B', 4, 9},    //10
+    {15, 'B', 5, 0xFF}, //11
+    {20, 'A', 1, 1},    //12
+    {19, 'A', 0, 0},    //13
+    {22, 'A', 3, 3},    //14
+    {24, 'A', 5, 4},    //15    
+    {38, 'D', 0, 0xFF}, //16
+    {39, 'D', 1, 0xFF}, //17
+    {40, 'D', 2, 0xFF}, //18
+    {41, 'D', 3, 0xFF}, //19
+    {2,  'D', 4, 0xFF}, //20
+    {3,  'D', 5, 0xFF}, //21
+    {25, 'E', 0, 5},    //22
+    {26, 'E', 1, 6}     //23   
+#else
     {11, 'C', 0, 0xFF},   //0
     {12, 'C', 1, 0xFF},   //1
     {13, 'C', 2, 0xFF},   //2
@@ -182,6 +207,7 @@ const rom Config configs[NUM_IO] = {
     {2,  'A', 0, 0},   //13
     {5,  'A', 3, 3},   //14
     {7,  'A', 5, 4}    //15
+#endif
 };
 
 // forward declarations
@@ -664,7 +690,24 @@ void configIO(unsigned char i) {
             } else {
                 TRISC &= ~(1 << configs[i].no); // output
             }
-            break;          
+            break; 
+#ifdef CANEMIO        
+        case 'D':
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
+                TRISD |= (1 << configs[i].no);  // input
+            } else {
+                TRISD &= ~(1 << configs[i].no); // output
+            }
+            break;  
+            
+        case 'E':
+            if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
+                TRISE |= (1 << configs[i].no);  // input
+            } else {
+                TRISE &= ~(1 << configs[i].no); // output
+            }
+            break;             
+#endif
     }
 #ifdef ANALOGUE
     if ((NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {

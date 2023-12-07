@@ -165,16 +165,20 @@ void defaultEvents(unsigned char io, unsigned char type) {
  * @return error number or 0 for success
  */
 unsigned char APP_addEvent(WORD nodeNumber, WORD eventNumber, BYTE evNum, BYTE evVal, BOOL forceOwnNN) {
-    if ((evNum == 0) && (evVal != NO_ACTION)) {
+    if ((evNum == 0) && (evVal != NO_ACTION))
+    {
         // this is a Happening
+#ifdef HASH_TABLE       // This generates compile errors if hash table not defined, because producer events are not supported if hash table turned off 
         unsigned char tableIndex = happening2Event[evVal-HAPPENING_BASE];
         if (tableIndex != NO_INDEX) {
             // Happening already exists
             // remove it
             writeEv(tableIndex, 0, NO_ACTION);
             checkRemoveTableEntry(tableIndex);
-            rebuildHashtable();
+
+            rebuildHashtable();         
         }
+        #endif  
     }
     return addEvent(nodeNumber, eventNumber, evNum, evVal, forceOwnNN);
 }

@@ -56,8 +56,13 @@ extern "C" {
  * IO pin configuration
  */
 // Number of IO pins
-#define NUM_IO 16
-#define NUM_IO_MAIN 8  // pins on the main board
+#ifdef CANEMIO
+    #define NUM_IO 24
+    #define NUM_IO_MAIN 16  // pins on the main board
+#else   
+    #define NUM_IO 16
+    #define NUM_IO_MAIN 8  // pins on the main board
+#endif    
 // look in mioNv as the IO pin config is stored in NVs
     
 /*******************************************************************
@@ -65,12 +70,12 @@ extern "C" {
  */ 
 #ifdef CANBIP
 #define MAJOR_VER 	3
-#define MINOR_VER 	'd'        // Minor version character
-#define BETA        2           // BETA version 0=non beta release
+#define MINOR_VER 	'e'        // Minor version character
+#define BETA        1           // BETA version 0=non beta release
 #else
 #define MAJOR_VER 	3
-#define MINOR_VER 	'd'        // Minor version character
-#define BETA        2           // BETA version 0=non beta release
+#define MINOR_VER 	'e'        // Minor version character
+#define BETA        1           // BETA version 0=non beta release
 #endif
 
 #include "GenericTypeDefs.h"
@@ -81,6 +86,12 @@ extern "C" {
 #ifdef CANBIP
 #define MODULE_ID       MTYP_CANBIP
 #define MODULE_TYPE     "BIP    "       // MUST be at least 7 character long. First 7 are used    
+#elif CANCDU
+#define MODULE_ID       MTYP_CANCDU
+#define MODULE_TYPE     "CDU    "       // MUST be at least 7 character long. First 7 are used        
+#elif CANEMIO
+#define MODULE_ID       MTYP_CANEMIO
+#define MODULE_TYPE     "EMIO   "       // MUST be at least 7 character long. First 7 are used     
 #else
 #define MODULE_ID       MTYP_CANMIO
 #define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.    
