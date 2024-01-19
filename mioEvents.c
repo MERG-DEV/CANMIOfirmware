@@ -228,7 +228,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
     unsigned char io;
     unsigned char ca;
-    int action;
+    unsigned int action;   // unsigned so check <= NUM_ACTIONS works correctly for CANEMIO when NUM_ACTIONS is 128
     unsigned char masked_action;
 
     BYTE opc = getEVs(tableIndex);
@@ -291,7 +291,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     } else {
         // OFF events work down through the EVs
         //int nextAction = getEv(tableIndex, EVperEVT-1);
-        int nextAction = evs[EVperEVT-1];
+        unsigned int nextAction = evs[EVperEVT-1];
         for (e=EVperEVT-1; e>=1 ;e--) { 
             unsigned char nextSimultaneous;
             unsigned char firstAction = NO_ACTION;  // used to determine simultaneous flag for the end of actions
