@@ -282,7 +282,7 @@ void setOutputPin(unsigned char io, BOOL state) {
                 LATC &= ~(1<<configs[io].no);
             }
             break;
-#ifdef CANEMIO            
+#ifdef CANXIO            
         case 'D':
             if (state) {
                 // set it

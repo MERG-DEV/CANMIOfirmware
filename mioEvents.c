@@ -228,7 +228,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
     unsigned char e;
     unsigned char io;
     unsigned char ca;
-    unsigned int action;   // unsigned so check <= NUM_ACTIONS works correctly for CANEMIO when NUM_ACTIONS is 128
+    unsigned int action;   // unsigned so check <= NUM_ACTIONS works correctly for CANXIO when NUM_ACTIONS is 128
     unsigned char masked_action;
 
     BYTE opc = getEVs(tableIndex);

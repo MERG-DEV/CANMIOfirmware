@@ -194,7 +194,7 @@ extern void clearEvents(unsigned char i);
 #define AT_EVENTS               0x6F80      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes
 #endif
 #ifdef CPUF26K
-    #ifdef CANEMIO
+    #ifdef CANXIO
         #define AT_EVENTS               0xE940      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 4096(0x1000) bytes   FF40 - 1600 = E940 (note eventable size currently 16 but allow for max of 22)
     #else
         #define AT_EVENTS               0xEF80      //(AT_NV - sizeof(EventTable)*NUM_EVENTS) Size=256 * 22 = 5632(0x1600) bytes

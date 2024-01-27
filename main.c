@@ -165,7 +165,7 @@ void ISRHigh(void);
 // PIN configs
 const rom Config configs[NUM_IO] = {
     //PIN, PORT, PORT#, AN#
-#ifdef CANEMIO
+#ifdef CANXIO
     {32, 'C', 0, 0xFF}, //0
     {35, 'C', 1, 0xFF}, //1
     {36, 'C', 2, 0xFF}, //2
@@ -691,7 +691,7 @@ void configIO(unsigned char i) {
                 TRISC &= ~(1 << configs[i].no); // output
             }
             break; 
-#ifdef CANEMIO        
+#ifdef CANXIO        
         case 'D':
             if ((NV->io[i].type == TYPE_INPUT) || (NV->io[i].type == TYPE_ANALOGUE_IN) || (NV->io[i].type == TYPE_MAGNET)) {
                 TRISD |= (1 << configs[i].no);  // input

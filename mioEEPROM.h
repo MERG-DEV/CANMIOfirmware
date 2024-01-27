@@ -55,7 +55,7 @@ extern "C" {
     /**
      * Record the current output state for all the IO.
      */
-#define EE_OP_STATE         ((WORD)(EE_APPLICATION)-25)    // Space to store current state of up to 16 outputs (24 for CANEMIO)
+#define EE_OP_STATE         ((WORD)(EE_APPLICATION)-25)    // Space to store current state of up to 16 outputs (24 for CANXIO)
                                                  // You'll need to do ee_read(EE_OP_STATE + io)
     
 

@@ -180,7 +180,7 @@ BOOL readInput(unsigned char io) {
                 return PORTB & (1<<configs[io].no);
             case 'C':
                 return PORTC & (1<<configs[io].no);
-#ifdef CANEMIO
+#ifdef CANXIO
             case 'D':
                 return PORTD & (1<<configs[io].no);
             case 'E':

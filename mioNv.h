@@ -245,7 +245,7 @@ typedef struct {
 #define AT_NV   0x7F80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes
 #endif
 #ifdef CPUF26K
-    #ifdef CANEMIO
+    #ifdef CANXIO
         #define AT_NV   0xFF40                  // Where the NVs are stored. (_ROMSIZE - 184)  Size=184 bytes for 24 I/O  gives FF48, allow 8 spare bytes start at FF40
 #else
         #define AT_NV   0xFF80                  // Where the NVs are stored. (_ROMSIZE - 128)  Size=128 bytes

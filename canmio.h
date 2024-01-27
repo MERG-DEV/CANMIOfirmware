@@ -56,7 +56,7 @@ extern "C" {
  * IO pin configuration
  */
 // Number of IO pins
-#ifdef CANEMIO
+#ifdef CANXIO
     #define NUM_IO 24
     #define NUM_IO_MAIN 16  // pins on the main board
 #else   
@@ -83,9 +83,9 @@ extern "C" {
 #elif CANCDU
 #define MODULE_ID       MTYP_CANCDU
 #define MODULE_TYPE     "CDU    "       // MUST be at least 7 character long. First 7 are used        
-#elif CANEMIO
-#define MODULE_ID       MTYP_CANEMIO
-#define MODULE_TYPE     "EMIO   "       // MUST be at least 7 character long. First 7 are used     
+#elif CANXIO
+#define MODULE_ID       MTYP_CANXIO
+#define MODULE_TYPE     "XIO    "       // MUST be at least 7 character long. First 7 are used     
 #else
 #define MODULE_ID       MTYP_CANMIO
 #define MODULE_TYPE     "MIO    "       // MUST be at least 7 character long. First 7 are used.    
