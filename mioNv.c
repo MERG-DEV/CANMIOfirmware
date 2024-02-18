@@ -208,7 +208,7 @@ void factoryResetGlobalNv(void) {
  */
 void defaultNVs(unsigned char i, unsigned char type) {
     // add the module's default nv for this io
-    writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_CUTOFF | FLAG_STARTUP));
+    writeFlashByte((BYTE*)(AT_NV+NV_IO_FLAGS(i)), (BYTE)(FLAG_SERVO_CUTOFF | FLAG_OUTPUT_STARTUP));
     switch(type) {
         case TYPE_INPUT:
             writeFlashByte((BYTE*)(AT_NV+NV_IO_INPUT_ON_DELAY(i)), (BYTE)4);

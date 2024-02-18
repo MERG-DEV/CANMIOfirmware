@@ -125,14 +125,14 @@ void initServos(void) {
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
         // try STOPPED state to reduced or correct power on jump
-        if (NV->io[io].flags & FLAG_STARTUP) {
+        if (NV->io[io].flags & FLAG_OUTPUT_STARTUP) {
             /* This will send 1sec of pulses at power up */
             servoState[io] = STOPPED;
         } else {
             servoState[io] = OFF;
         }
         ticksWhenStopped[io].Val = tickGet();
-        if (NV->io[io].flags & FLAG_STARTUP) {
+        if (NV->io[io].flags & FLAG_OUTPUT_STARTUP) {
             setOutputPosition(io, ee_read(EE_OP_STATE+io), NV->io[io].type);   // restore last known positions
         } else {
             setOutputPosition(io, NV->io[io].nv_io.nv_servo.servo_start_pos, NV->io[io].type);    // START pos
@@ -195,7 +195,7 @@ void setupTimer1(unsigned char io) {
     TMR1L = ticks & 0xFF;
 #endif
     // turn on output
-    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+    setOutputPin(io, !(NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
 void setupTimer3(unsigned char io) {
@@ -207,7 +207,7 @@ void setupTimer3(unsigned char io) {
     TMR3L = ticks & 0xFF;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
 #endif
     // turn on output
-    setOutputPin(io, !(NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+    setOutputPin(io, !(NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
     T3CONbits.TMR3ON = 1;       // enable Timer3
 }
 
@@ -219,12 +219,12 @@ void setupTimer3(unsigned char io) {
  */
 void timer1DoneInterruptHandler(void) {
     T1CONbits.TMR1ON = 0;       // disable Timer1
-    setOutputPin(servoInBlock, NV->io[servoInBlock].flags & FLAG_RESULT_ACTION_INVERTED);    
+    setOutputPin(servoInBlock, NV->io[servoInBlock].flags & FLAG_OUTPUT_ACTION_INVERTED);    
 }
 
 void timer3DoneInterruptHandler(void) {
     T3CONbits.TMR3ON = 0;       // disable Timer3
-    setOutputPin(servoInBlock+SERVOS_IN_BLOCK, NV->io[servoInBlock+SERVOS_IN_BLOCK].flags & FLAG_RESULT_ACTION_INVERTED);    
+    setOutputPin(servoInBlock+SERVOS_IN_BLOCK, NV->io[servoInBlock+SERVOS_IN_BLOCK].flags & FLAG_OUTPUT_ACTION_INVERTED);    
 }
 
 /**
@@ -454,7 +454,7 @@ void pollServos(void) {
         case STOPPED:
             // if we have been stopped for more than 1 sec then change to OFF
             // If FLAG_CUTOFF isn't set then we never reach OFF
-            if (NV->io[io].flags & FLAG_CUTOFF) {
+            if (NV->io[io].flags & FLAG_SERVO_CUTOFF) {
                 if (tickTimeSince(ticksWhenStopped[io]) > ONE_SECOND) {
                     servoState[io] = OFF;
                 }

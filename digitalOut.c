@@ -117,7 +117,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
         pulseDelays[io] = 0;
-        setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+        setOutputPin(io, ! (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
         sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, 
                 NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED, TRUE, TRUE);
@@ -149,7 +149,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     }
 
     pinState = actionState;
-    if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+    if (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) {
         pinState = !pinState;
     }
     setOutputPin(io, pinState);
@@ -181,12 +181,12 @@ void processOutputs(void) {
         if (NV->io[io].type == TYPE_OUTPUT) {
             // Handle the FLASH toggle
             if (flashDelays[io] == 1) {
-                setOutputPin(io, NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED);
+                setOutputPin(io, NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED);
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
                 flashDelays[io] = - flashDelays[io];
             }
             if (flashDelays[io] == -1) {
-                setOutputPin(io, ! (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+                setOutputPin(io, ! (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
                 flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
             }
             if (flashDelays[io] > 1) {
@@ -197,7 +197,7 @@ void processOutputs(void) {
             // Handle PULSEd outputs
             if (pulseDelays[io] == 1) {
                 // time to go off
-                if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+                if (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) {
                     setOutputPin(io, TRUE);
                 } else {
                     setOutputPin(io, FALSE);
@@ -235,7 +235,7 @@ void setDigitalOutput(unsigned char io, unsigned char state) {
 //            if (NV->io[io].flags & FLAG_TRIGGER_INVERTED) {
 //                pinState = pinState?0:1;
 //            }
-            if (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED) {
+            if (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) {
                 setOutputPin(io, ! pinState);
             } else {
                 setOutputPin(io, pinState);

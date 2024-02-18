@@ -80,7 +80,7 @@ void initInputScan(void) {
             input = !input;
         }
         outputState[io] = input;
-        if (NV->io[io].flags & FLAGS_TOGGLE) {
+        if (NV->io[io].flags & FLAG_INPUT_TOGGLE) {
             outputState[io] = ee_read(EE_OP_STATE+io);
         }
         delayCount[io] = 0;
@@ -120,7 +120,7 @@ void inputScan(void) {
                         input = !input;
                     }
                     // Check if toggle
-                    if (NV->io[io].flags & FLAGS_TOGGLE) {
+                    if (NV->io[io].flags & FLAG_INPUT_TOGGLE) {
                         if (input) {
                             outputState[io] = ! outputState[io];
                         } else {

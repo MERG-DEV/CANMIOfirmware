@@ -649,10 +649,10 @@ void configIO(unsigned char i) {
     // servos will do this in servo.c
     switch (NV->io[i].type) {
         case TYPE_OUTPUT:
-        if (NV->io[i].flags & FLAG_STARTUP) {
+        if (NV->io[i].flags & FLAG_OUTPUT_STARTUP) {
             setDigitalOutput(i, ee_read((WORD)EE_OP_STATE+i)); // saved state
         } else {
-            action = (NV->io[i].flags & FLAG_RESULT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
+            action = (NV->io[i].flags & FLAG_OUTPUT_ACTION_INVERTED) ? ACTION_IO_2 : ACTION_IO_3;
             setDigitalOutput(i, action);  // OFF
             // save the current state of output as OFF so 
             ee_write(EE_OP_STATE+i, action);       // Unsure if this is required or if it should be deleted. Therefore leaving it for now.
@@ -664,7 +664,7 @@ void configIO(unsigned char i) {
     case TYPE_BOUNCE:
 #endif
         // start with the polarity defined in flag PULLUP
-        setDigitalOutput(i, NV->io[i].flags & FLAG_PULLUP);
+        setDigitalOutput(i, NV->io[i].flags & FLAG_SERVO_START_PULLUP);
 #endif
     }
     // Now actually set it

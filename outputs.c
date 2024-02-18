@@ -153,7 +153,7 @@ void setOutputPosition(unsigned char io, unsigned char pos, unsigned char type) 
 #ifdef SERVO
         case TYPE_SERVO:
             setServoPosition(io, pos);
-            setOutputPin(io, (NV->io[io].flags & FLAG_RESULT_ACTION_INVERTED));
+            setOutputPin(io, (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
             return;
 #endif
 
