@@ -260,7 +260,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                         ca = ACTION(masked_action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
-                                if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
+                                if (NV->io[io].flags & FLAG_OUTPUT_EXPEDITED) {
                                     setExpeditedActions();
                                 }
                                 // fall through
@@ -323,7 +323,7 @@ void processEvent(BYTE tableIndex, BYTE * msg) {
                         ca = ACTION(action);
                         switch (NV->io[io].type) {
                             case TYPE_OUTPUT:
-                                if (NV->io[io].flags & FLAG_EXPEDITED_ACTIONS) {
+                                if (NV->io[io].flags & FLAG_OUTPUT_EXPEDITED) {
                                     setExpeditedActions();
                                 }
                                 if (ca == ACTION_IO_4) {

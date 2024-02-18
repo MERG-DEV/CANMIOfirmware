@@ -177,13 +177,12 @@ extern "C" {
 
 #define	FLAG_OUTPUT_STARTUP             0x04	// Whether this output be changed on module start to match values in EE_OP_STATE
 #define FLAG_OUTPUT_ACTION_INVERTED     0x20    // whether the resulting action is inverted
-  
+#define FLAG_OUTPUT_EXPEDITED           0x80    // whether consumed actions are expedited
+
 #define	FLAG_SERVO_CUTOFF               0x02	// Whether the servo cut off after 1 second once it has reached its target position
 #define FLAG_SERVO_START_PULLUP         0x10    // Start servos high or low. Reuse Toggle flag
 #define FLAG_SERVO_EXTENDED_TRAVEL      0x80    // 0-90 or 0-180 degree rotation
-    
-//Action flag
-#define FLAG_EXPEDITED_ACTIONS      0x80    // whether consumed actions are expedited
+
 
 typedef struct {
     unsigned char type;

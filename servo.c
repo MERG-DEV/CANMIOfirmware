@@ -72,11 +72,11 @@
 #include "happeningsActions.h"
 
 // These setting for 1ms to 2ms
-#define POS2TICK_OFFSET         3600    // change this to affect the min pulse width
-#define POS2TICK_MULTIPLIER     19      // change this to affect the max pulse width
+#define POS2TICK_OFFSET                 3600    // change this to affect the min pulse width
+#define POS2TICK_MULTIPLIER             19      // change this to affect the max pulse width
 // These setting for 0.5ms to 2.5ms
-//#define POS2TICK_OFFSET         1999    // change this to affect the min pulse width
-//#define POS2TICK_MULTIPLIER     32      // change this to affect the max pulse width
+#define POS2TICK_EXTENDED_OFFSET        1999    // change this to affect the min pulse width
+#define POS2TICK_EXTENDED_MULTIPLIER    32      // change this to affect the max pulse width
 
 #define MAX_SERVO_LOOP          250      // Max number of loops 
 #define MAX_BOUNCE_LOOP         250      // Max number of loops 
@@ -187,9 +187,13 @@ void startServos(void) {
  * @param io
  */
 void setupTimer1(unsigned char io) {
-    WORD ticks = 0xFFFF-(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
+    WORD ticks = 0xFFFF - ((NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) ? 
+                (POS2TICK_EXTENDED_OFFSET + (WORD)POS2TICK_EXTENDED_MULTIPLIER * currentPos[io]) :
+                (POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]) );
 #ifdef __XC8
-    TMR1 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+    TMR1 = - ((NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) ?   // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+                (POS2TICK_EXTENDED_OFFSET + POS2TICK_EXTENDED_MULTIPLIER * currentPos[io]) :
+                (POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]) ); 
 #else
     TMR1H = ticks >> 8;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
     TMR1L = ticks & 0xFF;
@@ -199,9 +203,13 @@ void setupTimer1(unsigned char io) {
     T1CONbits.TMR1ON = 1;       // enable Timer1
 }
 void setupTimer3(unsigned char io) {
-    WORD ticks = 0xFFFF -(POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]);
+    WORD ticks = 0xFFFF - ((NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) ? 
+                (POS2TICK_EXTENDED_OFFSET + (WORD)POS2TICK_EXTENDED_MULTIPLIER * currentPos[io]) :
+                (POS2TICK_OFFSET + (WORD)POS2TICK_MULTIPLIER * currentPos[io]) );
 #ifdef __XC8
-    TMR3 = -(POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]);     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+    TMR3 = - ((NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) ?   // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
+                (POS2TICK_EXTENDED_OFFSET + POS2TICK_EXTENDED_MULTIPLIER * currentPos[io]) :
+                (POS2TICK_OFFSET + POS2TICK_MULTIPLIER * currentPos[io]) ); 
 #else
     TMR3H = ticks >> 8;
     TMR3L = ticks & 0xFF;     // set the duration. Negative to count up to 0x0000 when it generates overflow interrupt
