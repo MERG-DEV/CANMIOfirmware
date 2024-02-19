@@ -207,7 +207,6 @@ void processOutputs(void) {
                     // check if produced event is inverted
                     sendProducedEvent(HAPPENING_IO_INPUT(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED); 
                 }
-                doneAction();
             }
             if (pulseDelays[io] != 0) {
                 pulseDelays[io]--;

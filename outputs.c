@@ -205,7 +205,7 @@ BOOL completed(unsigned char io, ACTION_T action, unsigned char type) {
             return TRUE;
         case TYPE_OUTPUT:
             // wait for a pulse to complete. 
-            return pulseDelays[io] == 0;
+            return pulseDelays[io] == 1;
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE
