@@ -19,6 +19,10 @@ extern void startDigitalOutput(unsigned char io, BOOL state);
 extern void setDigitalOutput(unsigned char io, BOOL state);
 extern void setOutputPin(unsigned char io, BOOL state);
 
+// Pulsed output special values
+#define NEEDS_STARTING  0
+#define COMPLETED       1
+
 #ifdef	__cplusplus
 }
 #endif

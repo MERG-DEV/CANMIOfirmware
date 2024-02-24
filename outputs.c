@@ -174,7 +174,7 @@ BOOL needsStarting(unsigned char io, ACTION_T action, unsigned char type) {
             // Flashing outputs will complete immediately
             // pulsed output will complete after pulse has finished
             // but we need to start them all
-            return (pulseDelays[io] == 0);
+            return (pulseDelays[io] == NEEDS_STARTING);
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE
@@ -205,7 +205,7 @@ BOOL completed(unsigned char io, ACTION_T action, unsigned char type) {
             return TRUE;
         case TYPE_OUTPUT:
             // wait for a pulse to complete. 
-            return pulseDelays[io] == 1;
+            return pulseDelays[io] == COMPLETED;
 #ifdef SERVO
         case TYPE_SERVO:
 #ifdef BOUNCE

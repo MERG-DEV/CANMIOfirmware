@@ -61,6 +61,7 @@
 #include "config.h"
 #include "actionQueue.h"
 #include "happeningsActions.h"
+#include "digitalOut.h"
 
 // Forward declarations
 unsigned char pulseDelays[NUM_IO];
@@ -88,7 +89,7 @@ void initOutputs(void) {
     // probably initialised to 0 by the compiler but make sure here
     unsigned char io;
     for (io=0; io<NUM_IO; io++) {
-       pulseDelays[io] = 0;
+       pulseDelays[io] = NEEDS_STARTING;
        flashDelays[io] = 0;
     }
 }
@@ -116,7 +117,7 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
 
     if (state == ACTION_IO_4) {
         flashDelays[io] = NV->io[io].nv_io.nv_output.output_flash_period;
-        pulseDelays[io] = 0;
+        pulseDelays[io] = COMPLETED;
         setOutputPin(io, ! (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED));
         ee_write(EE_OP_STATE+io, state);	// save the current state of output
         sendInvertedProducedEvent(HAPPENING_IO_INPUT(io), TRUE, 
@@ -139,12 +140,13 @@ void startDigitalOutput(unsigned char io, unsigned char state) {
     
     // Save state in EEPROM
     // Was this a ON and we have a pulse duration defined and this is the start of the pulse?
-    if ((actionState) && NV->io[io].nv_io.nv_output.output_pulse_duration && (pulseDelays[io] == 0)) {
+    if ((actionState) && NV->io[io].nv_io.nv_output.output_pulse_duration && (pulseDelays[io] == NEEDS_STARTING)) {
         pulseDelays[io] = NV->io[io].nv_io.nv_output.output_pulse_duration;
         // save the current state of output as OFF so 
         // we don't power up with pulse active 
         ee_write(EE_OP_STATE+io, ACTION_IO_3);	// save the current state of output
     } else {
+        pulseDelays[io] = COMPLETED;
         ee_write(EE_OP_STATE+io, actionState?ACTION_IO_2:ACTION_IO_3);	// save the current state of output
     }
 
@@ -194,22 +196,23 @@ void processOutputs(void) {
             } else if (flashDelays[io] < -1) {
                 flashDelays[io]++;
             }
-            // Handle PULSEd outputs
-            if (pulseDelays[io] == 1) {
-                // time to go off
-                if (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) {
-                    setOutputPin(io, TRUE);
-                } else {
-                    setOutputPin(io, FALSE);
-                }
-                // check if OFF events are enabled
-                if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
-                    // check if produced event is inverted
-                    sendProducedEvent(HAPPENING_IO_INPUT(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED); 
-                }
-            }
-            if (pulseDelays[io] != 0) {
+            if (pulseDelays[io] != NEEDS_STARTING) {
                 pulseDelays[io]--;
+            
+                // Handle PULSEd outputs
+                if (pulseDelays[io] == COMPLETED) {
+                    // time to go off
+                    if (NV->io[io].flags & FLAG_OUTPUT_ACTION_INVERTED) {
+                        setOutputPin(io, TRUE);
+                    } else {
+                        setOutputPin(io, FALSE);
+                    }
+                    // check if OFF events are enabled
+                    if ( ! (NV->io[io].flags & FLAG_DISABLE_OFF)) {
+                        // check if produced event is inverted
+                        sendProducedEvent(HAPPENING_IO_INPUT(io), NV->io[io].flags & FLAG_RESULT_EVENT_INVERTED); 
+                    }
+                }
             }
         }
     }
