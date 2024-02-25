@@ -137,7 +137,7 @@ ACTION_T peekActionQueue(unsigned char index) {
  * @param index the item index within the queue
  */
 void deleteActionQueue(unsigned char index) {
-    if (index <= quantity(&expeditedQueue)) {
+    if (index < quantity(&expeditedQueue)) {
         delete(&expeditedQueue, index);
     } else {
         index -= quantity(&expeditedQueue);
