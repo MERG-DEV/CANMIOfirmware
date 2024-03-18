@@ -70,7 +70,7 @@ extern "C" {
  */ 
 #define MAJOR_VER 	3
 #define MINOR_VER 	'e'        // Minor version character
-#define BETA        1           // BETA version 0=non beta release
+#define BETA        3           // BETA version 0=non beta release
 
 #include "GenericTypeDefs.h"
 #include "cbusdefs.h"

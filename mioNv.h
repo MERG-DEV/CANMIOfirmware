@@ -73,7 +73,7 @@ extern "C" {
 #define NV_SERVO_SPEED                  3   // Used for Multi and Bounce types where there isn't an NV to define speed.
 #define NV_PULLUPS                      4
 #define NV_RESPONSE_DELAY               5
-#define NV_SPARE3                       6
+#define NV_GLOBAL_FLAGS                 6
 #define NV_SPARE4                       7
 #define NV_SPARE5                       8
 #define NV_SPARE6                       9
@@ -231,6 +231,18 @@ typedef struct {
     } nv_io;
 } NvIo;
 
+// Global flags (NV6))
+
+typedef	union
+{
+    struct
+    {
+        BOOL        wpu17to24:1;    // Enable internal pullups for I/O channels 17 to 24
+        unsigned	spare:7;
+    } ;
+    BYTE	byte;
+} GFlags;
+
 /*
  * This structure is required by FLiM.h
  */
@@ -241,7 +253,8 @@ typedef struct {
         BYTE servo_speed;               // default servo speed
         BYTE pullups;                   // weak pullup resistors
         BYTE responseDelay;             // timing of multiple responses
-        BYTE spare[10];
+        GFlags globalFlags;               // Misc flags - only one used at themoment
+        BYTE spare[9];
         NvIo io[NUM_IO];                 // config for each IO
 } ModuleNvDefs;
 

@@ -118,6 +118,8 @@ void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char 
     // If the IO type is changed then we need to do a bit or work
     unsigned char io;
     unsigned char nv;
+    GFlags globalFlags;
+    
     if (IS_NV_TYPE(index)) {
         io = index-NV_IO_START;
         io /= NVS_PER_IO;
@@ -128,6 +130,13 @@ void actUponNVchange(unsigned char index, unsigned char oldValue, unsigned char 
     if (index == NV_PULLUPS) {
         WPUB = value; 
     }
+    
+#ifdef CANXIO    
+    if (index == NV_GLOBAL_FLAGS) {
+        globalFlags.byte = value;
+        PADCFG1 = globalFlags.wpu17to24 ? 0xC0 : 0;
+    }
+#endif    
     
     if (index >= NV_IO_START) {
         io = IO_NV(index);
@@ -221,6 +230,7 @@ void factoryResetGlobalNv(void) {
     writeFlashByte((BYTE*)(AT_NV + NV_SERVO_SPEED), (BYTE)PIVOT);
     writeFlashByte((BYTE*)(AT_NV + NV_PULLUPS), (BYTE)0x33);
     writeFlashByte((BYTE*)(AT_NV + NV_RESPONSE_DELAY), (BYTE)10);
+    writeFlashByte((BYTE*)(AT_NV + NV_GLOBAL_FLAGS), (BYTE)1);
 #ifdef NV_CACHE
     loadNvCache();
 #endif

@@ -498,7 +498,12 @@ void initialise(void) {
     // Enable PORT B weak pullups
     INTCON2bits.RBPU = 0;
     // RB bits 0,1,4,5 need pullups
-    WPUB = NV->pullups; 
+    WPUB = NV->pullups;
+    
+#ifdef CANXIO
+    PADCFG1 = NV->globalFlags.wpu17to24 ? 0xC0 : 0;
+#endif
+    
     actionQueueInit();
     mioEventsInit();
     mioFlimInit(); // This will call FLiMinit, which, in turn, calls eventsInit, cbusInit
